@@ -11,8 +11,8 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
   }
 }
 
@@ -31,3 +31,13 @@ body {
     text-wrap: balance;
   }
 }
+
+.full-screen-div {
+  background-color: white;
+  width: 100vw;  /* 100% of the viewport width */
+  height: 100vh; /* 100% of the viewport height */
+  margin: 0;     /* Remove any default margin */
+  padding: 0;    /* Remove any default padding */
+  box-sizing: border-box; /* Ensure padding and border are included in the element's width and height */
+}
+
