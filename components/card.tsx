@@ -22,15 +22,14 @@ const CardComponent: NextPage<CardComponentProps> = ({title,children}) =>{
     return(
         <div className={styles.card}>
         <Card className="w-full h-full">
-          <CardHeader className="flex gap-3">
+          <CardHeader className="flex">
             <div className="flex flex-col">
               <p className="text-md text-black font-serif">{title}</p>
             </div>
           </CardHeader>
           <Divider />
           <CardBody>
-            <div className="w-full h-full" >
-            {/* <DoughnutChart data={data}/> */}
+            <div className="flex w-full h-full items-center" >
             {children}
             </div>
           </CardBody>

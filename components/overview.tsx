@@ -2,7 +2,7 @@ import React from "react";
 
 const OverviewCard = () => {
   return (
-    <div className="bg-gray-900 text-white p-5 rounded-lg max-w-md mx-auto">
+    <div className="bg-gray-900 text-black p-5 rounded-lg w-full">
       <div className="mb-5">
         <h2 className="text-lg">MyApp Overview</h2>
         <p className="text-gray-400">

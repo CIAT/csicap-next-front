@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -30,14 +35,5 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
-
-.full-screen-div {
-  background-color: white;
-  width: 100vw;  /* 100% of the viewport width */
-  height: 100vh; /* 100% of the viewport height */
-  margin: 0;     /* Remove any default margin */
-  padding: 0;    /* Remove any default padding */
-  box-sizing: border-box; /* Ensure padding and border are included in the element's width and height */
 }
 

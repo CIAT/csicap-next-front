@@ -1,13 +1,14 @@
 import { NextPage } from "next";
 import CardComponent from "@/components/card";
-import { Doughnut } from "react-chartjs-2";
-import { Chart, ArcElement } from "chart.js";
+import { Doughnut, Bar } from "react-chartjs-2";
+import { Chart, ArcElement, CategoryScale, BarElement} from "chart.js";
 import styles from "./events.module.css";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart as ChartJS, Tooltip, Legend, LinearScale } from "chart.js";
 import { Chart as ReactChart } from "react-chartjs-2";
 import ChartCardComponent from "@/components/chartCard";
 import OverviewCard from "@/components/overview";
+import { Select, SelectSection, SelectItem } from "@nextui-org/react";
 
 Chart.register(
   ArcElement,
@@ -15,10 +16,36 @@ Chart.register(
   Legend,
   TreemapController,
   TreemapElement,
-  LinearScale
+  LinearScale,
+  CategoryScale, // Register the CategoryScale here
+  BarElement // Register the BarElement for bar charts
 );
 
 const EventPage: NextPage = () => {
+  const institutionParticipants = {
+    labels: [
+      "CENICAFE",
+      "CIAT",
+      "ASBAMA",
+      "AUGURA",
+      "FENALCE",
+      "FEDEPANELA",
+      "AGROSAVIA",
+      "CIMMYT",
+      "ADR",
+      "CENICAÑA",
+    ],
+    datasets: [
+      {
+        label: "Instituciones participantes",
+        data: [3, 8, 1, 1, 2, 2, 1, 1, 2, 1],
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
   const data = {
     datasets: [
       {
@@ -60,6 +87,36 @@ const EventPage: NextPage = () => {
     ],
   };
 
+  const typesAsist = {
+    labels: [
+      "Agricultura digital",
+      "Servicios de informacion",
+      "Mejoramiento genetico",
+      "Servicios de asistencia",
+      "Medio ambiental",
+    ],
+    datasets: [
+      {
+        label: "Customer Types",
+        data: [50, 20, 4, 16, 40], // Tus datos numéricos
+        backgroundColor: [
+          "#36A2EB", // Returning Customer
+          "#FF6384", // VIP
+          "#FFCE56", // Trial
+          "#9966FF", // Inactive
+          "#FF9F40", // Referral
+        ],
+        hoverBackgroundColor: [
+          "#36A2EB", // Returning Customer
+          "#FF6384", // VIP
+          "#FFCE56", // Trial
+          "#9966FF", // Inactive
+          "#FF9F40", // Referral
+        ],
+      },
+    ],
+  };
+
   const config = {
     responsive: true,
     maintainAspectRatio: false,
@@ -91,36 +148,78 @@ const EventPage: NextPage = () => {
     },
   };
 
+  const barChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            beginAtZero: true,
+            max: 8,
+            ticks: {
+                stepSize: 1
+            }
+        }
+    },
+    plugins: {
+        legend: {
+            display: false // Asegúrate de usar un valor válido
+        }
+    }
+};
+
+
   return (
-    <div className="flex flex-row gap-2 w-full h-full">
-      
+    <div className="flex flex-row w-full h-full">
       <div className={styles.div}>
-        <ChartCardComponent title="TreeMap">
+        <ChartCardComponent
+          title="Numero de eventos por cultivos"
+          header={
+            <Select label="Filtrar" className={styles.width_50}>
+              <SelectItem key="eje">Eje</SelectItem>
+              <SelectItem key="cultivo">Cultivo</SelectItem>
+              <SelectItem key="lugar">Lugar</SelectItem>
+              <SelectItem key="gremio">Gremio/Instituto</SelectItem>
+            </Select>
+          }
+        >
           <ReactChart type="treemap" data={data} options={options} />
         </ChartCardComponent>
       </div>
 
       <div className={styles.card_container}>
-
-      {/* <div className="w-full">
-        <CardComponent title="Vision General">
-          <OverviewCard/>
-        </CardComponent>
-      </div> */}
-
-        <CardComponent title="Total Eventos">
-          <div className="w-64 h-64">
-            <Doughnut data={eventsTotal} options={config} />
-          </div>
-        </CardComponent>
-
-        <CardComponent title="Total Asistentes">
+        <div className={styles.overview}>
+          <ChartCardComponent title="Vision General" header={<></>}>
+            <OverviewCard />
+          </ChartCardComponent>
+        </div>
+        <div className={styles.sub_card_container}>
+          <CardComponent title="Total Eventos">
+            <div className="w-full h-full">
+              <Doughnut data={eventsTotal} options={config} />
+            </div>
+          </CardComponent>
+          <CardComponent title="Ejes por evento">
+            <div className="w-full h-full">
+              <Doughnut data={typesAsist} options={config} />
+            </div>
+          </CardComponent>
+          <CardComponent title="Tipo de Participantes por evento">
+            <div className="w-full h-full">
+              <Doughnut data={typesAsist} options={config} />
+            </div>
+          </CardComponent>
+          <CardComponent title="Instituciones participantes">
+            <div className="w-full h-full">
+              <Bar data={institutionParticipants} options={barChartOptions} />
+            </div>
+          </CardComponent>
+        </div>
+      </div>
+      {/* <CardComponent title="Total Asistentes">
           <div className="justify-center h-full w-full flex alignContent: 'center',">
             <label className={styles.total_assist}>50</label>
           </div>
-        </CardComponent>
-
-      </div>
+        </CardComponent> */}
     </div>
   );
 };
