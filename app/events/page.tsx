@@ -1,14 +1,17 @@
+'use client'; 
+
 import { NextPage } from "next";
-import CardComponent from "@/components/card";
 import { Doughnut, Bar } from "react-chartjs-2";
 import { Chart, ArcElement, CategoryScale, BarElement} from "chart.js";
 import styles from "./events.module.css";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart as ChartJS, Tooltip, Legend, LinearScale } from "chart.js";
 import { Chart as ReactChart } from "react-chartjs-2";
-import ChartCardComponent from "@/components/chartCard";
-import OverviewCard from "@/components/overview";
 import { Select, SelectSection, SelectItem } from "@nextui-org/react";
+import OverviewCard from "@/components/overview";
+import CardComponent from "@/components/events/card";
+import ChartCardComponent from "@/components/events/chartCard";
+
 
 Chart.register(
   ArcElement,
@@ -215,11 +218,6 @@ const EventPage: NextPage = () => {
           </CardComponent>
         </div>
       </div>
-      {/* <CardComponent title="Total Asistentes">
-          <div className="justify-center h-full w-full flex alignContent: 'center',">
-            <label className={styles.total_assist}>50</label>
-          </div>
-        </CardComponent> */}
     </div>
   );
 };

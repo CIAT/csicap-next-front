@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <NextUIProvider>
-          {children}
+          <div className="w-screen h-screen">{children}</div>
         </NextUIProvider>
       </body>
     </html>

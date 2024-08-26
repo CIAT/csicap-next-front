@@ -8,7 +8,7 @@ import {
   Image,
 } from "@nextui-org/react";
 import { NextPage } from "next";
-import styles from "../pages/events.module.css";
+import styles from "../components.module.css";
 
 interface ChartCardComponentProps {
   title: string;

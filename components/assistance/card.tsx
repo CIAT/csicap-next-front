@@ -8,7 +8,7 @@ import {
     Image,
   } from "@nextui-org/react";
 import { NextPage } from "next";
-import styles from "../pages/events.module.css";
+import styles from "./components.module.css";
 
 interface CardComponentProps {
   title: string;
@@ -20,9 +20,8 @@ const CardComponent: NextPage<CardComponentProps> = ({title,children}) =>{
 
 
     return(
-        <div className={styles.card}>
         <Card className="w-full h-full">
-          <CardHeader className="flex">
+          <CardHeader className={'${styles.card_header} flex'}>
             <div className="flex flex-col">
               <p className="text-md text-black font-serif">{title}</p>
             </div>
@@ -36,7 +35,6 @@ const CardComponent: NextPage<CardComponentProps> = ({title,children}) =>{
           <Divider />
           <CardFooter></CardFooter>
         </Card>
-      </div>
     );
 }
 
