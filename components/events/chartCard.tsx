@@ -35,8 +35,6 @@ const ChartCardComponent: NextPage<ChartCardComponentProps> = ({
             {children}
           </div>
         </CardBody>
-        <Divider />
-        <CardFooter></CardFooter>
       </Card>
     </div>
   );

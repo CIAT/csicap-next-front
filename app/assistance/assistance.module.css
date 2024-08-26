@@ -9,15 +9,17 @@
 }
 
 .top_card_label {
-    font-size: 6em;
+    font-size: 4em;
 }
 
 .top_div {
+    padding: 20px;
     justify-content: center;
     width: 100%;
     height: 30%;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
 }
 
 .top_card {
@@ -31,4 +33,18 @@
 
 .top_div_division {
     width: 20%;
+    height: 100%;
+}
+
+.bottom_div {
+    padding: 20px;
+    padding-top: 0;
+    width: 50%;
+    height: 70%;
+    box-sizing: border-box;
+}
+
+.header_width {
+    display: flex;
+    justify-content: center;
 }

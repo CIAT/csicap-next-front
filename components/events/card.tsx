@@ -33,8 +33,6 @@ const CardComponent: NextPage<CardComponentProps> = ({title,children}) =>{
             {children}
             </div>
           </CardBody>
-          <Divider />
-          <CardFooter></CardFooter>
         </Card>
       </div>
     );
