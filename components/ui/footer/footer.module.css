@@ -1,0 +1,19 @@
+.container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 ;
+    padding: 15px;
+    background-color: #0e6e8c;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 3px rgb(50, 50, 50);
+    min-height: 15vh;
+}
+.size-logos {
+    /*width: 120px;*/
+    height: 150px;
+    object-fit: contain;
+  }
+/*.left{}*/
+/*.center{}*/
+/*.right{}*/

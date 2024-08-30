@@ -1,39 +1,29 @@
+/* Import Tailwind's base styles, which include things like resets and base typography styles */
 @tailwind base;
+/* Import Tailwind's component styles, which include styles for buttons, forms, etc. */
 @tailwind components;
+/* Import Tailwind's utility styles, which provide utility classes for things like margin, padding, text color, etc. */
 @tailwind utilities;
 
-
-* {
-  box-sizing: border-box;
-}
-
+/* Define CSS custom properties (variables) in the :root pseudo-class */
+/* These variables can be used throughout the CSS file and will apply globally */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  /* Set a variable for the text color in RGB format (black by default) */
+  --foreground-rgb: 0, 0, 0; /* RGB for black */
 }
 
+/* Media query to detect if the user's system is set to dark mode */
+/* Adjust the variables when dark mode is active */
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 255, 255, 255;
-    --background-end-rgb: 255, 255, 255;
+    /* Change the text color to white for better readability in dark mode */
+    --foreground-rgb: 255, 255, 255; /* RGB for white */
   }
 }
 
+/* Apply styles to the body element, which affects the entire page */
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  /* Set the text color using the custom variable defined above */
+  color: black; /* Use the --foreground-rgb variable */
+  overflow-x: hidden;
 }
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-

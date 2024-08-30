@@ -24,7 +24,7 @@ const ChartCardComponent: NextPage<ChartCardComponentProps> = ({
   return (
     <div className="justify-center w-full h-full">
       <Card className="w-full h-full">
-        <CardHeader className="flex gap-3 justify-between items-center w-full">
+        <CardHeader className={styles.chart_card_header}>
             <p className="text-md text-black font-serif">{title}</p>
             <div className={styles.header_right}>{header}</div>
         </CardHeader>

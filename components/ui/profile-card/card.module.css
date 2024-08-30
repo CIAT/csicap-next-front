@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    width: fit-content;
+    background-color: #ffffff4d;
+    border-radius: 20px;
+    box-shadow: 0px 0px 4px 3px rgb(50, 50, 50);
+    padding: 15px;
+    margin: 15px
+}
+
+/*.left{}*/
+.img {
+    width: 130px;
+    height: 130px;
+    margin: 5px;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+.title {
+    font-size: xx-large;
+    font-weight: 900;
+    color: #0e6e8c;
+}
+
+.description {
+    font-weight: 100;
+    font-style: italic;
+    text-decoration: none;
+    color: #0e6e8c;
+}
+
+.underline {
+    text-decoration: none;
+}

@@ -1,8 +1,9 @@
 "use client";
 
+import Image from 'next/image';
 import { NextPage } from "next";
 import styles from "./assistance.module.css";
-import CardComponent from "@/components/assistance/card";
+import CardComponent from "@/components/assistance/Card";
 import {
   Chart,
   ArcElement,
@@ -204,7 +205,8 @@ const AssistancePage: NextPage = () => {
                   height: "20px",
                   backgroundColor: "#d1d1d1", // Color del divisor
                   margin: "0 20px", // Espaciado alrededor del divisor
-                }}></div>
+                }}
+              ></div>
 
               <div className={styles.top_div_division}>
                 <label className={styles.header_width}>Sexo</label>
@@ -281,12 +283,21 @@ const AssistancePage: NextPage = () => {
       </div>
 
       <div className={styles.bottom_div}>
-        <div className="h-full">
+        <div className={styles.width}>
           <ChartCardComponent title="TreeMap" header={<></>}>
             <ReactChart type="treemap" data={data} options={options} />
           </ChartCardComponent>
         </div>
-        <div></div>
+        <div className={styles.width}>
+          <ChartCardComponent title="Mapa Colombia" header={<></>}>
+            <Image
+              src="/data/colombia.jpg" // Path to your image
+              alt="Description of image" // Alternative text for accessibility
+              width={500} // Desired width of the image
+              height={300} // Desired height of the image
+            />
+          </ChartCardComponent>
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,12 @@
+#map {
+    width: 100%;
+    height: 75vh;
+}
+
+.mapContainer {
+    position: relative;
+    width: auto;
+    height: 100%;
+    margin-left: 20px;
+}
+  

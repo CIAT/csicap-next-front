@@ -1,0 +1,140 @@
+.custom-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 27px 0;
+    font-size: 15px;
+}
+
+.custom-toolbar .toolbar-label {
+    font-weight: bold;
+    margin: 0 20px;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 54px;
+    height: 54px;
+    background: #F2F2F2;
+
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+
+    color: #3C3C3C;
+    border-radius: 14px;
+    border: none;
+}
+
+.custom-toolbar button:hover {
+    color: #c2c2c2;
+}
+
+.arrow-icon {
+    width: 39px;
+    height: 39px;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    width: clamp(170px, 50%, 290px);
+    gap: clamp(10px, 1vw, 20px);
+}
+
+.central-button {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+
+    color: #F2F2F2;
+    width: 123px;
+    height: 54px;
+
+    background: #0e6e8c;
+}
+
+.filter-button {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+
+    color: #F2F2F2;
+    width: clamp(150px, 10vw, 150px);
+    height: 54px;
+
+    background: #0e6e8c;
+    position: absolute;
+}
+
+.slider-icon {
+    width: 39px;
+    height: 39px;
+    margin: 0 12px 0 0;
+}
+.filter-container{
+    display: flex;
+    flex-direction: row-reverse;
+    position: relative;
+}
+
+.calendar-title {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.5;
+    color: #3C3C3C;
+    text-align: center;
+    margin-bottom: 10px;
+
+    order: 2;
+    margin-right: clamp(200px, 16vw, 320px);
+}
+
+@media screen and (max-width: 1360px) {
+    .filter-button {
+        top: 13px;
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    .central-button {
+        width: 17vw;
+    }
+
+    .calendar-title {
+        margin-right: clamp(200px, 34vw, 369px);
+    }
+
+    .filter-button {
+        top: 0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .custom-toolbar {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 70px;
+    }
+
+    .filter-button,
+    .button-container {
+        width: 92vw;
+    }
+
+    .central-button {
+        width: 76vw;
+    }
+
+    .calendar-title {
+        margin-right: 0;
+    }
+}

@@ -51,9 +51,12 @@
     height: 30%;
 }
 
-.width_50 {
-    width: 100%;
-}
+.select_header {
+    height: 30px !important; /* Set the desired height */
+    font-size: 1rem !important; /* Adjust font size if needed */
+    padding: 0 !important; /* Remove any default padding that might affect height */
+  }
+  
 
 .header_right {
     width: 30%;
@@ -64,5 +67,14 @@
 .card_header {
     display: flex;
     height: 30px;
+}
+
+.chart_card_header {
+    display: flex;
+    height: 50px;
+    gap: 3;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 

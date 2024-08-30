@@ -1,0 +1,28 @@
+.container {
+    font-family: "Segoe UI";
+    background: #ffff;
+    background-attachment: fixed;
+}
+
+.sub-container {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    min-height: 75vh;
+}
+
+
+@media (max-width: 1000px) {
+    .sub-container {
+        padding-bottom: 900px;
+
+    }
+}
+
+/*background-color: #304f00;
+background: radial-gradient(circle, rgba(148,188,84,1) 0%, rgba(43,51,31,1) 100%);
+background: radial-gradient(circle, rgb(102 131 56) 0%, rgb(29 48 0) 100%);
+
+ #94bc54 img
+ #325100
+ #94BC54 pallet*/

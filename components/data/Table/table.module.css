@@ -1,0 +1,30 @@
+.tableContainer{
+  display: flex;
+  flex-direction: column;
+  min-width: 50%;
+  transform: rotateX(180deg);
+  overflow-x: auto;
+  box-shadow: 0px 0px 10px 3px rgb(35, 35, 35);
+}
+.dataTable{
+  border-collapse: collapse;
+  transform: rotateX(180deg);
+}
+.dataHead{
+  background: #39b0cb94;
+  color: #454545;
+}
+.dataTitle{}
+.dataBody .dataRow:nth-of-type(even) {
+  background-color: #002b3594;
+}
+.dataBody{
+  font-style: italic;
+  font-weight: 100;
+  text-align: center;
+}
+.dataCell{}
+.dataRow{}
+.dataTitle, .dataCell{
+  padding: 8px;
+}

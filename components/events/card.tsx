@@ -22,7 +22,7 @@ const CardComponent: NextPage<CardComponentProps> = ({title,children}) =>{
     return(
         <div className={styles.card}>
         <Card className="w-full h-full">
-          <CardHeader className="flex">
+          <CardHeader className={styles.card_header}>
             <div className="flex flex-col">
               <p className="text-md text-black font-serif">{title}</p>
             </div>

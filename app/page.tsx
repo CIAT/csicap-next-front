@@ -10,14 +10,6 @@ export default function Home() {
   return (
     <NextUIProvider>
       <div className="w-screen h-screen">
-        <nav>
-          <ul>
-            <li><Link href="/">Home</Link></li>
-            <li><Link href="/events">Events</Link></li>
-            <li><Link href="/assistance">Asistencia</Link></li>
-            <li><Link href="/reports">Reportes</Link></li>
-          </ul>
-        </nav>
       </div>
     </NextUIProvider>
   );

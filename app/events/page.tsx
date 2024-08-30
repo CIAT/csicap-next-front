@@ -1,27 +1,36 @@
-'use client'; 
+"use client";
 
 import { NextPage } from "next";
 import { Doughnut, Bar } from "react-chartjs-2";
-import { Chart, ArcElement, CategoryScale, BarElement} from "chart.js";
 import styles from "./events.module.css";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
-import { Chart as ChartJS, Tooltip, Legend, LinearScale } from "chart.js";
-import { Chart as ReactChart } from "react-chartjs-2";
-import { Select, SelectSection, SelectItem } from "@nextui-org/react";
-import OverviewCard from "@/components/overview";
-import CardComponent from "@/components/events/card";
-import ChartCardComponent from "@/components/events/chartCard";
-
-
-Chart.register(
-  ArcElement,
+import {
+  Chart,
   Tooltip,
   Legend,
-  TreemapController,
-  TreemapElement,
+  ArcElement,
+  CategoryScale,
+  BarElement,
   LinearScale,
-  CategoryScale, // Register the CategoryScale here
-  BarElement // Register the BarElement for bar charts
+} from "chart.js";
+import { Chart as ReactChart } from "react-chartjs-2";
+import CardComponent from "@/components/events/Card";
+import ChartCardComponent from "@/components/events/chartCard";
+import * as React from "react";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+
+Chart.register(
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  BarElement,
+  LinearScale,
+  TreemapController,
+  TreemapElement
 );
 
 const EventPage: NextPage = () => {
@@ -141,6 +150,7 @@ const EventPage: NextPage = () => {
         display: false,
       },
       tooltip: {
+        enabled: true,
         callbacks: {
           label: (context: any) => {
             const data = context.dataset.tree[context.dataIndex];
@@ -155,21 +165,20 @@ const EventPage: NextPage = () => {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-        y: {
-            beginAtZero: true,
-            max: 8,
-            ticks: {
-                stepSize: 1
-            }
-        }
+      y: {
+        beginAtZero: true,
+        max: 8,
+        ticks: {
+          stepSize: 1,
+        },
+      },
     },
     plugins: {
-        legend: {
-            display: false // Asegúrate de usar un valor válido
-        }
-    }
-};
-
+      legend: {
+        display: false, // Asegúrate de usar un valor válido
+      },
+    },
+  };
 
   return (
     <div className="flex flex-row w-full h-full">
@@ -177,12 +186,22 @@ const EventPage: NextPage = () => {
         <ChartCardComponent
           title="Numero de eventos por cultivos"
           header={
-            <Select label="Filtrar" className={styles.width_50}>
-              <SelectItem key="eje">Eje</SelectItem>
-              <SelectItem key="cultivo">Cultivo</SelectItem>
-              <SelectItem key="lugar">Lugar</SelectItem>
-              <SelectItem key="gremio">Gremio/Instituto</SelectItem>
-            </Select>
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                label="Filtrar"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Eje</MenuItem>
+                <MenuItem value={20}>Cultivo</MenuItem>
+                <MenuItem value={30}>Lugar</MenuItem>
+                <MenuItem value={30}>Gremio/Institucion</MenuItem>
+              </Select>
+            </FormControl>
           }
         >
           <ReactChart type="treemap" data={data} options={options} />
@@ -192,7 +211,7 @@ const EventPage: NextPage = () => {
       <div className={styles.card_container}>
         <div className={styles.overview}>
           <ChartCardComponent title="Vision General" header={<></>}>
-            <OverviewCard />
+            <></>
           </ChartCardComponent>
         </div>
         <div className={styles.sub_card_container}>
