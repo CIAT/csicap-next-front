@@ -7,7 +7,6 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "dayjs/locale/es";
 import updateLocale from "dayjs/plugin/updateLocale";
 import style from "./calendar.module.css";
-import { Layout } from "@/components";
 import CalendarModal from "@/components/Modals/CalendarModal/CalendarModal";
 import MapComponent from "@/components/data/Map/MapComponent";
 import { EventsData, DataFormat, sectionStateData } from "@/interfaces";
@@ -128,7 +127,6 @@ export default function DataCalendarResults() {
 
   return (
     <>
-      <Layout title="Calendario">
         <div className={style["tableContainer"]}>
           {dataCalendarResp === 200 ? (
             <>
@@ -172,7 +170,6 @@ export default function DataCalendarResults() {
             "Ups! something went wrong, try later"
           )}
         </div>
-      </Layout>
       {selectedEvent && (
         <CalendarModal
           title={selectedEvent.name}

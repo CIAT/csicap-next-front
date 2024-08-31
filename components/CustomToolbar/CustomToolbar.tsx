@@ -12,13 +12,13 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
         <div className={style["custom-toolbar"]}>
             <div className={style["button-container"]}>
                 <button className={style["button"]} onClick={() => onNavigate("PREV")}>
-                    <img src="/images/Calendar/arrow_left.png" alt="Anterior" className={style["arrow-icon"]} />
+                    <img src="/public/arrow-left-svgrepo-com.png" alt="Atras" />
                 </button>
                 <button className={`${style["button"]} ${style["central-button"]}`} onClick={() => onNavigate("TODAY")}>
                     Hoy
                 </button>
                 <button className={style["button"]} onClick={() => onNavigate("NEXT")}>
-                    <img src="/images/Calendar/arrow_right.png" alt="Siguiente" className={style["arrow-icon"]} />
+                    <img src="/public/arrow-right-svgrepo-com.png" alt="Siguiente" />
                 </button>
             </div>
             <span className={style["calendar-title"]}>
