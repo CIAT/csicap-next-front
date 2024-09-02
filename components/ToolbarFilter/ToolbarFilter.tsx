@@ -22,7 +22,6 @@ const ToolbarFilter: React.FC<ToolbarFilterProps> = ({
     return (
         <div className={style["filter-container"]}>
             <button className={`${style["button"]} ${style["filter-button"]}`} onClick={toggleFilter}>
-                <img src="/images/Calendar/Slider.png" alt="Filtro" className={style["slider-icon"]}/>
                 Filtro
             </button>
             <div hidden={isHiddenFilter} className={style["map-filter-container"]}>

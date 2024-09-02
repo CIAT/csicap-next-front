@@ -1,9 +1,9 @@
 "use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 import { NextPage } from "next";
 import styles from "./assistance.module.css";
-import CardComponent from "@/components/assistance/Card";
+import CardComponent from "@/components/assistance/card";
 import {
   Chart,
   ArcElement,
@@ -17,6 +17,10 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart as ReactChart } from "react-chartjs-2";
 import ChartCardComponent from "@/components/events/chartCard";
+import MapComponent from "@/components/data/Map/MapComponent";
+import CalendarController from "@/helpers/Component/Controller/CalendarController";
+import { useState } from "react";
+import { EventsData } from "@/interfaces";
 
 Chart.register(
   ArcElement,
@@ -188,6 +192,13 @@ const options = {
 };
 
 const AssistancePage: NextPage = () => {
+
+  const [events, setEvents] = useState<EventsData[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(
+    events
+  );
+  const [selectedEvent, setSelectedEvent] = useState<EventsData | null>(null);
+  
   return (
     <div className="w-full h-full flex flex-wrap">
       <div className={styles.top_div}>
@@ -290,12 +301,9 @@ const AssistancePage: NextPage = () => {
         </div>
         <div className={styles.width}>
           <ChartCardComponent title="Mapa Colombia" header={<></>}>
-            <Image
-              src="/data/colombia.jpg" // Path to your image
-              alt="Description of image" // Alternative text for accessibility
-              width={500} // Desired width of the image
-              height={300} // Desired height of the image
-            />
+            <div className="w-full h-full">
+              <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)}/>
+            </div>
           </ChartCardComponent>
         </div>
       </div>

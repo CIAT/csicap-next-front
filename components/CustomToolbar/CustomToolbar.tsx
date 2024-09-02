@@ -1,6 +1,8 @@
 import React from "react";
 import style from "./toolbar.module.css";
 import {CustomToolbarProps} from "@/interfaces/Components/CustomToolbar";
+import Image from 'next/image';
+
 
 const CustomToolbar: React.FC<CustomToolbarProps> = ({
                                                          label,
@@ -12,13 +14,13 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
         <div className={style["custom-toolbar"]}>
             <div className={style["button-container"]}>
                 <button className={style["button"]} onClick={() => onNavigate("PREV")}>
-                    <img src="/public/arrow-left-svgrepo-com.png" alt="Atras" />
+                    <Image src="/arrow-left-svgrepo-com.png" alt="" width={30} height={30}/>
                 </button>
                 <button className={`${style["button"]} ${style["central-button"]}`} onClick={() => onNavigate("TODAY")}>
                     Hoy
                 </button>
                 <button className={style["button"]} onClick={() => onNavigate("NEXT")}>
-                    <img src="/public/arrow-right-svgrepo-com.png" alt="Siguiente" />
+                <Image src="/arrow-right-svgrepo-com.png" alt="" width={30} height={30}/>
                 </button>
             </div>
             <span className={style["calendar-title"]}>
