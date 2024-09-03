@@ -1,0 +1,23 @@
+.first_div {
+    padding: 20px 10px 0 20px;
+    width: 50%;
+    height: 100%;
+}
+
+.second_div{
+    padding: 20px 20px 0 20px ;
+    width: 50%;
+    height: 100%;
+}
+
+.preview_div {
+    padding-top: 20px;
+    height: 90%;
+}
+
+.filter_div {
+    display: flex;
+    align-items: center;
+    height: 10%;
+    width: 100%;
+}

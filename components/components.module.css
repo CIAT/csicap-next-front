@@ -16,6 +16,12 @@
     box-sizing: border-box;
 }
 
+.preview_card {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 20px;
+}
+
 .card_chart {
     justify-content: center;
 }

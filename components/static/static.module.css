@@ -55,3 +55,45 @@
 .nav_style li {
   margin-left: 15px;
 }
+
+.semi_header {
+  height: 6vh;
+  width: 100%;
+  background-color: #0e6e8c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 500;
+}
+
+@media (max-width: 500px) and (min-width: 300px) {
+  .semi_header {
+      justify-content: center;
+  }
+}
+
+@media (max-width: 800px) and (min-width: 500px) {
+  .semi_header {
+      font-size: 1rem;
+  }
+}
+
+@media (max-width: 1000px) and (min-width: 800px) {
+  .semi_header {
+      font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 1000px) {
+  .semi_header {
+      justify-content: center;
+      font-size: 1rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .semi_header {
+      width: 101% !important;
+  }
+}

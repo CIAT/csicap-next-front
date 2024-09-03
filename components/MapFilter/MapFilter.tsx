@@ -38,7 +38,7 @@ const MapFilter: React.FC<MapFilterProps> = ({
                     Filter
                 </div>
                 <button className={style["close-button"]} onClick={() => setShowFilter(prev => !prev)}>
-                    <img className={style["close-image"]} src="/images/Calendar/x.png" alt="Close"/>
+                    <img className={style["close-image"]} src="/cross-svgrepo-com.png" alt="Close"/>
                 </button>
             </div>
             <div className={style["select-container"]}>
