@@ -1,0 +1,77 @@
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Ensure equal spacing between elements */
+  width: 100%;
+  color: black;
+}
+
+.containerCaledar {
+  display: flex;
+  height: 800px;
+  padding: 20px;
+}
+
+.dataTitle {
+  background: black;
+  padding: 0 2.5%;
+  /* Add padding to create equal margins left and right */
+}
+
+.mapContainer,
+.calendarContainer {
+  width: 49%;
+  height: 550px;
+  background: #fff;
+}
+
+.calendarContainer {
+  background: #f9f9f9;
+}
+
+.mapContainer {
+  position: relative;
+}
+
+.dataRow {
+  font-style: italic;
+  font-weight: 100;
+  text-align: center;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.calendar {
+  position: relative;
+  width: 50%;
+  height: 550px;
+}
+
+@media screen and (max-width: 1023px) {
+  .containerCaledar {
+    display: block;
+  }
+
+  .mapContainer,
+  .calendar {
+    width: 100%;
+    height: 100%;
+  }
+
+  .calendar {
+    margin-bottom: 50px;
+  }
+
+  .filter_container {
+    justify-content: center;
+    padding: 10px 0;
+  }
+}
+
+@media screen and (max-width: 767px) {
+
+}

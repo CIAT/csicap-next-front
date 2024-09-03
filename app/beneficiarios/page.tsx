@@ -209,6 +209,7 @@ const options = {
       display: false,
     },
     tooltip: {
+      enabled: true,
       callbacks: {
         label: (context: any) => {
           const data = context.dataset.tree[context.dataIndex];
@@ -326,7 +327,7 @@ const BeneficiariosPage: NextPage = () => {
 
             <div className={styles.bottom_div}>
               <div className={styles.width}>
-                <ChartCardComponent title="TreeMap" header={<></>}>
+                <ChartCardComponent title="Gremios" header={<></>}>
                   <ReactChart type="treemap" data={data} options={options} />
                 </ChartCardComponent>
               </div>

@@ -12,9 +12,11 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import { EventsData, DataFormat, sectionStateData } from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
-import { MainBar } from "@/components/mainbar/MainBar";
-import CustomToolbar from "@/components/CustomToolbar/CustomToolbar";
-import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
+import { Card, Container } from "@mui/material";
+import ChartCardComponent from "@/components/events/chartCard";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid"
+
 
 dayjs.extend(updateLocale);
 dayjs.locale("es");
@@ -108,86 +110,42 @@ export default function DataCalendarResults() {
     showMore: (total: number) => `+ Ver más (${total})`
   };
 
-  const eventStyleGetter = (event: any) => {
-    let backgroundColor;
-
-    const today = new Date();
-    const eventDateEnd = new Date(event.datesEnd);
-
-    if (event.formstate == "1" && eventDateEnd < today) {
-      backgroundColor = "#ff0000";
-    } else {
-      backgroundColor = event.formstate == "0" ? "#80c41c" : "#0e6e8c";
-    }
-
-    return {
-      style: { backgroundColor }
-    };
-  };
-
   return (
-    <>
-      <div className={style["tableContainer"]}>
-        {dataCalendarResp === 200 ? (
-          <>
-            <MainBar section="Calendario de eventos" />
-            <div className={style["containerCaledar"]}>
-              <div className={style["calendar"]}>
-                <ToolbarFilter
-                  filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                  axesState={axesState}
-                  cropState={cropState}
-                  provinceState={provinceState}
-                  sectionState={sectionState}
-                  setSectionState={setSectionState}
-                />
-                <Calendar
-                  localizer={localizer}
-                  events={filteredEvents}
-                  onSelectEvent={handleSelectedEvent}
-                  views={{ month: true }}
-                  messages={messages}
-                  style={{ fontSize: 10 }}
-                  eventPropGetter={eventStyleGetter}
-                  popup
-                  components={{
-                    toolbar: (toolbarProps) => (
-                      <CustomToolbar
-                        {...toolbarProps}
-                      />
-                    )
-                  }}
-                />
-              </div>
-              <div className={style["mapContainer"]}>
-                <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
-              </div>
-            </div>
-          </>
-        ) : dataCalendarResp === 0 ? (
-          "Loading..."
-        ) : (
-          "Ups! something went wrong, try later"
-        )}
-      </div>
-      {selectedEvent && (
-        <CalendarModal
-          title={selectedEvent.name}
-          show={modalIsOpen}
-          handleClose={closeModal}
-          eventDate={dayjs(selectedEvent.date).format("YYYY-MM-DD")}
-          eventDatend={dayjs(selectedEvent.datesEnd).format("YYYY-MM-DD")}
-          province={selectedEvent.province}
-          axis={selectedEvent.eje}
-          organizer={selectedEvent.responsable || "N/A"}
-          objetive={selectedEvent.event_objective}
-          city={selectedEvent.city}
-          crop={selectedEvent.crop}
-          institution={selectedEvent.institution}
-          guesType={selectedEvent.guess_type}
-          email={selectedEvent.email}
-        />
-      )}
-    </>
+    <ChartCardComponent title="esto" header={<></>}>
+      <FullCalendar
+        plugins={[
+          dayGridPlugin
+        ]}
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth'
+        }}
+        events={filteredEvents.map(event => {
+          const today = new Date();
+          const eventEndDate = new Date(event.datesEnd);
+
+          let backgroundColor;
+          let borderColor;
+
+          if (event.form_state === '1' && eventEndDate < today) {
+            backgroundColor = '#ff0000';
+            borderColor = '#ff0000';
+          } else if (event.form_state === '0') {
+            backgroundColor = '#80c41c';
+            borderColor = '#80c41c';
+          } else {
+            backgroundColor = '#0e6e8c';
+            borderColor = '#0e6e8c';
+          }
+
+          return {
+            ...event,
+            backgroundColor,
+            borderColor
+          };
+        })}
+      />
+    </ChartCardComponent>
   );
 }
