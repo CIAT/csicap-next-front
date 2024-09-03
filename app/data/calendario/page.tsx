@@ -8,6 +8,8 @@ import CalendarController from "@/helpers/Component/Controller/CalendarControlle
 import ChartCardComponent from "@/components/events/chartCard";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"
+import CalendarModal from "@/components/Modals/CalendarModal/CalendarModal";
+import dayjs from "dayjs";
 
 
 export default function DataCalendarResults() {
@@ -26,6 +28,16 @@ export default function DataCalendarResults() {
   const [cropState, setCropState] = useState<string[]>([]);
   const [axesState, setAxesState] = useState<string[]>([]);
   const [provinceState, setProvinceState] = useState<string[]>([]);
+
+  const handleEventClick = (clickInfo: any) => {
+    setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedEvent(null);
+  };
 
   useEffect(() => {
     CalendarRepository.fetchEvents()
@@ -61,44 +73,61 @@ export default function DataCalendarResults() {
   };
 
 
-
-
   return (
-    <ChartCardComponent title="esto" header={<></>}>
-      <FullCalendar
-        plugins={[
-          dayGridPlugin
-        ]}
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth'
-        }}
-        events={filteredEvents.map(event => {
-          const today = new Date();
-          const eventEndDate = new Date(event.datesEnd);
+    <>
+      <ChartCardComponent title="Calendario" header={<></>}>
+        <FullCalendar
+          plugins={[dayGridPlugin]}
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth'
+          }}
+          events={filteredEvents.map(event => {
+            const today = new Date();
+            const eventEndDate = new Date(event.datesEnd);
 
-          let backgroundColor;
-          let borderColor;
+            let backgroundColor;
+            let borderColor;
 
-          if (event.form_state === '1' && eventEndDate < today) {
-            backgroundColor = '#ff0000';
-            borderColor = '#ff0000';
-          } else if (event.form_state === '0') {
-            backgroundColor = '#80c41c';
-            borderColor = '#80c41c';
-          } else {
-            backgroundColor = '#0e6e8c';
-            borderColor = '#0e6e8c';
-          }
+            if (event.form_state === '1' && eventEndDate < today) {
+              backgroundColor = '#ff0000';
+              borderColor = '#ff0000';
+            } else if (event.form_state === '0') {
+              backgroundColor = '#80c41c';
+              borderColor = '#80c41c';
+            } else {
+              backgroundColor = '#0e6e8c';
+              borderColor = '#0e6e8c';
+            }
 
-          return {
-            ...event,
-            backgroundColor,
-            borderColor
-          };
-        })}
-      />
-    </ChartCardComponent>
+            return {
+              ...event,
+              backgroundColor,
+              borderColor
+            };
+          })}
+          eventClick={handleEventClick} // Handle event click to open the modal
+        />
+      </ChartCardComponent>
+      {selectedEvent && (
+        <CalendarModal
+          title={selectedEvent.name}
+          show={modalIsOpen}
+          handleClose={closeModal}
+          eventDate={dayjs(selectedEvent.datesStart).format("YYYY-MM-DD")}
+          eventDatend={dayjs(selectedEvent.datesEnd).format("YYYY-MM-DD")}
+          province={selectedEvent.province}
+          axis={selectedEvent.eje}
+          organizer={selectedEvent.responsable || "N/A"}
+          objetive={selectedEvent.event_objective}
+          city={selectedEvent.city}
+          crop={selectedEvent.crop}
+          institution={selectedEvent.institution}
+          guesType={selectedEvent.guess_type}
+          email={selectedEvent.email}
+        />
+      )}
+    </>
   );
 }
