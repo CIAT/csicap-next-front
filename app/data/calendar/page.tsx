@@ -92,42 +92,6 @@ export default function DataCalendarResults() {
     setSelectedEvent(null);
   };
 
-  const messages = {
-    date: "Fecha",
-    time: "Hora",
-    event: "Evento",
-    allDay: "Todo el día",
-    week: "Semana",
-    work_week: "Semana laboral",
-    day: "Día",
-    month: "Mes",
-    previous: "Anterior",
-    next: "Siguiente",
-    yesterday: "Ayer",
-    tomorrow: "Mañana",
-    today: "Hoy",
-    agenda: "Agenda",
-    noEventsInRange: "No hay eventos en este rango",
-    showMore: (total: number) => `+ Ver más (${total})`
-  };
-
-  const eventStyleGetter = (event: any) => {
-    let backgroundColor;
-
-    const today = new Date();
-    const eventDateEnd = new Date(event.datesEnd);
-
-    if (event.formstate == "1" && eventDateEnd < today) {
-      backgroundColor = "#ff0000";
-    } else {
-      backgroundColor = event.formstate == "0" ? "#80c41c" : "#0e6e8c";
-    }
-
-    return {
-      style: { backgroundColor }
-    };
-  };
-
   return (
     <>
       <div className={style["tableContainer"]}>
@@ -178,6 +142,9 @@ export default function DataCalendarResults() {
                     })}
                     eventClick={handleEventClick} // Handle event click to open the modal
                   />
+                </ChartCardComponent>
+                <ChartCardComponent title="Vision General" header={<></>}>
+                  <></>
                 </ChartCardComponent>
               </div>
               <div className={style["mapContainer"]}>
