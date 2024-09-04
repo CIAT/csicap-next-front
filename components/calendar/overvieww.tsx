@@ -19,7 +19,7 @@ const OverviewCard = () => {
                 <div className="flex items-center">
                     <div className="text-2xl mr-3">🟦</div>
                     <div>
-                        <p className="text-gray-400 text-sm">Eventos abiertos</p>
+                        <p className="text-gray-400 text-sm">Eventos programados</p>
                     </div>
                 </div>
             </div>

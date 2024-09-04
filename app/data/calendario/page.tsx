@@ -12,6 +12,7 @@ import CalendarModal from "@/components/Modals/CalendarModal/CalendarModal";
 import dayjs from "dayjs";
 import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
+import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 
 
 export default function DataCalendarResults() {
@@ -122,7 +123,16 @@ export default function DataCalendarResults() {
         </div>
       </div>
       <div className={styles.div}>
-        <ChartCardComponent title="Eventos por departamento" header={<></>}>
+        <ChartCardComponent title="Eventos por departamento" header={<>
+          <ToolbarFilter
+            filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+            axesState={axesState}
+            cropState={cropState}
+            provinceState={provinceState}
+            sectionState={sectionState}
+            setSectionState={setSectionState}
+          />
+        </>}>
           <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
         </ChartCardComponent>
       </div>
