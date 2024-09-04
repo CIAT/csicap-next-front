@@ -15,6 +15,9 @@ import CalendarController from "@/helpers/Component/Controller/CalendarControlle
 import { MainBar } from "@/components/mainbar/MainBar";
 import CustomToolbar from "@/components/CustomToolbar/CustomToolbar";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
+import ChartCardComponent from "@/components/events/chartCard";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid"
 
 dayjs.extend(updateLocale);
 dayjs.locale("es");
@@ -79,8 +82,8 @@ export default function DataCalendarResults() {
     setFilteredEvents(tempEvens);
   };
 
-  const handleSelectedEvent = (event: EventsData) => {
-    setSelectedEvent(event);
+  const handleEventClick = (clickInfo: any) => {
+    setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
     setModalIsOpen(true);
   };
 
@@ -141,23 +144,41 @@ export default function DataCalendarResults() {
                   sectionState={sectionState}
                   setSectionState={setSectionState}
                 />
-                <Calendar
-                  localizer={localizer}
-                  events={filteredEvents}
-                  onSelectEvent={handleSelectedEvent}
-                  views={{ month: true }}
-                  messages={messages}
-                  style={{ fontSize: 10 }}
-                  eventPropGetter={eventStyleGetter}
-                  popup
-                  components={{
-                    toolbar: (toolbarProps) => (
-                      <CustomToolbar
-                        {...toolbarProps}
-                      />
-                    )
-                  }}
-                />
+                <ChartCardComponent title="Calendario" header={<></>}>
+                  <FullCalendar
+                    plugins={[dayGridPlugin]}
+                    headerToolbar={{
+                      left: 'prev,next today',
+                      center: 'title',
+                      right: 'dayGridMonth'
+                    }}
+                    events={filteredEvents.map(event => {
+                      const today = new Date();
+                      const eventEndDate = new Date(event.datesEnd);
+
+                      let backgroundColor;
+                      let borderColor;
+
+                      if (event.form_state === '1' && eventEndDate < today) {
+                        backgroundColor = '#ff0000';
+                        borderColor = '#ff0000';
+                      } else if (event.form_state === '0') {
+                        backgroundColor = '#80c41c';
+                        borderColor = '#80c41c';
+                      } else {
+                        backgroundColor = '#0e6e8c';
+                        borderColor = '#0e6e8c';
+                      }
+
+                      return {
+                        ...event,
+                        backgroundColor,
+                        borderColor
+                      };
+                    })}
+                    eventClick={handleEventClick} // Handle event click to open the modal
+                  />
+                </ChartCardComponent>
               </div>
               <div className={style["mapContainer"]}>
                 <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
