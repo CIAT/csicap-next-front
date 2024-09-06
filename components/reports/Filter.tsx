@@ -2,7 +2,7 @@
 
 import { Select, SelectItem } from "@nextui-org/react";
 import { NextPage } from "next";
-import styles from "./reports.module.css";
+// import styles from "./reports.module.css";
 
 const options = [
   { key: "cat", label: "Cat" },
@@ -21,20 +21,20 @@ const options = [
 ];
 
 const Filter: NextPage = () => {
-    return (
-      <div className="w-full">
-        <Select label="Favorite Animal" placeholder="Select an animal" selectionMode="multiple" className="max-w-xs">
-          {options.map((option) => {
-            return (
-              <SelectItem key={option.key}>
-                {option.label}
-              </SelectItem>
-            );
-          })}
-        </Select>
-      </div>
-    );
-  };
-  
+  return (
+    <div className="w-full">
+      <Select label="Favorite Animal" placeholder="Select an animal" selectionMode="multiple" className="max-w-xs">
+        {options.map((option) => {
+          return (
+            <SelectItem key={option.key}>
+              {option.label}
+            </SelectItem>
+          );
+        })}
+      </Select>
+    </div>
+  );
+};
+
 
 export default Filter;

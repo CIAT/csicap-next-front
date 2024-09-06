@@ -1,9 +1,9 @@
-import { Select, SelectItem } from "@nextui-org/react";
+// import { Select, SelectItem } from "@nextui-org/react";
 import { NextPage } from "next";
 import styles from "./reports.module.css";
 import Filter from "@/components/reports/Filter";
 import SemiHeader from "@/components/static/SemiHeader";
-import CardComponent from "@/components/events/Card";
+// import CardComponent from "@/components/events/Card";
 import PreviewCard from "@/components/reports/PreviewCard";
 import ColombiaHeat from "@/components/maps/ColombiaHeat";
 

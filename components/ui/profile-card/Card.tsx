@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./card.module.css";
 import Image from "next/image";
-import { Card } from "../../../interfaces";
+import type { Card } from "../../../interfaces";
 import Link from "next/link";
 
 export function Card({ chars }: { chars: Card }) {

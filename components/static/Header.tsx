@@ -16,7 +16,7 @@ const Header = () => {
       </div>
       <div className={styles.nav_style}>
         <ul>
-          <li className={styles.header_nav_item}>
+          {/* <li className={styles.header_nav_item}>
             <Link href="/">
               Home
             </Link>
@@ -40,13 +40,13 @@ const Header = () => {
             <Link href="/tecnicos">
               Tecnicos
             </Link>
-          </li>
+          </li> */}
           <li className={styles.header_nav_item}>
             <Link href="/data/calendario">
               Calendario
             </Link>
           </li>
-          <li className={styles.header_nav_item}>
+          {/* <li className={styles.header_nav_item}>
             <Link href="/data">
               Data
             </Link>
@@ -55,7 +55,7 @@ const Header = () => {
             <Link href="/reports">
               Reports
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </header>
