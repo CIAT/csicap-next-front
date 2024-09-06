@@ -14,7 +14,6 @@ import {
   LinearScale,
 } from "chart.js";
 import { Chart as ReactChart } from "react-chartjs-2";
-// import CardComponent from "@/components/events/Card";
 import ChartCardComponent from "@/components/events/chartCard";
 import * as React from "react";
 import InputLabel from "@mui/material/InputLabel";
