@@ -15,6 +15,9 @@ import CalendarController from "@/helpers/Component/Controller/CalendarControlle
 import { MainBar } from "@/components/mainbar/MainBar";
 import CustomToolbar from "@/components/CustomToolbar/CustomToolbar";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
+import ChartCardComponent from "@/components/events/chartCard";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid"
 
 dayjs.extend(updateLocale);
 dayjs.locale("es");
@@ -79,8 +82,8 @@ export default function DataCalendarResults() {
     setFilteredEvents(tempEvens);
   };
 
-  const handleSelectedEvent = (event: EventsData) => {
-    setSelectedEvent(event);
+  const handleEventClick = (clickInfo: any) => {
+    setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
     setModalIsOpen(true);
   };
 
@@ -89,87 +92,72 @@ export default function DataCalendarResults() {
     setSelectedEvent(null);
   };
 
-  const messages = {
-    date: "Fecha",
-    time: "Hora",
-    event: "Evento",
-    allDay: "Todo el día",
-    week: "Semana",
-    work_week: "Semana laboral",
-    day: "Día",
-    month: "Mes",
-    previous: "Anterior",
-    next: "Siguiente",
-    yesterday: "Ayer",
-    tomorrow: "Mañana",
-    today: "Hoy",
-    agenda: "Agenda",
-    noEventsInRange: "No hay eventos en este rango",
-    showMore: (total: number) => `+ Ver más (${total})`
-  };
-
-  const eventStyleGetter = (event: any) => {
-    let backgroundColor;
-
-    const today = new Date();
-    const eventDateEnd = new Date(event.datesEnd);
-
-    if (event.formstate == "1" && eventDateEnd < today) {
-      backgroundColor = "#ff0000";
-    } else {
-      backgroundColor = event.formstate == "0" ? "#80c41c" : "#0e6e8c";
-    }
-
-    return {
-      style: { backgroundColor }
-    };
-  };
-
   return (
     <>
-        <div className={style["tableContainer"]}>
-          {dataCalendarResp === 200 ? (
-            <>
-              <MainBar section="Calendario de eventos" />
-              <div className={style["containerCaledar"]}>
-                <div className={style["calendar"]}>
-                  <ToolbarFilter
-                    filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                    axesState={axesState}
-                    cropState={cropState}
-                    provinceState={provinceState}
-                    sectionState={sectionState}
-                    setSectionState={setSectionState}
-                  />
-                  <Calendar
-                    localizer={localizer}
-                    events={filteredEvents}
-                    onSelectEvent={handleSelectedEvent}
-                    views={{ month: true }}
-                    messages={messages}
-                    style={{ fontSize: 10 }}
-                    eventPropGetter={eventStyleGetter}
-                    popup
-                    components={{
-                      toolbar: (toolbarProps) => (
-                        <CustomToolbar
-                          {...toolbarProps}
-                        />
-                      )
+      <div className={style["tableContainer"]}>
+        {dataCalendarResp === 200 ? (
+          <>
+            <MainBar section="Calendario de eventos" />
+            <div className={style["containerCaledar"]}>
+              <div className={style["calendar"]}>
+                <ToolbarFilter
+                  filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+                  axesState={axesState}
+                  cropState={cropState}
+                  provinceState={provinceState}
+                  sectionState={sectionState}
+                  setSectionState={setSectionState}
+                />
+                <ChartCardComponent title="Calendario" header={<></>}>
+                  <FullCalendar
+                    plugins={[dayGridPlugin]}
+                    headerToolbar={{
+                      left: 'prev,next today',
+                      center: 'title',
+                      right: 'dayGridMonth'
                     }}
+                    events={filteredEvents.map(event => {
+                      const today = new Date();
+                      const eventEndDate = new Date(event.datesEnd);
+
+                      let backgroundColor;
+                      let borderColor;
+
+                      if (event.form_state === '1' && eventEndDate < today) {
+                        backgroundColor = '#ff0000';
+                        borderColor = '#ff0000';
+                      } else if (event.form_state === '0') {
+                        backgroundColor = '#80c41c';
+                        borderColor = '#80c41c';
+                      } else {
+                        backgroundColor = '#0e6e8c';
+                        borderColor = '#0e6e8c';
+                      }
+
+                      return {
+                        ...event,
+                        backgroundColor,
+                        borderColor
+                      };
+                    })}
+                    eventClick={handleEventClick} // Handle event click to open the modal
                   />
-                </div>
-                <div className={style["mapContainer"]}>
-                  <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
-                </div>
+                </ChartCardComponent>
+                <ChartCardComponent title="Vision General" header={<></>}>
+                  <></>
+                </ChartCardComponent>
               </div>
-            </>
-          ) : dataCalendarResp === 0 ? (
-            "Loading..."
-          ) : (
-            "Ups! something went wrong, try later"
-          )}
-        </div>
+              <div className={style["mapContainer"]}>
+                <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
+              </div>
+            </div>
+          </>
+        ) : dataCalendarResp === 0 ? (
+          "Loading..."
+        ) : (
+          "Ups! something went wrong, try later"
+        )}
+      </div>
       {selectedEvent && (
         <CalendarModal
           title={selectedEvent.name}

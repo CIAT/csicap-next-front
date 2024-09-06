@@ -8,10 +8,10 @@ const Header = () => {
     <header className={styles.headerStyle}>
       <div className={styles.logoStyle}>
         <Link href="/">
-        <img
-          src="/logo.png"
-          alt="alliance-logo"
-        />
+          <img
+            src="/logo.png"
+            alt="alliance-logo"
+          />
         </Link>
       </div>
       <div className={styles.nav_style}>
@@ -29,6 +29,21 @@ const Header = () => {
           <li className={styles.header_nav_item}>
             <Link href="/assistance">
               Assistance
+            </Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/beneficiarios">
+              Beneficiarios
+            </Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/tecnicos">
+              Tecnicos
+            </Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/data/calendario">
+              Calendario
             </Link>
           </li>
           <li className={styles.header_nav_item}>
