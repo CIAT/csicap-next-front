@@ -1,3 +1,5 @@
+"use client";
+
 // import { Select, SelectItem } from "@nextui-org/react";
 import { NextPage } from "next";
 import styles from "./reports.module.css";
