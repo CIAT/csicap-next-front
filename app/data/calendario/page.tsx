@@ -78,64 +78,73 @@ export default function DataCalendarResults() {
 
   return (
     <div className="flex flex-row w-full h-full">
-      <div className={styles.card_container}>
-        <div className={styles.overview}>
-          <ChartCardComponent title="Vision General" header={<></>}>
-            <OverviewCard></OverviewCard>
-          </ChartCardComponent>
-        </div>
-        <div className={styles.sub_card_container}>
-          <ChartCardComponent title="Calendario de eventos" header={<></>}>
-            <FullCalendar
-              plugins={[dayGridPlugin]}
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth'
-              }}
-              events={filteredEvents.map(event => {
-                const today = new Date();
-                const eventEndDate = new Date(event.datesEnd);
+      {dataCalendarResp === 200 ? (
+        <>
+          <div className={styles.card_container}>
+            <div className={styles.overview}>
+              <ChartCardComponent title="Vision General" header={<></>}>
+                <OverviewCard></OverviewCard>
+              </ChartCardComponent>
+            </div>
+            <div className={styles.sub_card_container}>
+              <ChartCardComponent title="Calendario de eventos" header={<></>}>
+                <FullCalendar
+                  plugins={[dayGridPlugin]}
+                  headerToolbar={{
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth'
+                  }}
+                  events={filteredEvents.map(event => {
+                    const today = new Date();
+                    const eventEndDate = new Date(event.datesEnd);
 
-                let backgroundColor;
-                let borderColor;
+                    let backgroundColor;
+                    let borderColor;
 
-                if (event.form_state === '1' && eventEndDate < today) {
-                  backgroundColor = '#ff0000';
-                  borderColor = '#ff0000';
-                } else if (event.form_state === '0') {
-                  backgroundColor = '#80c41c';
-                  borderColor = '#80c41c';
-                } else {
-                  backgroundColor = '#0e6e8c';
-                  borderColor = '#0e6e8c';
-                }
+                    if (event.form_state === '1' && eventEndDate < today) {
+                      backgroundColor = '#ff0000';
+                      borderColor = '#ff0000';
+                    } else if (event.form_state === '0') {
+                      backgroundColor = '#80c41c';
+                      borderColor = '#80c41c';
+                    } else {
+                      backgroundColor = '#0e6e8c';
+                      borderColor = '#0e6e8c';
+                    }
 
-                return {
-                  ...event,
-                  backgroundColor,
-                  borderColor
-                };
-              })}
-              eventClick={handleEventClick} // Handle event click to open the modal
-            />
-          </ChartCardComponent>
-        </div>
-      </div>
-      <div className={styles.div}>
-        <ChartCardComponent title="Eventos por departamento" header={<>
-          <ToolbarFilter
-            filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-            axesState={axesState}
-            cropState={cropState}
-            provinceState={provinceState}
-            sectionState={sectionState}
-            setSectionState={setSectionState}
-          />
-        </>}>
-          <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
-        </ChartCardComponent>
-      </div>
+                    return {
+                      ...event,
+                      backgroundColor,
+                      borderColor
+                    };
+                  })}
+                  eventClick={handleEventClick} // Handle event click to open the modal
+                />
+              </ChartCardComponent>
+            </div>
+          </div>
+          <div className={styles.div}>
+            <ChartCardComponent title="Eventos por departamento" header={<>
+              <ToolbarFilter
+                filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+                axesState={axesState}
+                cropState={cropState}
+                provinceState={provinceState}
+                sectionState={sectionState}
+                setSectionState={setSectionState}
+              />
+            </>}>
+              <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
+            </ChartCardComponent>
+
+          </div>
+        </>
+      ) : dataCalendarResp === 0 ? (
+        "Loading..."
+      ) : (
+        "Ups! something went wrong, try later"
+      )},
       {
         selectedEvent && (
           <CalendarModal
