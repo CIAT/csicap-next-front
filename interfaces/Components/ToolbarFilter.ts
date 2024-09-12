@@ -1,5 +1,5 @@
 import React from "react";
-import {sectionStateData} from "@/interfaces";
+import { sectionStateData } from "@/interfaces";
 
 export interface ToolbarFilterProps {
     axesState: string[];

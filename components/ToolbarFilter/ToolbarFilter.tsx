@@ -1,17 +1,17 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import style from "../CustomToolbar/toolbar.module.css";
-import {sectionStateData} from "@/interfaces";
+import { sectionStateData } from "@/interfaces";
 import MapFilter from "@/components/MapFilter/MapFilter";
-import {ToolbarFilterProps} from "@/interfaces/Components/ToolbarFilter";
+import { ToolbarFilterProps } from "@/interfaces/Components/ToolbarFilter";
 
 const ToolbarFilter: React.FC<ToolbarFilterProps> = ({
-        axesState,
-        cropState,
-        provinceState,
-        sectionState,
-        setSectionState,
-        filterEvents
-    }) => {
+    axesState,
+    cropState,
+    provinceState,
+    sectionState,
+    setSectionState,
+    filterEvents
+}) => {
 
     const [isHiddenFilter, setShowFilter] = useState(true);
 
