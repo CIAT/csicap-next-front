@@ -134,6 +134,7 @@ const BeneficiariosPage: NextPage = () => {
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>("institution");
+  const [treemapTitle, setTreemapTitle] = useState("");
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
@@ -154,10 +155,12 @@ const BeneficiariosPage: NextPage = () => {
         switch (selectedFilter) {
           case "crop":
             filterData = countCrops(data);
+            setTreemapTitle("Cultivos")
             break;
           case "institution":
           default:
             filterData = countOrganizations(data);
+            setTreemapTitle("Instituciones")
         }
 
         const treemapData = Object.keys(filterData).map((key) => ({
@@ -410,7 +413,7 @@ const BeneficiariosPage: NextPage = () => {
 
       <div className={styles.bottom_div}>
         <div className={styles.width}>
-          <ChartCardComponent title="TreeMap" header={
+          <ChartCardComponent title={treemapTitle} header={
             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
               <InputLabel id="filter-select-label">Filtrar</InputLabel>
               <Select

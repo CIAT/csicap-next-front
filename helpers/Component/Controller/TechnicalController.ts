@@ -10,11 +10,11 @@ class TechnicalController {
     static formatEvents(data: DataFormat): FormattedBeneficiary[] {
         return data.map((item: DataItem) => ({
             ...item.data, // Extraer los datos de la propiedad `data`
-            province: item.data.department_where_you_work.join(', '), // Asumir que `department_where_you_work` es un array
-            city: item.data.municipalities_where_you_work.join(', '), // Asumir que `municipalities_where_you_work` es un array
-            crop: item.data.crops_worked_last_12_months.join(', '), // Asumir que `crops_worked_last_12_months` es un array
+            province: item.data.department_where_you_work.join(', '),
+            city: item.data.municipalities_where_you_work.join(', '),
+            crop: item.data.crops_worked_last_12_months.join(', '),
             academicLevel: item.data.highest_educational_level,
-            institution: item.data.affiliated_guild_or_organization.join(', '), // Asumir que `affiliated_guild_or_organization` es un array
+            institution: item.data.affiliated_guild_or_organization.join(', '),
             age: item.data.age
         }));
     }
