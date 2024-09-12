@@ -18,7 +18,7 @@
 
 .sub_card_container {
   padding: 10px 10px 0 0;
-  height: 85%;
+  height: 92%;
   width: 100%;
 }
 
@@ -29,7 +29,7 @@
 
 .overview {
   padding: 0 10px 0 0;
-  height: 15%;
+  height: 8%;
   width: 100%;
 }
 
@@ -41,4 +41,14 @@
   width: 30%;
   display: flex;
   justify-content: flex-end;
+}
+
+@media screen and (max-height: 600px){
+  .overview {
+    height: 15%;
+  }
+
+  .sub_card_container {
+    height: 85%;
+  }
 }

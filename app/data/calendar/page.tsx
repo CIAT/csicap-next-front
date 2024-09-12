@@ -100,15 +100,16 @@ export default function DataCalendarResults() {
             <MainBar section="Calendario de eventos" />
             <div className={style["containerCaledar"]}>
               <div className={style["calendar"]}>
-                <ToolbarFilter
-                  filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                  axesState={axesState}
-                  cropState={cropState}
-                  provinceState={provinceState}
-                  sectionState={sectionState}
-                  setSectionState={setSectionState}
-                />
-                <ChartCardComponent title="Calendario" header={<></>}>
+                <ChartCardComponent title="Calendario" header={
+                    <ToolbarFilter
+                        filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+                        axesState={axesState}
+                        cropState={cropState}
+                        provinceState={provinceState}
+                        sectionState={sectionState}
+                        setSectionState={setSectionState}
+                    />
+                }>
                   <FullCalendar
                     plugins={[dayGridPlugin]}
                     headerToolbar={{
@@ -116,6 +117,7 @@ export default function DataCalendarResults() {
                       center: 'title',
                       right: 'dayGridMonth'
                     }}
+                    fixedWeekCount={false}
                     events={filteredEvents.map(event => {
                       const today = new Date();
                       const eventEndDate = new Date(event.datesEnd);

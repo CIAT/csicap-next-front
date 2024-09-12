@@ -20,7 +20,7 @@ const ToolbarFilter: React.FC<ToolbarFilterProps> = ({
     };
 
     return (
-        <div className={style["filter-container"]}>
+        <div>
             <button className={`${style["button"]} ${style["filter-button"]}`} onClick={toggleFilter}>
                 Filtro
             </button>

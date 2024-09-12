@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./calendar.module.css";
+import cardStyle from "@/components/calendar/Card/cardComponent.module.css";
 import { EventsData, DataFormat, sectionStateData } from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
@@ -13,6 +14,7 @@ import dayjs from "dayjs";
 import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
+import CardComponent from "@/components/calendar/Card/CardComponent";
 
 
 export default function DataCalendarResults() {
@@ -82,9 +84,9 @@ export default function DataCalendarResults() {
         <>
           <div className={styles.card_container}>
             <div className={styles.overview}>
-              <ChartCardComponent title="Vision General" header={<></>}>
+              <CardComponent title="Vision General" header={<></>} style={cardStyle}>
                 <OverviewCard></OverviewCard>
-              </ChartCardComponent>
+              </CardComponent>
             </div>
             <div className={styles.sub_card_container}>
               <ChartCardComponent title="Calendario de eventos" header={<></>}>
