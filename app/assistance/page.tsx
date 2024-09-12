@@ -5,59 +5,101 @@ import { NextPage } from "next";
 import styles from "./assistance.module.css";
 import CardComponent from "@/components/assistance/card";
 import {
-  Chart,
+  Chart as ChartJS,
+  Tooltip as TooltipPlugin,
+  Legend as LegendPlugin,
   ArcElement,
   CategoryScale,
   BarElement,
   LinearScale,
-  Title,
-  Legend,
+  Title as TitlePlugin,
 } from "chart.js";
-import { Bar, Doughnut } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart as ReactChart } from "react-chartjs-2";
 import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EventsData } from "@/interfaces";
 
-Chart.register(
+interface Assistance {
+  data: {
+    "Instituciones que organizan el evento": string[];
+    Eje: string[];
+    Edad: string;
+    "¿Es su primera vez asistiendo a algún evento CSICAP?": string | null;
+    "Tipo de documento": string;
+    "Ocupación principal": string;
+    id_unique: string;
+    "Cadena productiva": string[];
+    Componente: string[];
+    "¿Cúal fue su sexo al nacer?": string;
+    "Departamento del evento": string;
+    "Unique Row Identifier (UUID)": string;
+    "Organización o afiliación": string;
+    id_event: string;
+    "Municipio al cual va dirigido el evento": string;
+  };
+  id_event: string;
+  unique_row_id: string;
+}
+
+ChartJS.register(
+  TooltipPlugin,
+  LegendPlugin,
   ArcElement,
-  Legend,
+  CategoryScale,
+  BarElement,
   LinearScale,
-  CategoryScale, // Register the CategoryScale here
-  BarElement, // Register the BarElement for bar charts
-  Title,
+  TitlePlugin,
   TreemapController,
   TreemapElement
 );
 
-const sex = {
-  labels: ["MUJER", "HOMBRE"],
-  datasets: [
-    {
-      label: "Sexo",
-      data: [28, 32],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-      borderColor: "rgba(255, 99, 132, 1)",
-      borderWidth: 1,
-    },
-  ],
-};
+  // Predefined list of colors
+  const colors = [
+    "rgba(255, 99, 132, 0.5)",
+    "rgba(54, 162, 235, 0.5)",
+    "rgba(75, 192, 192, 0.5)",
+    "rgba(153, 102, 255, 0.5)",
+    "rgba(255, 205, 86, 0.5)",
+    "rgba(255, 159, 64, 0.5)",
+    "rgba(39, 174, 96, 0.5)"
+  ];
 
-const age = {
-  labels: ["20 a 25", "26 a 30"],
-  datasets: [
-    {
-      label: "Edad",
-      data: [28, 32],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-      borderColor: "rgba(255, 99, 132, 1)",
-      borderWidth: 1,
-    },
-  ],
-};
+  const borderColors = [
+    "rgba(255, 99, 132, 1)",
+    "rgba(54, 162, 235, 1)",
+    "rgba(75, 192, 192, 1)",
+    "rgba(153, 102, 255, 1)",
+    "rgba(255, 205, 86, 1)",
+    "rgba(255, 159, 64, 1)",
+    "rgba(39, 174, 96, 1)"
+  ];
+
+async function getAssistanceData(): Promise<Assistance[]> {
+  try {
+    const response = await fetch(
+      "https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list"
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const json = await response.json();
+
+    // Ensure the response contains the expected "data" array
+    if (json && Array.isArray(json)) {
+      return json;
+    } else {
+      console.log("API returned unexpected structure.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return [];
+  }
+}
 
 const role = {
   labels: ["Ingeniería", "Docencia", "Administración", "Salud", "Arte"],
@@ -107,25 +149,6 @@ const data = {
   ],
 };
 
-const barChartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
-  title: {
-    display: true,
-    text: sex.datasets[0].label, // Usar el label del dataset como título
-  },
-};
-
 const config = {
   responsive: true,
   maintainAspectRatio: false,
@@ -139,7 +162,6 @@ const config = {
   },
   title: {
     display: true,
-    text: sex.datasets[0].label, // Usar el label del dataset como título
   },
 };
 
@@ -149,6 +171,9 @@ const config2 = {
   plugins: {
     legend: {
       labels: {
+        font: {
+          size:10,
+        },
         usePointStyle: true,
       },
       position: "right" as const,
@@ -156,7 +181,6 @@ const config2 = {
   },
   title: {
     display: true,
-    text: age.datasets[0].label, // Usar el label del dataset como título
   },
 };
 
@@ -166,6 +190,9 @@ const config3 = {
   plugins: {
     legend: {
       labels: {
+        font: {
+          size:6,
+        },
         usePointStyle: true,
       },
       position: "right" as const,
@@ -192,13 +219,153 @@ const options = {
 };
 
 const AssistancePage: NextPage = () => {
-
+  const [totalAssistants, setTotalAssistants] = useState<number>(); // State to hold total assistants
   const [events, setEvents] = useState<EventsData[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(
-    events
-  );
-  const [selectedEvent, setSelectedEvent] = useState<EventsData | null>(null);
+  const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(events);
+  const [genderStats, setGenderStats] = useState({ men: 0, women: 0, other: 0 });
+  const [ageStats, setAgeStats] = useState<{ [key: string]: number }>({});
+  const [occupationStats, setOccupationStats] = useState<{
+    [key: string]: number;
+  }>({});
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await getAssistanceData();
+        let menCount = 0;
+        let womenCount = 0;
+        let otherCount = 0;
+        let ageCount: { [key: string]: number } = {
+          "20-25": 0,
+          "26-30": 0,
+          "31-40": 0,
+          "41-50": 0,
+          "51+": 0,
+          "N/N": 0,
+        };
+        let occupationCount: { [key: string]: number } = {
+          "Otro": 0 // Initialize "Otro" to count any null or undefined occupations
+        };
   
+        data.forEach((item) => {
+          const gender = item.data["¿Cúal fue su sexo al nacer?"]?.toLowerCase();
+          const age = parseInt(item.data.Edad);
+          const occupation = item.data["Ocupación principal"];
+  
+          // Count gender
+          if (gender === "hombre") {
+            menCount++;
+          } else if (gender === "mujer") {
+            womenCount++;
+          } else {
+            otherCount++;
+          }
+  
+          // Count age groups
+          if (!isNaN(age)) {
+            if (age >= 20 && age <= 25) {
+              ageCount["20-25"]++;
+            } else if (age >= 26 && age <= 30) {
+              ageCount["26-30"]++;
+            } else if (age >= 31 && age <= 40) {
+              ageCount["31-40"]++;
+            } else if (age >= 41 && age <= 50) {
+              ageCount["41-50"]++;
+            } else if (age >= 51) {
+              ageCount["51+"]++;
+            }
+          } else {
+            ageCount["N/N"]++;
+          }
+  
+          // Count occupations, if occupation is null, undefined, or empty, count as "Otro"
+          if (occupation) {
+            occupationCount[occupation] = (occupationCount[occupation] || 0) + 1;
+          } else {
+            occupationCount["Otro"]++; // Increment "Otro" for null/undefined occupations
+          }
+        });
+  
+        // Update state with the counts
+        setTotalAssistants(data.length);
+        setGenderStats({ men: menCount, women: womenCount, other: otherCount });
+        setAgeStats(ageCount);
+        setOccupationStats(occupationCount);
+      } catch (error) {
+        console.error('Failed to fetch or process data:', error);
+      }
+    }
+  
+    fetchData();
+  }, []);
+  
+  
+
+  const genderChartData = {
+    labels: ["Hombre", "Mujer",  "Otro"],
+    datasets: [
+      {
+        label: "Distribución de Género",
+        data: [genderStats.men, genderStats.women, genderStats.other],
+        backgroundColor: ["rgba(54, 162, 235, 0.5)", "rgba(255, 99, 132, 0.5)", "rgba(179, 179, 179, 0.5)"],
+        hoverBackgroundColor: ["#36A2EB", "#FF6384"],
+        borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)", "rgba(179, 179, 179, 1)"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Chart data for age distribution
+  const ageChartData = {
+    labels: ["20-25", "26-30", "31-40", "41-50", "51+","N/N"],
+    datasets: [
+      {
+        label: "Distribución de Edad",
+        data: Object.values(ageStats), // Use age group counts
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.5)", // Ingeniería
+          "rgba(54, 162, 235, 0.5)", // Docencia
+          "rgba(75, 192, 192, 0.5)", // Administración
+          "rgba(153, 102, 255, 0.5)", // Salud
+          "rgba(255, 205, 86, 0.5)",
+          "rgba(179, 179, 179, 0.5)" 
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)", // Ingeniería
+          "rgba(54, 162, 235, 1)", // Docencia
+          "rgba(75, 192, 192, 1)", // Administración
+          "rgba(153, 102, 255, 1)", // Salud
+          "rgba(255, 205, 86, 1)", // Arte
+          "rgba(179, 179, 179, 1)"
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Generate colors dynamically for the occupation chart
+  const occupationBackgroundColors = Object.keys(occupationStats).map(
+    (_, index) => colors[index % colors.length]
+  );
+
+  const occupationBorderColors = Object.keys(occupationStats).map(
+    (_, index) => borderColors[index % borderColors.length]
+  );
+
+  // Chart data for occupation distribution with dynamic color assignment
+  const occupationChartData = {
+    labels: Object.keys(occupationStats), // Use occupation types as labels
+    datasets: [
+      {
+        label: "Distribución de Ocupaciones",
+        data: Object.values(occupationStats), // Use occupation counts
+        backgroundColor: occupationBackgroundColors, // Dynamically assigned background colors
+        borderColor: occupationBorderColors, // Dynamically assigned border colors
+        borderWidth: 1,
+      },
+    ],
+  };
+
   return (
     <div className="w-full h-full flex flex-wrap">
       <div className={styles.top_div}>
@@ -215,7 +382,6 @@ const AssistancePage: NextPage = () => {
                   width: "1px", // Ancho del divisor
                   height: "20px",
                   backgroundColor: "#d1d1d1", // Color del divisor
-                  margin: "0 20px", // Espaciado alrededor del divisor
                 }}
               ></div>
 
@@ -228,7 +394,6 @@ const AssistancePage: NextPage = () => {
                   width: "1px", // Ancho del divisor
                   height: "20px",
                   backgroundColor: "#d1d1d1", // Color del divisor
-                  margin: "0 20px", // Espaciado alrededor del divisor
                 }}
               ></div>
 
@@ -241,7 +406,6 @@ const AssistancePage: NextPage = () => {
                   width: "1px", // Ancho del divisor
                   height: "20px",
                   backgroundColor: "#d1d1d1", // Color del divisor
-                  margin: "0 20px", // Espaciado alrededor del divisor
                 }}
               ></div>
 
@@ -254,40 +418,39 @@ const AssistancePage: NextPage = () => {
           <div className={styles.top_card}>
             <div className={styles.total_assist}>
               {/* <label>Total Asistencias</label> */}
-              <label className={styles.top_card_label}>50</label>
+              <label className={styles.top_card_label}>{totalAssistants}</label>
             </div>
             <div
               style={{
                 width: "1px", // Ancho del divisor
                 height: "100%",
                 backgroundColor: "#d1d1d1", // Color del divisor
-                margin: "0 20px", // Espaciado alrededor del divisor
               }}
             ></div>
             <div className={styles.top_div_division}>
-              <Doughnut data={sex} options={config} />
+              <Doughnut data={genderChartData} options={config} />
             </div>
             <div
               style={{
                 width: "1px", // Ancho del divisor
                 height: "100%",
                 backgroundColor: "#d1d1d1", // Color del divisor
-                margin: "0 20px", // Espaciado alrededor del divisor
               }}
             ></div>
             <div className={styles.top_div_division}>
-              <Doughnut data={age} options={config2} />
+              <Doughnut data={ageChartData} options={config2} />
             </div>
             <div
               style={{
                 width: "1px", // Ancho del divisor
                 height: "100%",
                 backgroundColor: "#d1d1d1", // Color del divisor
-                margin: "0 20px", // Espaciado alrededor del divisor
               }}
             ></div>
-            <div className={styles.top_div_division}>
-              <Doughnut data={role} options={config3} />
+            <div className={styles.top_div_division2}>
+              <div className={styles.chart_inner}>
+                <Doughnut data={occupationChartData} options={config3} />
+              </div>
             </div>
           </div>
         </CardComponent>
@@ -302,7 +465,9 @@ const AssistancePage: NextPage = () => {
         <div className={styles.width}>
           <ChartCardComponent title="Mapa Colombia" header={<></>}>
             <div className="w-full h-full">
-              <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)}/>
+              <MapComponent
+                provinces={CalendarController.extractProvinces(filteredEvents)}
+              />
             </div>
           </ChartCardComponent>
         </div>

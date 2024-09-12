@@ -31,7 +31,7 @@ const CardComponent: NextPage<CardComponentProps> = ({title,children, header}) =
             </div>
           </CardHeader>
           <Divider />
-          <CardBody>
+          <CardBody className="py-1">
             <div className="flex w-full h-full items-center" >
             {children}
             </div>

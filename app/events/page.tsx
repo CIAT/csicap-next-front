@@ -25,6 +25,7 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
+import { wrap } from "module";
 
 interface Event {
   date: string;
@@ -151,18 +152,21 @@ const EventPage: NextPage = () => {
   const [eventStatusData, setEventStatusData] = useState([0, 0]);
   const [guestTypeData, setGuestTypeData] = useState<number[]>([]);
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<string>("institution");
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
 
+  // Fetch and process data based on the selected filter
   useEffect(() => {
     async function fetchAndProcessData() {
       const dataset = await getEventData();
 
+      if (!selectedFilter) return; // If no filter is selected, don't process data
+
       let filterData: { [key: string]: number };
 
-      // Based on selected filter, count occurrences
+      // Count based on the selected filter
       switch (selectedFilter) {
         case "crop":
           filterData = countCrops(dataset.data);
@@ -174,17 +178,19 @@ const EventPage: NextPage = () => {
           filterData = countCities(dataset.data);
           break;
         case "institution":
-        default:
           filterData = countInstitutions(dataset.data);
+          break;
+        default:
+          return; // If no valid filter, do not process
       }
 
       // Create treemap data
-      const treemapData = Object.keys(filterData).map((key) => ({
+      const mappedData = Object.keys(filterData).map((key) => ({
         name: key,
         value: filterData[key],
       }));
 
-      setTreemapData(treemapData);
+      setTreemapData(mappedData);
     }
 
     fetchAndProcessData();
@@ -193,7 +199,6 @@ const EventPage: NextPage = () => {
   const handleFilterChange = (event: SelectChangeEvent) => {
     setSelectedFilter(event.target.value);
   };
-
 
   useEffect(() => {
     async function fetchAndProcessData() {
@@ -331,9 +336,50 @@ const EventPage: NextPage = () => {
     plugins: {
       legend: {
         labels: {
+          boxWidth:10,
+          padding:3,    
+          font: {
+            size: 10
+          },
           usePointStyle: true,
         },
-        position: "left" as const,
+        position: "bottom" as const,
+      },
+    },
+  };
+
+  const config2 = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: {
+          boxWidth: 10,
+          padding: 3,
+          font: {
+            size: 7.5
+          },
+          usePointStyle: true, // Use point style but without the outline
+          generateLabels: function(chart:any) {
+            // Get the labels dynamically from the datasets (like "ejes", "institutions")
+            const labels = chart.data.labels.map((label: string, index: number) => {
+              return {
+                text: label, // No wrapping, just use the label as is
+                fillStyle: chart.data.datasets[0].backgroundColor[index], // Use the correct color
+                strokeStyle: '', // Remove any outline by setting no stroke color
+                lineWidth: 0, // Ensure no border width is applied
+                hidden: chart.getDatasetMeta(0).data[index].hidden, // Handle hidden states
+                datasetIndex: index
+              };
+            });
+  
+            // Sort labels alphabetically by 'text'
+            labels.sort((a: { text: string }, b: { text: string }) => a.text.localeCompare(b.text));
+  
+            return labels;
+          }
+        },
+        position: "bottom" as const,
       },
     },
   };
@@ -363,7 +409,6 @@ const EventPage: NextPage = () => {
     scales: {
       y: {
         beginAtZero: true,
-        max: 8,
         ticks: {
           stepSize: 1,
         },
@@ -383,32 +428,36 @@ const EventPage: NextPage = () => {
           title="Numero de eventos por cultivos"
           header={
             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="filter-select-label">Filtrar</InputLabel>
-            <Select
-              labelId="filter-select-label"
-              id="filter-select"
-              value={selectedFilter}
-              onChange={handleFilterChange}
-            >
-              <MenuItem value="crop">Cultivo</MenuItem>
-              <MenuItem value="ejes">Eje</MenuItem>
-              <MenuItem value="city">Lugar</MenuItem>
-              <MenuItem value="institution">Institución</MenuItem>
-            </Select>
-          </FormControl>
+              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={selectedFilter}
+                onChange={handleFilterChange}
+                label="Filtrar"
+              >
+                <MenuItem value="crop">Cultivo</MenuItem>
+                <MenuItem value="ejes">Eje</MenuItem>
+                <MenuItem value="city">Lugar</MenuItem>
+                <MenuItem value="institution">Institución</MenuItem>
+              </Select>
+            </FormControl>
           }
         >
-          <ReactChart type="treemap" data={treemapChartData} options={options} />
+          {/* Only render the treemap when there's valid data */}
+          {treemapData.length > 0 ? (
+            <ReactChart
+              type="treemap"
+              data={treemapChartData}
+              options={options}
+            />
+          ) : (
+            <div className="flex justify-center items-center h-full">Seleccione un filtro para ver los datos</div>
+          )}
         </ChartCardComponent>
       </div>
 
       <div className={styles.card_container}>
-        <div className={styles.overview}>
-          <ChartCardComponent title="Vision General" header={<></>}>
-            <></>
-          </ChartCardComponent>
-        </div>
-        <div className={styles.sub_card_container}>
           <CardComponent title="Total Eventos">
             <div className="w-full h-full">
               <Doughnut data={eventsTotal} options={config} />
@@ -416,7 +465,7 @@ const EventPage: NextPage = () => {
           </CardComponent>
           <CardComponent title="Ejes por evento">
             <div className="w-full h-full">
-              <Doughnut data={ejesChartData} options={config} />
+              <Doughnut data={ejesChartData} options={config2} />
             </div>
           </CardComponent>
           <CardComponent title="Tipo de Participantes por evento">
@@ -429,7 +478,6 @@ const EventPage: NextPage = () => {
               <Bar data={institutionsChartData} options={barChartOptions} />
             </div>
           </CardComponent>
-        </div>
       </div>
     </div>
   );
