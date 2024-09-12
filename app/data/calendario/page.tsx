@@ -95,6 +95,7 @@ export default function DataCalendarResults() {
                     center: 'title',
                     right: 'dayGridMonth'
                   }}
+                  fixedWeekCount={false}
                   events={filteredEvents.map(event => {
                     const today = new Date();
                     const eventEndDate = new Date(event.datesEnd);
@@ -124,7 +125,7 @@ export default function DataCalendarResults() {
               </ChartCardComponent>
             </div>
           </div>
-          <div className={styles.div}>
+          <div className={styles.card_container}>
             <ChartCardComponent title="Eventos por departamento" header={<>
               <ToolbarFilter
                 filterEvents={(newState: sectionStateData) => filterEvents(newState)}
@@ -137,7 +138,6 @@ export default function DataCalendarResults() {
             </>}>
               <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
             </ChartCardComponent>
-
           </div>
         </>
       ) : dataCalendarResp === 0 ? (
