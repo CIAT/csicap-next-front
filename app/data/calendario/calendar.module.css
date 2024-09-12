@@ -43,7 +43,7 @@
   justify-content: flex-end;
 }
 
-@media screen and (max-height: 600px){
+@media screen and (max-height: 1000px){
   .overview {
     height: 15%;
   }

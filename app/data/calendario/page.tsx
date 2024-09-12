@@ -89,7 +89,16 @@ export default function DataCalendarResults() {
               </CardComponent>
             </div>
             <div className={styles.sub_card_container}>
-              <ChartCardComponent title="Calendario de eventos" header={<></>}>
+              <ChartCardComponent title="Calendario de eventos" header={
+                <ToolbarFilter
+                    filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+                    axesState={axesState}
+                    cropState={cropState}
+                    provinceState={provinceState}
+                    sectionState={sectionState}
+                    setSectionState={setSectionState}
+                />
+              }>
                 <FullCalendar
                   plugins={[dayGridPlugin]}
                   headerToolbar={{
@@ -128,16 +137,7 @@ export default function DataCalendarResults() {
             </div>
           </div>
           <div className={styles.card_container}>
-            <ChartCardComponent title="Eventos por departamento" header={<>
-              <ToolbarFilter
-                filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                axesState={axesState}
-                cropState={cropState}
-                provinceState={provinceState}
-                sectionState={sectionState}
-                setSectionState={setSectionState}
-              />
-            </>}>
+            <ChartCardComponent title="Eventos por departamento" header={<></>}>
               <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
             </ChartCardComponent>
           </div>
