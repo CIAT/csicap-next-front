@@ -29,6 +29,7 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
+import { colors } from "@nextui-org/react";
 
 Chart.register(
   ArcElement,
@@ -41,7 +42,7 @@ Chart.register(
   TreemapElement
 );
 
-const colors = [
+const colores = [
   "#0E6E8C",
   "#80C41C",
   "#C8A041",
@@ -202,8 +203,8 @@ const BeneficiariosPage: NextPage = () => {
       {
         label: "Sexo",
         data: genderNumber,
-        backgroundColor: colors,
-        borderColor: colors,
+        backgroundColor: colores,
+        borderColor: colores,
         borderWidth: 1,
       },
     ],
@@ -215,8 +216,8 @@ const BeneficiariosPage: NextPage = () => {
       {
         label: "Nivel educativo",
         data: educationaLevelNumber,
-        backgroundColor: colors,
-        borderColor: colors,
+        backgroundColor: colores,
+        borderColor: colores,
         borderWidth: 1,
       },
     ],
@@ -228,8 +229,8 @@ const BeneficiariosPage: NextPage = () => {
       {
         label: "Etnia",
         data: ethnicityNumber,
-        backgroundColor: colors,
-        borderColor: colors,
+        backgroundColor: colores,
+        borderColor: colores,
         borderWidth: 1,
       },
     ],
@@ -244,7 +245,7 @@ const BeneficiariosPage: NextPage = () => {
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
-          const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
+          const colors = colores;
           return colors[ctx.dataIndex % colors.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
