@@ -348,7 +348,8 @@ const BeneficiariosPage: NextPage = () => {
                       backgroundColor: "#d1d1d1", // Color del divisor
                       margin: "0 20px", // Espaciado alrededor del divisor
                     }}
-                  ></div>
+                  >
+                  </div>
                   <div className={styles.top_div_division}>
                     <Doughnut data={sex} options={config} />
                   </div>
