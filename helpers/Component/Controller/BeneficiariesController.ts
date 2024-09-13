@@ -1,0 +1,45 @@
+import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
+
+class BeneficiariesController {
+
+    static getUniqueCrops(data: DataFormat[]): string[] {
+        const crops: string[] = data.flatMap(data => data.produccion);
+        return Array.from(new Set(crops));
+    }
+
+    static formatEvents(data: DataFormat[]) {
+        return data.map((item: DataFormat) => ({
+            ...item, // Extraer los datos de la propiedad `data`
+            gremio: item.gremio,
+            sexo: item.sexo,
+            etnia: item.etnia,
+            propiedad: item.propiedad,
+            produccion: item.produccion,
+            edad: item.edad,
+            cultivo1: item.cultivo1,
+            cultivo2: item.cultivo2
+        }));
+    }
+
+    // static extractProvinces(events: DataFormat[]): string[] {
+    //     const provinces = events.map(event => event.province);
+    //     return Array.from(new Set(provinces));
+    // }
+
+    static filterEventsByCrop(events: DataFormat[], crop: string): DataFormat[] {
+        if (crop === "") {
+            return events;
+        }
+        return events.filter(event => event.produccion.includes(crop));
+    }
+
+    // static filterEventsByProvince(events: DataFormat[], province: string): DataFormat[] {
+    //     if (province === "") {
+    //         return events;
+    //     }
+    //     return events.filter(event => event.department_where_you_work.includes(province));
+    // }
+
+}
+
+export default BeneficiariesController;
