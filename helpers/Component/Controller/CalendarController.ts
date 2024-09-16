@@ -15,7 +15,7 @@ class CalendarController {
     static formatEvents(data: DataFormat): EventsData[] {
         return data.data.map((event: EventsData) => ({
             ...event,
-            start: dayjs(event.date).toDate(), // Convert to Date object
+            initialDate: dayjs(event.date).toDate(), // Convert to Date object
             end: dayjs(event.datesEnd).endOf("day").toDate(),
             title: event.name,
             province: event.province,
@@ -23,11 +23,11 @@ class CalendarController {
             city: event.city || "",
             crop: event.crop || [],
             eje: event.eje || [],
-            guessType: event.guess_type || [],
-            eventObjetive: event.event_objective,
+            guess_type: event.guess_type || [],
+            event_objective: event.event_objective,
             institution: event.institution || [],
-            eventType: event.event_type,
-            formstate: event.form_state,
+            event_type: event.event_type,
+            form_state: event.form_state,
             email: event.email
         }));
     }
