@@ -79,7 +79,7 @@ export default function DataCalendarResults() {
 
 
   return (
-    <div className="flex flex-row w-full h-full">
+    <div className={styles.container}>
       {dataCalendarResp === 200 ? (
         <>
           <div className={styles.card_container}>
@@ -104,7 +104,7 @@ export default function DataCalendarResults() {
                   headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth'
+                    right: ''
                   }}
                   fixedWeekCount={false}
                   events={filteredEvents.map(event => {
@@ -131,7 +131,7 @@ export default function DataCalendarResults() {
                       borderColor
                     };
                   })}
-                  eventClick={handleEventClick} // Handle event click to open the modal
+                  eventClick={handleEventClick}
                 />
               </ChartCardComponent>
             </div>

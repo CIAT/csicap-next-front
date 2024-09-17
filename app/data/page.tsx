@@ -9,9 +9,6 @@ export default function DataPage() {
       <nav>
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           <li style={{ margin: '10px 0' }}>
-            <Link href="/data/calendar">
-              Go to Calendar Page
-            </Link>
           </li>
         </ul>
       </nav>
