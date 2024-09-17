@@ -35,6 +35,7 @@ export default function DataCalendarResults() {
   const [provinceState, setProvinceState] = useState<string[]>([]);
 
   const handleEventClick = (clickInfo: any) => {
+    console.log(clickInfo.event.extendedProps)
     setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
     setModalIsOpen(true);
   };
@@ -153,7 +154,9 @@ export default function DataCalendarResults() {
             title={selectedEvent.name}
             show={modalIsOpen}
             handleClose={closeModal}
-            eventDate={dayjs(selectedEvent.datesStart).format("YYYY-MM-DD")}
+            //@ts-ignore
+            //TODO: fix this datexx
+            eventDate={dayjs(selectedEvent.initialDate).format("YYYY-MM-DD")}
             eventDatend={dayjs(selectedEvent.datesEnd).format("YYYY-MM-DD")}
             province={selectedEvent.province}
             axis={selectedEvent.eje}
