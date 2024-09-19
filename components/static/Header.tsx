@@ -47,11 +47,6 @@ const Header = () => {
             </Link>
           </li>
           <li className={styles.header_nav_item}>
-            <Link href="/data">
-              Data
-            </Link>
-          </li>
-          <li className={styles.header_nav_item}>
             <Link href="/reports">
               Reports
             </Link>

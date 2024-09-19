@@ -20,6 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/next.png" />
+      </head>
       <body className={inter.className}>
         <NextUIProvider>
           <header>

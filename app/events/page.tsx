@@ -152,52 +152,46 @@ const EventPage: NextPage = () => {
   const [eventStatusData, setEventStatusData] = useState([0, 0]);
   const [guestTypeData, setGuestTypeData] = useState<number[]>([]);
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
+  const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
 
-  // Fetch and process data based on the selected filter
-  useEffect(() => {
-    async function fetchAndProcessData() {
-      const dataset = await getEventData();
+  // // Initialize treemap data with crop data on component mount and on filter change
+  // useEffect(() => {
+  //   async function fetchTreemapData() {
+  //     let filterData: { [key: string]: number } = {};
 
-      if (!selectedFilter) return; // If no filter is selected, don't process data
+  //     // Count based on the selected filter
+  //     if (selectedFilter === "crop") {
+  //       filterData = countCrops(dataset.data);
+  //     } else if (selectedFilter === "ejes") {
+  //       filterData = countEjes(dataset.data);
+  //     } else if (selectedFilter === "city") {
+  //       filterData = countCities(dataset.data);
+  //     } else if (selectedFilter === "institution") {
+  //       filterData = countInstitutions(dataset.data);
+  //     }
 
-      let filterData: { [key: string]: number };
+  //     // Map the filter data to the treemap structure
+  //     const mappedData = Object.keys(filterData).map((key) => ({
+  //       name: key,
+  //       value: filterData[key],
+  //     }));
 
-      // Count based on the selected filter
-      switch (selectedFilter) {
-        case "crop":
-          filterData = countCrops(dataset.data);
-          break;
-        case "ejes":
-          filterData = countEjes(dataset.data);
-          break;
-        case "city":
-          filterData = countCities(dataset.data);
-          break;
-        case "institution":
-          filterData = countInstitutions(dataset.data);
-          break;
-        default:
-          return; // If no valid filter, do not process
-      }
+  //     setTreemapData(mappedData);
+  //     console.log(mappedData)
+  //   }
+  //   fetchTreemapData();
+  //   console.log("holi");
+  // }, [selectedFilter]); // Trigger when selectedFilter changes
 
-      // Create treemap data
-      const mappedData = Object.keys(filterData).map((key) => ({
-        name: key,
-        value: filterData[key],
-      }));
-
-      setTreemapData(mappedData);
-    }
-
-    fetchAndProcessData();
-  }, [selectedFilter]);
-
+  // Handle filter change
   const handleFilterChange = (event: SelectChangeEvent) => {
-    setSelectedFilter(event.target.value);
+    const newFilter = event.target.value;
+    setSelectedFilter(newFilter);
+    processTreemapData(newFilter, allEventData); // Use the stored event data
   };
 
   useEffect(() => {
@@ -229,11 +223,60 @@ const EventPage: NextPage = () => {
     fetchAndProcessData();
   }, []);
 
+  
+  useEffect(() => {
+    async function fetchData() {
+      const dataset = await getEventData();
+      setAllEventData(dataset.data); // Store all data for reuse
+      initializeTreemapData(dataset.data); // Initialize treemap with default "crop" data
+    }
+
+    fetchData();
+  }, []);
+
+
+  const initializeTreemapData = (data: Event[]) => {
+    let filterData = countCrops(data); // Using "crop" as the default filter
+    const mappedData = Object.keys(filterData).map((key) => ({
+      name: key,
+      value: filterData[key],
+    }));
+    setTreemapData(mappedData);
+  };
+
+  const processTreemapData = (filter: string, data: Event[]) => {
+    let filterData: { [key: string]: number } = {};
+
+    switch (filter) {
+      case "crop":
+        filterData = countCrops(data);
+        break;
+      case "ejes":
+        filterData = countEjes(data);
+        break;
+      case "city":
+        filterData = countCities(data);
+        break;
+      case "institution":
+        filterData = countInstitutions(data);
+        break;
+      default:
+        return;
+    }
+
+    // Create treemap data
+    const mappedData = Object.keys(filterData).map((key) => ({
+      name: key,
+      value: filterData[key],
+    }));
+    setTreemapData(mappedData);
+  };
+
   const treemapChartData = {
     datasets: [
       {
-        data: [], // Required property
-        tree: treemapData, // Use the calculated treemap data
+        data: [],
+        tree: treemapData,
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
@@ -251,13 +294,12 @@ const EventPage: NextPage = () => {
     ],
   };
 
-  // Bar chart for institution participation count
   const institutionsChartData = {
-    labels: institutionLabels, // Names of institutions
+    labels: institutionLabels,
     datasets: [
       {
         label: "Instituciones participantes",
-        data: institutionData, // Number of occurrences
+        data: institutionData,
         backgroundColor: "rgba(75, 192, 192, 0.6)",
         borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
@@ -336,10 +378,10 @@ const EventPage: NextPage = () => {
     plugins: {
       legend: {
         labels: {
-          boxWidth:10,
-          padding:3,    
+          boxWidth: 10,
+          padding: 3,
           font: {
-            size: 10
+            size: 10,
           },
           usePointStyle: true,
         },
@@ -357,27 +399,31 @@ const EventPage: NextPage = () => {
           boxWidth: 10,
           padding: 3,
           font: {
-            size: 7.5
+            size: 7.5,
           },
           usePointStyle: true, // Use point style but without the outline
-          generateLabels: function(chart:any) {
+          generateLabels: function (chart: any) {
             // Get the labels dynamically from the datasets (like "ejes", "institutions")
-            const labels = chart.data.labels.map((label: string, index: number) => {
-              return {
-                text: label, // No wrapping, just use the label as is
-                fillStyle: chart.data.datasets[0].backgroundColor[index], // Use the correct color
-                strokeStyle: '', // Remove any outline by setting no stroke color
-                lineWidth: 0, // Ensure no border width is applied
-                hidden: chart.getDatasetMeta(0).data[index].hidden, // Handle hidden states
-                datasetIndex: index
-              };
-            });
-  
+            const labels = chart.data.labels.map(
+              (label: string, index: number) => {
+                return {
+                  text: label, // No wrapping, just use the label as is
+                  fillStyle: chart.data.datasets[0].backgroundColor[index], // Use the correct color
+                  strokeStyle: "", // Remove any outline by setting no stroke color
+                  lineWidth: 0, // Ensure no border width is applied
+                  hidden: chart.getDatasetMeta(0).data[index].hidden, // Handle hidden states
+                  datasetIndex: index,
+                };
+              }
+            );
+
             // Sort labels alphabetically by 'text'
-            labels.sort((a: { text: string }, b: { text: string }) => a.text.localeCompare(b.text));
-  
+            labels.sort((a: { text: string }, b: { text: string }) =>
+              a.text.localeCompare(b.text)
+            );
+
             return labels;
-          }
+          },
         },
         position: "bottom" as const,
       },
@@ -422,7 +468,7 @@ const EventPage: NextPage = () => {
   };
 
   return (
-    <div className="flex flex-row w-full h-full">
+    <div className={styles.event_page}>
       <div className={styles.div}>
         <ChartCardComponent
           title="Numero de eventos por cultivos"
@@ -444,13 +490,8 @@ const EventPage: NextPage = () => {
             </FormControl>
           }
         >
-          {/* Only render the treemap when there's valid data */}
           {treemapData.length > 0 ? (
-            <ReactChart
-              type="treemap"
-              data={treemapChartData}
-              options={options}
-            />
+            <ReactChart type="treemap" data={treemapChartData} options={options} />
           ) : (
             <div className="flex justify-center items-center h-full">Seleccione un filtro para ver los datos</div>
           )}
@@ -458,26 +499,26 @@ const EventPage: NextPage = () => {
       </div>
 
       <div className={styles.card_container}>
-          <CardComponent title="Total Eventos">
-            <div className="w-full h-full">
-              <Doughnut data={eventsTotal} options={config} />
-            </div>
-          </CardComponent>
-          <CardComponent title="Ejes por evento">
-            <div className="w-full h-full">
-              <Doughnut data={ejesChartData} options={config2} />
-            </div>
-          </CardComponent>
-          <CardComponent title="Tipo de Participantes por evento">
-            <div className="w-full h-full">
-              <Doughnut data={guestTypesChartData} options={config} />
-            </div>
-          </CardComponent>
-          <CardComponent title="Instituciones participantes">
-            <div className="w-full h-full">
-              <Bar data={institutionsChartData} options={barChartOptions} />
-            </div>
-          </CardComponent>
+        <CardComponent title="Total Eventos">
+          <div className="w-full h-full">
+            <Doughnut data={eventsTotal} options={config} />
+          </div>
+        </CardComponent>
+        <CardComponent title="Ejes por evento">
+          <div className="w-full h-full">
+            <Doughnut data={ejesChartData} options={config2} />
+          </div>
+        </CardComponent>
+        <CardComponent title="Tipo de Participantes por evento">
+          <div className="w-full h-full">
+            <Doughnut data={guestTypesChartData} options={config} />
+          </div>
+        </CardComponent>
+        <CardComponent title="Instituciones participantes">
+          <div className="w-full h-full">
+            <Bar data={institutionsChartData} options={barChartOptions} />
+          </div>
+        </CardComponent>
       </div>
     </div>
   );
