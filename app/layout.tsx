@@ -28,7 +28,7 @@ export default function RootLayout({
           <header>
             <Header />
           </header>
-          <div className="w-screen h-screen">{children}</div>
+          <div className="layout">{children}</div>
           <footer>
             <Footer />
           </footer>

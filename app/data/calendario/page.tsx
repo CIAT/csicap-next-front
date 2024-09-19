@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./calendar.module.css";
+import cardStyle from "@/components/calendar/Card/cardComponent.module.css";
 import { EventsData, DataFormat, sectionStateData } from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
@@ -13,6 +14,7 @@ import dayjs from "dayjs";
 import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
+import CardComponent from "@/components/calendar/Card/CardComponent";
 
 
 export default function DataCalendarResults() {
@@ -33,6 +35,7 @@ export default function DataCalendarResults() {
   const [provinceState, setProvinceState] = useState<string[]>([]);
 
   const handleEventClick = (clickInfo: any) => {
+    console.log(clickInfo.event.extendedProps)
     setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
     setModalIsOpen(true);
   };
@@ -77,24 +80,34 @@ export default function DataCalendarResults() {
 
 
   return (
-    <div className="flex flex-row w-full h-full">
+    <div className={styles.container}>
       {dataCalendarResp === 200 ? (
         <>
           <div className={styles.card_container}>
             <div className={styles.overview}>
-              <ChartCardComponent title="Vision General" header={<></>}>
+              <CardComponent title="Vision General" header={<></>} style={cardStyle}>
                 <OverviewCard></OverviewCard>
-              </ChartCardComponent>
+              </CardComponent>
             </div>
             <div className={styles.sub_card_container}>
-              <ChartCardComponent title="Calendario de eventos" header={<></>}>
+              <ChartCardComponent title="Calendario de eventos" header={
+                <ToolbarFilter
+                    filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+                    axesState={axesState}
+                    cropState={cropState}
+                    provinceState={provinceState}
+                    sectionState={sectionState}
+                    setSectionState={setSectionState}
+                />
+              }>
                 <FullCalendar
                   plugins={[dayGridPlugin]}
                   headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth'
+                    right: ''
                   }}
+                  fixedWeekCount={false}
                   events={filteredEvents.map(event => {
                     const today = new Date();
                     const eventEndDate = new Date(event.datesEnd);
@@ -119,25 +132,15 @@ export default function DataCalendarResults() {
                       borderColor
                     };
                   })}
-                  eventClick={handleEventClick} // Handle event click to open the modal
+                  eventClick={handleEventClick}
                 />
               </ChartCardComponent>
             </div>
           </div>
-          <div className={styles.div}>
-            <ChartCardComponent title="Eventos por departamento" header={<>
-              <ToolbarFilter
-                filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                axesState={axesState}
-                cropState={cropState}
-                provinceState={provinceState}
-                sectionState={sectionState}
-                setSectionState={setSectionState}
-              />
-            </>}>
+          <div className={styles.card_container}>
+            <ChartCardComponent title="Eventos por departamento" header={<></>}>
               <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
             </ChartCardComponent>
-
           </div>
         </>
       ) : dataCalendarResp === 0 ? (
@@ -151,7 +154,9 @@ export default function DataCalendarResults() {
             title={selectedEvent.name}
             show={modalIsOpen}
             handleClose={closeModal}
-            eventDate={dayjs(selectedEvent.datesStart).format("YYYY-MM-DD")}
+            //@ts-ignore
+            //TODO: fix this datexx
+            eventDate={dayjs(selectedEvent.initialDate).format("YYYY-MM-DD")}
             eventDatend={dayjs(selectedEvent.datesEnd).format("YYYY-MM-DD")}
             province={selectedEvent.province}
             axis={selectedEvent.eje}

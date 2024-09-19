@@ -27,3 +27,14 @@ body {
   color: black; /* Use the --foreground-rgb variable */
   overflow-x: hidden;
 }
+
+.layout {
+  width: 100vw;
+  height: 100vh;
+}
+
+@media screen and (max-width: 1023px){
+  .layout {
+    height: auto;
+  }
+}

@@ -1,9 +1,10 @@
 import React from "react";
+import style from "./overview.module.css";
 
 const OverviewCard = () => {
     return (
         <div className="bg-gray-900 text-black p-5 rounded-lg w-full">
-            <div className="flex justify-between">
+            <div className={style.content}>
                 <div className="flex items-center">
                     <div className="text-2xl mr-3">🟩</div>
                     <div>
