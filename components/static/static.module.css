@@ -68,6 +68,11 @@
 }
 
 @media (max-width: 500px) and (min-width: 300px) {
+
+  .header_nav_item{
+    font-size: x-small;
+  }
+
   .semi_header {
       justify-content: center;
   }

@@ -1,5 +1,3 @@
-// components/Header.tsx
-import { color } from 'chart.js/helpers';
 import Link from 'next/link';
 import styles from "./static.module.css";
 
@@ -46,11 +44,7 @@ const Header = () => {
               Calendario
             </Link>
           </li>
-          {/* <li className={styles.header_nav_item}>
-            <Link href="/data">
-              Data
-            </Link>
-          </li>
+          {/*
           <li className={styles.header_nav_item}>
             <Link href="/reports">
               Reports
