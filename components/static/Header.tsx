@@ -26,12 +26,12 @@ const Header = () => {
               Events
             </Link>
           </li>
-          {/* <li className={styles.header_nav_item}>
+          <li className={styles.header_nav_item}>
             <Link href="/assistance">
               Assistance
             </Link>
           </li>
-          <li className={styles.header_nav_item}>
+          {/* <li className={styles.header_nav_item}>
             <Link href="/beneficiarios">
               Beneficiarios
             </Link>
