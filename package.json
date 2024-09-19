@@ -33,7 +33,6 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "react-leaflet": "^4.2.1",
-    "yarn": "^1.22.22",
     "react-plotly.js": "^2.6.0"
   },
   "devDependencies": {
