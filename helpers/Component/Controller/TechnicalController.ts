@@ -1,8 +1,8 @@
-import { DataFormat, DataItem, FormattedBeneficiary, TecnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
+import { DataFormat, DataItem, FormattedBeneficiary, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
 
 class TechnicalController {
 
-    static getUniqueCrops(data: TecnicalBeneficiaries[]): string[] {
+    static getUniqueCrops(data: TechnicalBeneficiaries[]): string[] {
         const crops: string[] = data.flatMap(data => data.crops_worked_last_12_months);
         return Array.from(new Set(crops));
     }
@@ -24,19 +24,33 @@ class TechnicalController {
         return Array.from(new Set(provinces));
     }
 
-    static filterEventsByCrop(events: TecnicalBeneficiaries[], crop: string): TecnicalBeneficiaries[] {
+    static filterEventsByCrop(events: TechnicalBeneficiaries[], crop: string): TechnicalBeneficiaries[] {
         if (crop === "") {
             return events;
         }
         return events.filter(event => event.crops_worked_last_12_months.includes(crop));
     }
 
-    static filterEventsByProvince(events: TecnicalBeneficiaries[], province: string): TecnicalBeneficiaries[] {
+    static filterEventsByProvince(events: TechnicalBeneficiaries[], province: string): TechnicalBeneficiaries[] {
         if (province === "") {
             return events;
         }
         return events.filter(event => event.department_where_you_work.includes(province));
     }
+
+    static transformToFormattedBeneficiary(
+        beneficiaries: TechnicalBeneficiaries[]
+    ): FormattedBeneficiary[] {
+        return beneficiaries.map((beneficiary) => ({
+            ...beneficiary, // Copia todas las propiedades de TechnicalBeneficiaries
+            province: beneficiary.department_where_you_work[0] || '', // Asigna la primera provincia o un valor vacío si no existe
+            city: beneficiary.municipalities_where_you_work[0] || '', // Asigna la primera ciudad o un valor vacío
+            crop: beneficiary.crops_worked_last_12_months[0] || '', // Asigna el primer cultivo trabajado o un valor vacío
+            academicLevel: beneficiary.highest_educational_level || '', // Asigna el nivel educativo más alto
+            institution: beneficiary.affiliated_guild_or_organization[0] || '', // Asigna la primera organización o un valor vacío
+        }));
+    }
+
 
 }
 
