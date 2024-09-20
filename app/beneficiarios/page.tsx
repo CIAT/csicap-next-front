@@ -344,14 +344,11 @@ const BeneficiariosPage: NextPage = () => {
               {/* Card superior */}
               <div className={styles.top_div}>
                 <CardComponent
-                    title="Cultivos Priorizados"
+                    title="Total Hectáreas"
                     styles={styleBeneficiaries}
                 >
-                  <div className={styles.top_card}>
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Total Hectáreas</label>
-                      <label className={styles.top_card_label}>9557</label>
-                    </div>
+                  <div className={styles.top_div_division}>
+                    <label className={styles.top_card_label}>9557</label>
                   </div>
                 </CardComponent>
                 <CardComponent
