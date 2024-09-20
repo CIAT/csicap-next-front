@@ -55,6 +55,18 @@ Chart.register(
   TreemapElement
 );
 
+const shortenedLabels = [
+  "1-Agricultura digital",
+  "2-Información climática",
+  "3-Mejoramiento génetico",
+  "4-Técnicas de manejo de cultivos",
+  "5-Modelos de negocio",
+  "6-Asistencia técnica",
+  "7-Monitoreo y evaluación",
+  "8-Ambiental, social y género",
+  "Equipo de coordinación",
+];
+
 async function getEventData(): Promise<{ data: Event[] }> {
   const response = await fetch(
     "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
@@ -148,7 +160,6 @@ const EventPage: NextPage = () => {
   const [institutionData, setInstitutionData] = useState<number[]>([]);
   const [institutionLabels, setInstitutionLabels] = useState<string[]>([]);
   const [ejeData, setEjeData] = useState<number[]>([]);
-  const [ejeLabels, setEjeLabels] = useState<string[]>([]);
   const [eventStatusData, setEventStatusData] = useState([0, 0]);
   const [guestTypeData, setGuestTypeData] = useState<number[]>([]);
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
@@ -158,36 +169,7 @@ const EventPage: NextPage = () => {
   >([]);
   const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
 
-  // // Initialize treemap data with crop data on component mount and on filter change
-  // useEffect(() => {
-  //   async function fetchTreemapData() {
-  //     let filterData: { [key: string]: number } = {};
 
-  //     // Count based on the selected filter
-  //     if (selectedFilter === "crop") {
-  //       filterData = countCrops(dataset.data);
-  //     } else if (selectedFilter === "ejes") {
-  //       filterData = countEjes(dataset.data);
-  //     } else if (selectedFilter === "city") {
-  //       filterData = countCities(dataset.data);
-  //     } else if (selectedFilter === "institution") {
-  //       filterData = countInstitutions(dataset.data);
-  //     }
-
-  //     // Map the filter data to the treemap structure
-  //     const mappedData = Object.keys(filterData).map((key) => ({
-  //       name: key,
-  //       value: filterData[key],
-  //     }));
-
-  //     setTreemapData(mappedData);
-  //     console.log(mappedData)
-  //   }
-  //   fetchTreemapData();
-  //   console.log("holi");
-  // }, [selectedFilter]); // Trigger when selectedFilter changes
-
-  // Handle filter change
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
     setSelectedFilter(newFilter);
@@ -206,7 +188,6 @@ const EventPage: NextPage = () => {
 
       // Calculate eje counts
       const ejeCount = countEjes(dataset.data);
-      setEjeLabels(Object.keys(ejeCount));
       setEjeData(Object.values(ejeCount));
 
       // Calculate institution counts
@@ -320,11 +301,11 @@ const EventPage: NextPage = () => {
   };
 
   const ejesChartData = {
-    labels: ejeLabels, // Names of the ejes
+    labels: shortenedLabels, // Use shortened labels for both display and tooltips
     datasets: [
       {
         label: "Eje Count",
-        data: ejeData, // Number of occurrences
+        data: ejeData, 
         backgroundColor: [
           "#4CAF50",
           "#FFCE56",
@@ -332,6 +313,9 @@ const EventPage: NextPage = () => {
           "#FF6384",
           "#9966FF",
           "#FF9F40",
+          "#FF6384",
+          "#36A2EB",
+          "#4BC0C0",
         ],
         hoverBackgroundColor: [
           "#45a049",
@@ -340,18 +324,20 @@ const EventPage: NextPage = () => {
           "#FF6384",
           "#9966FF",
           "#FF9F40",
+          "#FF6384",
+          "#36A2EB",
+          "#4BC0C0",
         ],
       },
     ],
   };
 
-  // Doughnut chart for guest type count
   const guestTypesChartData = {
-    labels: guestTypeLabels, // Names of guest types
+    labels: guestTypeLabels, 
     datasets: [
       {
         label: "Tipo de participantes",
-        data: guestTypeData, // Number of occurrences
+        data: guestTypeData, 
         backgroundColor: [
           "#FF6384",
           "#36A2EB",
@@ -401,31 +387,17 @@ const EventPage: NextPage = () => {
           font: {
             size: 7.5,
           },
-          usePointStyle: true, // Use point style but without the outline
-          generateLabels: function (chart: any) {
-            // Get the labels dynamically from the datasets (like "ejes", "institutions")
-            const labels = chart.data.labels.map(
-              (label: string, index: number) => {
-                return {
-                  text: label, // No wrapping, just use the label as is
-                  fillStyle: chart.data.datasets[0].backgroundColor[index], // Use the correct color
-                  strokeStyle: "", // Remove any outline by setting no stroke color
-                  lineWidth: 0, // Ensure no border width is applied
-                  hidden: chart.getDatasetMeta(0).data[index].hidden, // Handle hidden states
-                  datasetIndex: index,
-                };
-              }
-            );
-
-            // Sort labels alphabetically by 'text'
-            labels.sort((a: { text: string }, b: { text: string }) =>
-              a.text.localeCompare(b.text)
-            );
-
-            return labels;
-          },
+          usePointStyle: true,
         },
         position: "bottom" as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${shortenedLabels[index]}: ${tooltipItem.raw}`; // Show shortened label in the tooltip
+          },
+        },
       },
     },
   };
