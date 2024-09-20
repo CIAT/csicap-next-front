@@ -11,7 +11,7 @@ const Footer = () => {
           alt="alliance-logo"
         />
       </div>
-      <div className={styles.footer_img}>
+      <div className={styles.footer_text}>
         <p>© 2024 MyWebsite. All rights reserved.</p>
         <nav>
           <ul className={styles.footerNavStyle}>
