@@ -1,57 +1,49 @@
+'use client';
+
+import { useState } from "react";
 import Link from 'next/link';
 import styles from "./static.module.css";
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+  };
+
   return (
     <header className={styles.headerStyle}>
       <div className={styles.logoStyle}>
-        <Link href="/">
-          <img
-            src="/logo.png"
-            alt="alliance-logo"
-          />
+        <Link href="/" className="h-full w-full">
+          <img src="/logo.png" alt="alliance-logo" />
         </Link>
       </div>
-      <div className={styles.nav_style}>
-        <ul>
-          {/* <li className={styles.header_nav_item}>
-            <Link href="/">
-              Home
-            </Link>
-          </li> */}
-          <li className={styles.header_nav_item}>
-            <Link href="/events">
-              Events
-            </Link>
-          </li>
-          <li className={styles.header_nav_item}>
-            <Link href="/assistance">
-              Assistance
-            </Link>
-          </li>
-          {/* <li className={styles.header_nav_item}>
-            <Link href="/beneficiarios">
-              Beneficiarios
-            </Link>
-          </li> */}
-          <li className={styles.header_nav_item}>
-            <Link href="/tecnicos">
-              Tecnicos
-            </Link>
-          </li>
-          <li className={styles.header_nav_item}>
-            <Link href="/data/calendario">
-              Calendario
-            </Link>
-          </li>
-          {/*
-          <li className={styles.header_nav_item}>
-            <Link href="/reports">
-              Reports
-            </Link>
-          </li> */}
-        </ul>
+      <div className={styles.hamburger} onClick={toggleMenu}>
+        <img src="/menu.png" alt="menu"/>
+        <span className={styles.hamburgerIcon}></span>
       </div>
+      <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
+        <ul>
+          <li className={styles.header_nav_item}>
+            <Link href="/events" onClick={closeMenu}>Events</Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/assistance" onClick={closeMenu}>Assistance</Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/tecnicos" onClick={closeMenu}>Tecnicos</Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>
+          </li>
+        </ul>
+      </nav>
     </header>
   );
 };
