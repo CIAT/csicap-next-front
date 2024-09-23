@@ -1,11 +1,11 @@
-export interface FormattedBeneficiary extends TecnicalBeneficiaries {
+export interface FormattedBeneficiary extends TechnicalBeneficiaries {
     province: string;
     city: string;
     crop: string;
     academicLevel: string;
     institution: string;
 }
-export interface TecnicalBeneficiaries {
+export interface TechnicalBeneficiaries {
     highest_educational_level: string;
     ethnic_affiliation: string;
     affiliated_guild_or_organization: string[];
@@ -19,7 +19,7 @@ export interface TecnicalBeneficiaries {
 }
 
 export interface DataItem {
-    data: TecnicalBeneficiaries;
+    data: TechnicalBeneficiaries;
     created_at: string;
     unique_row_id: string;
 }

@@ -37,6 +37,9 @@ const Header = () => {
             <Link href="/assistance" onClick={closeMenu}>Assistance</Link>
           </li>
           <li className={styles.header_nav_item}>
+            <Link href="/beneficiarios" onClick={closeMenu}>Beneficiarios</Link>
+          </li>
+          <li className={styles.header_nav_item}>
             <Link href="/tecnicos" onClick={closeMenu}>Tecnicos</Link>
           </li>
           <li className={styles.header_nav_item}>

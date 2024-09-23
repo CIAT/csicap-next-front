@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { NextPage } from "next";
 import styles from "./assistance.module.css";
-import CardComponent from "@/components/assistance/card";
+import styleBeneficiaries from "@/components/ui/card/CardBeneficiaries.module.css";
 import {
   Chart,
   ArcElement,
@@ -13,18 +12,18 @@ import {
   Title,
   Legend,
 } from "chart.js";
-import { Bar, Doughnut } from "react-chartjs-2";
-import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
+import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
-import ChartCardComponent from "@/components/events/chartCard";
-import MapComponent from "@/components/data/Map/MapComponent";
-import CalendarController from "@/helpers/Component/Controller/CalendarController";
-import { SetStateAction, useEffect, useState } from "react";
+import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
+import { useEffect, useState } from "react";
 import { EventsData } from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import BeneficiariesRepository from "@/helpers/Component/Repository/BeneficiariesRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
 import BeneficiariesController from "@/helpers/Component/Controller/BeneficiariesController";
+import CardComponent from "@/components/ui/card/Card";
+import MapComponent from "@/components/data/Map/MapComponent";
+import CalendarController from "@/helpers/Component/Controller/CalendarController";
 
 Chart.register(
   ArcElement,
@@ -124,7 +123,6 @@ const BeneficiariosPage: NextPage = () => {
       .then((data: DataFormat[]) => {
         const formattedEvents = BeneficiariesController.formatEvents(data);
 
-        // setDataCalendarResp(200);
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
 
@@ -150,14 +148,12 @@ const BeneficiariosPage: NextPage = () => {
         }));
 
         setTreemapData(treemapData);
-
-
       })
       .catch(error => {
         console.error("Error fetching events:", error);
         setDataCalendarResp(-1); // Set error state
       });
-  });
+  }, []);
 
   const sex = {
     labels: genderLabel,
@@ -201,8 +197,7 @@ const BeneficiariosPage: NextPage = () => {
   const data = {
     datasets: [
       {
-        // Se requiere la propiedad `data` aunque esté vacía
-        data: [], // Obligatorio para Chart.js
+        data: [],
         tree: treemapData,
         key: "value",
         groups: ["name"],
@@ -282,231 +277,128 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
-      <Tabs aria-label="Options">
-        <Tab key="beneficiarios" title="Benefiaciarios" className="w-full h-full flex flex-wrap">
-          <div className="w-full h-full flex flex-wrap">
-            <div className={styles.top_div}>
-              <CardComponent
-                title=""
-                header={
-                  <div className={styles.top_card}>
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Total productores</label>
-                    </div>
-
-                    <div
-                      style={{
-                        width: "1px", // Ancho del divisor
-                        height: "20px",
-                        backgroundColor: "#d1d1d1", // Color del divisor
-                        margin: "0 20px", // Espaciado alrededor del divisor
-                      }}
-                    ></div>
-
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Genero</label>
-                    </div>
-
-                    <div
-                      style={{
-                        width: "1px", // Ancho del divisor
-                        height: "20px",
-                        backgroundColor: "#d1d1d1", // Color del divisor
-                        margin: "0 20px", // Espaciado alrededor del divisor
-                      }}
-                    ></div>
-
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Tipo de propiedad</label>
-                    </div>
-
-                    <div
-                      style={{
-                        width: "1px", // Ancho del divisor
-                        height: "20px",
-                        backgroundColor: "#d1d1d1", // Color del divisor
-                        margin: "0 20px", // Espaciado alrededor del divisor
-                      }}
-                    ></div>
-
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Etnia</label>
-                    </div>
-                  </div>
-                }
-              >
-                <div className={styles.top_card}>
-                  <div className={styles.total_assist}>
-                    {/* <label>Total Asistencias</label> */}
+      <div className="w-full h-full flex flex-wrap">
+        <Tabs aria-label="Options">
+          {/* Tab Beneficiarios */}
+          <Tab key="beneficiarios" title="Beneficiarios" className="w-full h-full flex flex-wrap">
+            <div className="w-full h-full flex flex-wrap">
+              {/* Card superior */}
+              <div className={styles.top_div}>
+                <CardComponent styles={styleBeneficiaries} title={"Total productores"}>
+                  <div className={styles.top_div_division}>
                     <label className={styles.top_card_label}>{totalData}</label>
                   </div>
-                  <div
-                    style={{
-                      width: "1px", // Ancho del divisor
-                      height: "100%",
-                      backgroundColor: "#d1d1d1", // Color del divisor
-                      margin: "0 20px", // Espaciado alrededor del divisor
-                    }}
-                  >
+                </CardComponent>
+                {/* Doughnut: Género */}
+                <CardComponent
+                    title="Género"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={sex} options={config}/>
                   </div>
-                  <div className={styles.top_div_division}>
-                    <Doughnut data={sex} options={config} />
+                </CardComponent>
+
+                {/* Doughnut: Tipo de propiedad */}
+                <CardComponent
+                    title="Tipo de propiedad"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={typeOfHousing} options={config2}/>
                   </div>
-                  <div
-                    style={{
-                      width: "1px", // Ancho del divisor
-                      height: "100%",
-                      backgroundColor: "#d1d1d1", // Color del divisor
-                      margin: "0 20px", // Espaciado alrededor del divisor
-                    }}
-                  ></div>
-                  <div className={styles.top_div_division}>
-                    <Doughnut data={typeOfHousing} options={config2} />
+                </CardComponent>
+
+                {/* Doughnut: Etnia */}
+                <CardComponent
+                    title="Etnia"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={etnia} options={config3}/>
                   </div>
-                  <div
-                    style={{
-                      width: "1px", // Ancho del divisor
-                      height: "100%",
-                      backgroundColor: "#d1d1d1", // Color del divisor
-                      margin: "0 20px", // Espaciado alrededor del divisor
-                    }}
-                  ></div>
-                  <div className={styles.top_div_division}>
-                    <Doughnut data={etnia} options={config3} />
+                </CardComponent>
+              </div>
+              <div className={styles.bottom_div}>
+                <div className={styles.flex_container}>
+                  <div className={styles.width}>
+                    <CardComponent title="TreeMap" styles={styleBeneficiaries}>
+                      <ReactChart type="treemap" data={data} options={options}/>
+                    </CardComponent>
+                  </div>
+                  <div className={styles.width}>
+                    <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
+                      <div className="w-full h-full">
+                        <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)}/>
+                      </div>
+                    </CardComponent>
                   </div>
                 </div>
-              </CardComponent>
-            </div>
-
-            <div className={styles.bottom_div}>
-              <div className={styles.width}>
-                <ChartCardComponent title="Gremios" header={<></>}>
-                  <ReactChart type="treemap" data={data} options={options} />
-                </ChartCardComponent>
-              </div>
-              <div className={styles.width}>
-                <ChartCardComponent title="Mapa Colombia" header={<></>}>
-                  <div className="w-full h-full">
-                    <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
-                  </div>
-                </ChartCardComponent>
               </div>
             </div>
-          </div>
-        </Tab>
-        <Tab key="cultivos" title="Cultivos Priorizados" className="w-full h-full flex flex-wrap">
-          <div className="w-full h-full flex flex-wrap">
-            <div className={styles.top_div}>
-              <CardComponent
-                title=""
-                header={
-                  <div className={styles.top_card}>
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Total Hectareas</label>
-                    </div>
+          </Tab>
 
-                    <div
-                      style={{
-                        width: "1px", // Ancho del divisor
-                        height: "20px",
-                        backgroundColor: "#d1d1d1", // Color del divisor
-                        margin: "0 20px", // Espaciado alrededor del divisor
-                      }}
-                    ></div>
-
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Cultivo priorizado 1</label>
-                    </div>
-
-                    <div
-                      style={{
-                        width: "1px", // Ancho del divisor
-                        height: "20px",
-                        backgroundColor: "#d1d1d1", // Color del divisor
-                        margin: "0 20px", // Espaciado alrededor del divisor
-                      }}
-                    ></div>
-
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Cultivo priorizado 2</label>
-                    </div>
-
-                    <div
-                      style={{
-                        width: "1px", // Ancho del divisor
-                        height: "20px",
-                        backgroundColor: "#d1d1d1", // Color del divisor
-                        margin: "0 20px", // Espaciado alrededor del divisor
-                      }}
-                    ></div>
-
-                    <div className={styles.top_div_division}>
-                      <label className={styles.header_width}>Sistemas productivos</label>
-                    </div>
-                  </div>
-                }
-              >
-                <div className={styles.top_card}>
-                  <div className={styles.total_assist}>
-                    {/* <label>Total Asistencias</label> */}
+          {/* Tab Cultivos Priorizados */}
+          <Tab key="cultivos" title="Cultivos Priorizados" className="w-full h-full flex flex-wrap">
+            <div className="w-full h-full flex flex-wrap">
+              {/* Card superior */}
+              <div className={styles.top_div}>
+                <CardComponent
+                    title="Total Hectáreas"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.top_div_division}>
                     <label className={styles.top_card_label}>9557</label>
                   </div>
-                  <div
-                    style={{
-                      width: "1px", // Ancho del divisor
-                      height: "100%",
-                      backgroundColor: "#d1d1d1", // Color del divisor
-                      margin: "0 20px", // Espaciado alrededor del divisor
-                    }}
-                  ></div>
-                  <div className={styles.top_div_division}>
+                </CardComponent>
+                <CardComponent
+                    title="Género"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.doughnut_chart}>
                     <Doughnut data={sex} options={config} />
                   </div>
-                  <div
-                    style={{
-                      width: "1px", // Ancho del divisor
-                      height: "100%",
-                      backgroundColor: "#d1d1d1", // Color del divisor
-                      margin: "0 20px", // Espaciado alrededor del divisor
-                    }}
-                  ></div>
-                  <div className={styles.top_div_division}>
+                </CardComponent>
+
+                {/* Doughnut: Tipo de propiedad */}
+                <CardComponent
+                    title="Tipo de propiedad"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.doughnut_chart}>
                     <Doughnut data={typeOfHousing} options={config2} />
                   </div>
-                  <div
-                    style={{
-                      width: "1px", // Ancho del divisor
-                      height: "100%",
-                      backgroundColor: "#d1d1d1", // Color del divisor
-                      margin: "0 20px", // Espaciado alrededor del divisor
-                    }}
-                  ></div>
-                  <div className={styles.top_div_division}>
+                </CardComponent>
+                {/* Doughnut: Etnia */}
+                <CardComponent
+                    title="Etnia"
+                    styles={styleBeneficiaries}
+                >
+                  <div className={styles.doughnut_chart}>
                     <Doughnut data={etnia} options={config3} />
                   </div>
-                </div>
-              </CardComponent>
-            </div>
-
-            <div className={styles.bottom_div}>
-              <div className={styles.width}>
-                <ChartCardComponent title="TreeMap" header={<></>}>
-                  <ReactChart type="treemap" data={data} options={options} />
-                </ChartCardComponent>
+                </CardComponent>
               </div>
-              <div className={styles.width}>
-                <ChartCardComponent title="Mapa Colombia" header={<></>}>
-                  <div className="w-full h-full">
-                    <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
+              <div className={styles.bottom_div}>
+                <div className={styles.flex_container}>
+                  <div className={styles.width}>
+                    <CardComponent title="TreeMap" styles={styleBeneficiaries}>
+                      <ReactChart type="treemap" data={data} options={options} />
+                    </CardComponent>
                   </div>
-                </ChartCardComponent>
+                  <div className={styles.width}>
+                    <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
+                      <div className="w-full h-full">
+                        <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
+                      </div>
+                    </CardComponent>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </Tab>
-      </Tabs>
-    </div>
+          </Tab>
+        </Tabs>
+      </div>
   );
 };
 
