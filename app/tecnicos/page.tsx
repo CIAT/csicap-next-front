@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { NextPage } from "next";
-import styles from "./assistance.module.css";
+import styles from "../assistance/assistance.module.css";
 import CardComponent from "@/components/assistance/card";
 import {
   Chart,
@@ -125,7 +125,6 @@ const BeneficiariosPage: NextPage = () => {
     events
   );
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
-  const [selectedEvent, setSelectedEvent] = useState<TecnicalBeneficiaries | null>(null);
   const [provinceState, setProvinceState] = useState<string[]>([]);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
@@ -319,7 +318,7 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
+    <div className="w-screen h-screen flex flex-wrap">
       <div className={styles.top_div}>
         <CardComponent
           title=""

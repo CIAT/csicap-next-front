@@ -67,6 +67,18 @@ const shortenedLabels = [
   "Equipo de coordinación",
 ];
 
+const colors = [
+  "#FECF00",
+  "#D2D200",
+  "#00BFB3",
+  "#FAAF41",
+  "#C8A041",
+  "#80C41C",
+  "#669d16",
+  "#0E6E8C",
+  "#569aaf",
+];
+
 async function getEventData(): Promise<{ data: Event[] }> {
   const response = await fetch(
     "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
@@ -75,22 +87,32 @@ async function getEventData(): Promise<{ data: Event[] }> {
   return data;
 }
 
-// Calculate finished and in-progress events based on their dates
+// Calculate finished, in-progress, and programmed events based on form_state and datesEnd
 function calculateEventStatus(events: Event[]) {
   let finishedEvents = 0;
   let inProgressEvents = 0;
+  let programmedEvents = 0;
   const currentDate = new Date();
 
   events.forEach((event) => {
     const eventEndDate = new Date(event.datesEnd);
-    if (eventEndDate < currentDate) {
+
+    if (event.form_state === "0") {
+      // If form_state is 0, count it as finished
       finishedEvents += 1;
-    } else {
-      inProgressEvents += 1;
+    } else if (event.form_state === "1") {
+      // If form_state is 1, check the date
+      if (eventEndDate < currentDate) {
+        // If end date has passed, count it as in-progress
+        inProgressEvents += 1;
+      } else {
+        // If end date hasn't passed, count it as programmed
+        programmedEvents += 1;
+      }
     }
   });
 
-  return { finishedEvents, inProgressEvents };
+  return { finishedEvents, inProgressEvents, programmedEvents };
 }
 
 // Count occurrences of each "eje"
@@ -181,10 +203,10 @@ const EventPage: NextPage = () => {
       const dataset = await getEventData();
 
       // Calculate finished/in-progress events
-      const { finishedEvents, inProgressEvents } = calculateEventStatus(
+      const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(
         dataset.data
       );
-      setEventStatusData([finishedEvents, inProgressEvents]);
+      setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
 
       // Calculate eje counts
       const ejeCount = countEjes(dataset.data);
@@ -261,14 +283,7 @@ const EventPage: NextPage = () => {
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
-          const colors = [
-            "#FF6384",
-            "#36A2EB",
-            "#FFCE56",
-            "#4BC0C0",
-            "#9966FF",
-          ];
-          return colors[ctx.dataIndex % colors.length];
+          return colors[ctx.dataIndex % colors.length]; // Reuse colors array
         },
         borderColor: "rgba(0,0,0,0.1)",
       },
@@ -281,21 +296,21 @@ const EventPage: NextPage = () => {
       {
         label: "Instituciones participantes",
         data: institutionData,
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: colors.slice(0, institutionLabels.length), // Use colors array
+        borderColor: colors.slice(0, institutionLabels.length),
         borderWidth: 1,
       },
     ],
   };
 
   const eventsTotal = {
-    labels: ["Completado", "En progreso"],
+    labels: ["Eventos Finalizados", "Eventos Programados", "Eventos sin Cerrar"],
     datasets: [
       {
         label: "Event Status",
         data: eventStatusData, // Dynamically set the data here
-        backgroundColor: ["#4CAF50", "#FFCE56"],
-        hoverBackgroundColor: ["#45a049", "#FFC107"],
+        backgroundColor: ["#80C41C", "#FECF00","#c84e42"],
+        hoverBackgroundColor: ["#80C41C", "#FECF00","#c84e42"],
       },
     ],
   };
@@ -305,55 +320,21 @@ const EventPage: NextPage = () => {
     datasets: [
       {
         label: "Eje Count",
-        data: ejeData, 
-        backgroundColor: [
-          "#4CAF50",
-          "#FFCE56",
-          "#36A2EB",
-          "#FF6384",
-          "#9966FF",
-          "#FF9F40",
-          "#FF6384",
-          "#36A2EB",
-          "#4BC0C0",
-        ],
-        hoverBackgroundColor: [
-          "#45a049",
-          "#FFC107",
-          "#36A2EB",
-          "#FF6384",
-          "#9966FF",
-          "#FF9F40",
-          "#FF6384",
-          "#36A2EB",
-          "#4BC0C0",
-        ],
+        data: ejeData,
+        backgroundColor: colors.slice(0, ejeData.length), // Reuse colors for background
+        hoverBackgroundColor: colors.slice(0, ejeData.length), // Reuse colors for hover
       },
     ],
   };
 
   const guestTypesChartData = {
-    labels: guestTypeLabels, 
+    labels: guestTypeLabels,
     datasets: [
       {
         label: "Tipo de participantes",
-        data: guestTypeData, 
-        backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FF9F40",
-        ],
-        hoverBackgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FF9F40",
-        ],
+        data: guestTypeData,
+        backgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array
+        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array for hover
       },
     ],
   };

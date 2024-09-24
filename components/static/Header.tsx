@@ -31,16 +31,19 @@ const Header = () => {
       <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
         <ul>
           <li className={styles.header_nav_item}>
-            <Link href="/events" onClick={closeMenu}>Events</Link>
+            <Link href="/events" onClick={closeMenu}>Eventos</Link>
           </li>
           <li className={styles.header_nav_item}>
-            <Link href="/assistance" onClick={closeMenu}>Assistance</Link>
+            <Link href="/assistance" onClick={closeMenu}>Assistencia</Link>
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/tecnicos" onClick={closeMenu}>Tecnicos</Link>
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/reports" onClick={closeMenu}>Reportes</Link>
           </li>
         </ul>
       </nav>

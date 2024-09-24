@@ -367,7 +367,7 @@ const AssistancePage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
+    <div className={styles.div}>
       <div className={styles.top_div}>
         <CardComponent
           title=""

@@ -116,14 +116,14 @@ export default function DataCalendarResults() {
                     let borderColor;
 
                     if (event.form_state === '1' && eventEndDate < today) {
-                      backgroundColor = '#ff0000';
-                      borderColor = '#ff0000';
+                      backgroundColor = '#c84e42';
+                      borderColor = '#c84e42';
                     } else if (event.form_state === '0') {
-                      backgroundColor = '#80c41c';
-                      borderColor = '#80c41c';
+                      backgroundColor = '#80C41C';
+                      borderColor = '#80C41C';
                     } else {
-                      backgroundColor = '#0e6e8c';
-                      borderColor = '#0e6e8c';
+                      backgroundColor = '#FECF00';
+                      borderColor = '#FECF00';
                     }
 
                     return {
