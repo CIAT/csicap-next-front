@@ -304,13 +304,13 @@ const EventPage: NextPage = () => {
   };
 
   const eventsTotal = {
-    labels: ["Eventos Finalizados", "Eventos Programados", "Eventos sin Cerrar"],
+    labels: ["Eventos Finalizados", "Eventos sin Cerrar", "Eventos Programados"],
     datasets: [
       {
         label: "Event Status",
         data: eventStatusData, // Dynamically set the data here
-        backgroundColor: ["#80C41C", "#FECF00","#c84e42"],
-        hoverBackgroundColor: ["#80C41C", "#FECF00","#c84e42"],
+        backgroundColor: ["#80C41C","#c84e42","#FECF00"],
+        hoverBackgroundColor: ["#80C41C","#c84e42","#FECF00"],
       },
     ],
   };
