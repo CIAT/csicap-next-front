@@ -15,6 +15,7 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
+import {className} from "postcss-selector-parser";
 
 
 export default function DataCalendarResults() {
@@ -107,6 +108,7 @@ export default function DataCalendarResults() {
                     center: 'title',
                     right: ''
                   }}
+                  height='100%'
                   fixedWeekCount={false}
                   events={filteredEvents.map(event => {
                     const today = new Date();
@@ -125,6 +127,8 @@ export default function DataCalendarResults() {
                       backgroundColor = '#0e6e8c';
                       borderColor = '#0e6e8c';
                     }
+
+
 
                     return {
                       ...event,
