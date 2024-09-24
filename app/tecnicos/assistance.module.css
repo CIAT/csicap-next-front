@@ -28,7 +28,7 @@
 }
 
 .top_div {
-    padding: 0 10px;
+    padding: 10px 10px 0 10px;
     justify-content: center;
     width: 100vw;
     height: 32vh;
@@ -101,6 +101,7 @@
     }
 
     .bottom_div {
-        height: 89vh;
+        height: 85vh;
+        flex-direction: column;
     }
 }

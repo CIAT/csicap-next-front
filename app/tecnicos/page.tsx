@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { NextPage } from "next";
-import styles from "../assistance/assistance.module.css";
-import CardComponent from "@/components/assistance/card";
+import styles from "./assistance.module.css";
+import styleTechnical from "@/components/ui/card/CardBeneficiaries.module.css";
+import CardComponent from "@/components/ui/card/Card";
 import {
   Chart,
   ArcElement,
@@ -20,7 +20,7 @@ import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
-import { DataFormat, TecnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
+import { DataFormat, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
 import TechnicalController from "@/helpers/Component/Controller/TechnicalController";
 import {
   InputLabel,
@@ -117,8 +117,8 @@ function countOrganizations(data: DataFormat): { [key: string]: number } {
 
 const BeneficiariosPage: NextPage = () => {
 
-  const [events, setEvents] = useState<TecnicalBeneficiaries[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<TecnicalBeneficiaries[]>(
+  const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
     events
   );
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
@@ -315,131 +315,77 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-wrap">
-      <div className={styles.top_div}>
-        <CardComponent
-          title=""
-          header={
-            <div className={styles.top_card}>
+      <div className="w-full h-full flex flex-wrap">
+        {/* Card superior */}
+        <div className="w-full h-full flex flex-wrap">
+          <div className={styles.top_div}>
+            {/* Card: Total técnicos */}
+            <CardComponent title="Total técnicos" styles={styleTechnical}>
               <div className={styles.top_div_division}>
-                <label className={styles.header_width}>Total técnicos</label>
+                <label className={styles.top_card_label}>{totalData}</label>
+              </div>
+            </CardComponent>
+
+            {/* Card: Género */}
+            <CardComponent title="Género" styles={styleTechnical}>
+              <div className={styles.doughnut_chart}>
+                <Doughnut data={gender} options={config}/>
+              </div>
+            </CardComponent>
+
+            {/* Card: Nivel Educativo */}
+            <CardComponent title="Nivel Educativo" styles={styleTechnical}>
+              <div className={styles.doughnut_chart}>
+                <Doughnut data={educationalLevel} options={config2}/>
+              </div>
+            </CardComponent>
+
+            {/* Card: Etnia */}
+            <CardComponent title="Etnia" styles={styleTechnical}>
+              <div className={styles.doughnut_chart}>
+                <Doughnut data={etnia} options={config3}/>
+              </div>
+            </CardComponent>
+          </div>
+
+          {/* Sección inferior con gráficos adicionales */}
+          <div className={styles.bottom_div}>
+            <div className={styles.flex_container}>
+              <div className={styles.width}>
+                {/* Gráfico de Treemap */}
+                <ChartCardComponent title={treemapTitle} header={
+                  <FormControl sx={{m: 1, minWidth: 120}} size="small">
+                    <InputLabel id="filter-select-label">Filtrar</InputLabel>
+                    <Select
+                        labelId="filter-select-label"
+                        id="filter-select"
+                        value={selectedFilter}
+                        onChange={handleFilterChange}
+                        label="Filtrar"
+                    >
+                      <MenuItem value="crop">Cultivo</MenuItem>
+                      <MenuItem value="institution">Institución</MenuItem>
+                    </Select>
+                  </FormControl>
+                }>
+                  <ReactChart type="treemap" data={treeMap} options={options}/>
+                </ChartCardComponent>
               </div>
 
-              <div
-                style={{
-                  width: "1px", // Ancho del divisor
-                  height: "20px",
-                  backgroundColor: "#d1d1d1", // Color del divisor
-                  margin: "0 20px", // Espaciado alrededor del divisor
-                }}
-              ></div>
-
-              <div className={styles.top_div_division}>
-                <label className={styles.header_width}>Género</label>
+              <div className={styles.width}>
+                {/* Mapa de Colombia */}
+                <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
+                  <div className="w-full h-full">
+                    <MapComponent
+                        provinces={TechnicalController.extractProvinces(TechnicalController.transformToFormattedBeneficiary(filteredEvents))}
+                    />
+                  </div>
+                </CardComponent>
               </div>
-
-              <div
-                style={{
-                  width: "1px", // Ancho del divisor
-                  height: "20px",
-                  backgroundColor: "#d1d1d1", // Color del divisor
-                  margin: "0 20px", // Espaciado alrededor del divisor
-                }}
-              ></div>
-
-              <div className={styles.top_div_division}>
-                <label className={styles.header_width}>Nivel Educativo</label>
-              </div>
-
-              <div
-                style={{
-                  width: "1px", // Ancho del divisor
-                  height: "20px",
-                  backgroundColor: "#d1d1d1", // Color del divisor
-                  margin: "0 20px", // Espaciado alrededor del divisor
-                }}
-              ></div>
-
-              <div className={styles.top_div_division}>
-                <label className={styles.header_width}>Etnia</label>
-              </div>
-            </div>
-          }
-        >
-          <div className={styles.top_card}>
-            <div className={styles.total_assist}>
-              {/* <label>Total Asistencias</label> */}
-              <label className={styles.top_card_label}>{totalData}</label>
-            </div>
-            <div
-              style={{
-                width: "1px", // Ancho del divisor
-                height: "100%",
-                backgroundColor: "#d1d1d1", // Color del divisor
-                margin: "0 20px", // Espaciado alrededor del divisor
-              }}
-            ></div>
-            <div className={styles.top_div_division}>
-              <Doughnut data={gender} options={config} />
-            </div>
-            <div
-              style={{
-                width: "1px", // Ancho del divisor
-                height: "100%",
-                backgroundColor: "#d1d1d1", // Color del divisor
-                margin: "0 20px", // Espaciado alrededor del divisor
-              }}
-            ></div>
-            <div className={styles.top_div_division}>
-              <Doughnut data={educationalLevel} options={config2} />
-            </div>
-            <div
-              style={{
-                width: "1px", // Ancho del divisor
-                height: "100%",
-                backgroundColor: "#d1d1d1", // Color del divisor
-                margin: "0 20px", // Espaciado alrededor del divisor
-              }}
-            ></div>
-            <div className={styles.top_div_division}>
-              <Doughnut data={etnia} options={config3} />
             </div>
           </div>
-        </CardComponent>
-      </div>
-
-      <div className={styles.bottom_div}>
-        <div className={styles.width}>
-          <ChartCardComponent title={treemapTitle} header={
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="filter-select-label">Filtrar</InputLabel>
-              <Select
-                labelId="filter-select-label"
-                id="filter-select"
-                value={selectedFilter}
-                onChange={handleFilterChange}
-              >
-                <MenuItem value="crop">Cultivo</MenuItem>
-                <MenuItem value="institution">Institución</MenuItem>
-              </Select>
-            </FormControl>
-          }>
-            <ReactChart type="treemap" data={treeMap} options={options} />
-          </ChartCardComponent>
-        </div>
-        <div className={styles.width}>
-          <ChartCardComponent title="Tecnicos por Departamento" header={<></>}>
-            <div className="w-full h-full">
-              <MapComponent
-                //TODO: fix the error with the string on technical interface
-                //@ts-ignore
-                provinces={TechnicalController.extractProvinces(filteredEvents)}
-              />
-            </div>
-          </ChartCardComponent>
         </div>
       </div>
-    </div>
   );
 };
 
