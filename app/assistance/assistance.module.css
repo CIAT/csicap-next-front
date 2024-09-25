@@ -74,6 +74,12 @@
   height: 100%;
 }
 
+.div{
+  display: flex;
+  flex-wrap: wrap;
+  height: 100vh;
+}
+
 @media (max-width: 480px) {
   .bottom_div {
     display: flex;

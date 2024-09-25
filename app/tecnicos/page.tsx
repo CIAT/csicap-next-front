@@ -43,18 +43,15 @@ Chart.register(
 );
 
 const colores = [
-  "#0E6E8C",
-  "#80C41C",
-  "#C8A041",
   "#FECF00",
+  "#0E6E8C",
   "#D2D200",
   "#00BFB3",
   "#FAAF41",
-  "#FF6384",
-  "#36A2EB",
-  "#FFCE56",
-  "#4BC0C0",
-  "#9966FF"
+  "#569aaf",
+  "#80C41C",
+  "#C8A041",
+  "#669d16",
 ];
 
 function countTotalRecords(data: { data: object }[]): number {
@@ -125,7 +122,6 @@ const BeneficiariosPage: NextPage = () => {
     events
   );
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
-  const [selectedEvent, setSelectedEvent] = useState<TechnicalBeneficiaries | null>(null);
   const [provinceState, setProvinceState] = useState<string[]>([]);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
