@@ -101,7 +101,7 @@
     }
 
     .bottom_div {
-        height: 85vh;
+        height: 100%;
         flex-direction: column;
     }
 }
