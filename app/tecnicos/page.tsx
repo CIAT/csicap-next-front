@@ -324,7 +324,7 @@ const BeneficiariosPage: NextPage = () => {
         <div className="w-full h-full flex flex-wrap">
           <div className={styles.top_div}>
             {/* Card: Total técnicos */}
-            <CardComponent title="Total técnicos" styles={styleTechnical}>
+            <CardComponent title="Total técnicos registrados" styles={styleTechnical}>
               <div className={styles.top_div_division}>
                 <label className={styles.top_card_label}>{totalData}</label>
               </div>
