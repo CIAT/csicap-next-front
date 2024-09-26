@@ -57,26 +57,29 @@ ChartJS.register(
   TreemapElement
 );
 
-  // Predefined list of colors
-  const colors = [
-    "rgba(255, 99, 132, 0.5)",
-    "rgba(54, 162, 235, 0.5)",
-    "rgba(75, 192, 192, 0.5)",
-    "rgba(153, 102, 255, 0.5)",
-    "rgba(255, 205, 86, 0.5)",
-    "rgba(255, 159, 64, 0.5)",
-    "rgba(39, 174, 96, 0.5)"
-  ];
+const colors = [
+  "#FECF00",
+  "#D2D200",
+  "#00BFB3",
+  "#FAAF41",
+  "#C8A041",
+  "#80C41C",
+  "#669d16",
+  "#0E6E8C",
+  "#569aaf",
+];
 
-  const borderColors = [
-    "rgba(255, 99, 132, 1)",
-    "rgba(54, 162, 235, 1)",
-    "rgba(75, 192, 192, 1)",
-    "rgba(153, 102, 255, 1)",
-    "rgba(255, 205, 86, 1)",
-    "rgba(255, 159, 64, 1)",
-    "rgba(39, 174, 96, 1)"
-  ];
+const borderColors = [
+  "#FECF00",
+  "#D2D200",
+  "#00BFB3",
+  "#FAAF41",
+  "#C8A041",
+  "#80C41C",
+  "#669d16",
+  "#0E6E8C",
+  "#569aaf",
+];
 
 async function getAssistanceData(): Promise<Assistance[]> {
   try {
@@ -101,31 +104,6 @@ async function getAssistanceData(): Promise<Assistance[]> {
   }
 }
 
-const role = {
-  labels: ["Ingeniería", "Docencia", "Administración", "Salud", "Arte"],
-  datasets: [
-    {
-      label: "Ocupaciones",
-      data: [28, 32, 15, 20, 10],
-      backgroundColor: [
-        "rgba(255, 99, 132, 0.5)", // Ingeniería
-        "rgba(54, 162, 235, 0.5)", // Docencia
-        "rgba(75, 192, 192, 0.5)", // Administración
-        "rgba(153, 102, 255, 0.5)", // Salud
-        "rgba(255, 205, 86, 0.5)", // Arte
-      ],
-      borderColor: [
-        "rgba(255, 99, 132, 1)", // Ingeniería
-        "rgba(54, 162, 235, 1)", // Docencia
-        "rgba(75, 192, 192, 1)", // Administración
-        "rgba(153, 102, 255, 1)", // Salud
-        "rgba(255, 205, 86, 1)", // Arte
-      ],
-      borderWidth: 1,
-    },
-  ],
-};
-
 const data = {
   datasets: [
     {
@@ -141,8 +119,7 @@ const data = {
       key: "value",
       groups: ["name"],
       backgroundColor: (ctx: { dataIndex: number }) => {
-        const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
-        return colors[ctx.dataIndex % colors.length];
+        return colors[ctx.dataIndex % colors.length]; // Reuse colors array
       },
       borderColor: "rgba(0,0,0,0.1)",
     },
@@ -367,7 +344,7 @@ const AssistancePage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
+    <div className={styles.div}>
       <div className={styles.top_div}>
         <CardComponent
           title=""

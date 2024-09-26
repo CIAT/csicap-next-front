@@ -23,7 +23,7 @@ const options = [
 const Filter: NextPage = () => {
   return (
     <div className="w-full">
-      <Select label="Favorite Animal" placeholder="Select an animal" selectionMode="multiple" className="max-w-xs">
+      <Select label="Reportes" placeholder="Elije un reporte" selectionMode="single" className="max-w-xs">
         {options.map((option) => {
           return (
             <SelectItem key={option.key}>

@@ -19,7 +19,7 @@ const PreviewCard: NextPage<CardComponentProps> = ({children}) =>{
 
     return(
         <div className={styles.preview_card}>
-        <Card className="w-full h-full">
+        <Card>
           <Divider />
           <CardBody>
             <div className="flex w-full h-full items-center" >
