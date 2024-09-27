@@ -30,10 +30,10 @@ const Header = () => {
       </div>
       <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
         <ul>
-          {/* <li className={styles.header_nav_item}>
+          <li className={styles.header_nav_item}>
             <Link href="/events" onClick={closeMenu}>Eventos</Link>
           </li>
-          <li className={styles.header_nav_item}>
+          {/*<li className={styles.header_nav_item}>
             <Link href="/assistance" onClick={closeMenu}>Assistencia</Link>
           </li>
           <li className={styles.header_nav_item}>
