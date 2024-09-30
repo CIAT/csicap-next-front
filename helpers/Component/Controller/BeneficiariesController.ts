@@ -11,20 +11,21 @@ class BeneficiariesController {
         return data.map((item: DataFormat) => ({
             ...item, // Extraer los datos de la propiedad `data`
             gremio: item.gremio,
-            sexo: item.sexo,
+            sexo: item.gen_name,
             etnia: item.etnia,
             propiedad: item.propiedad,
             produccion: item.produccion,
             edad: item.edad,
-            cultivo1: item.cultivo1,
-            cultivo2: item.cultivo2
+            cultivo1: item.pr_primary_crop,
+            cultivo2: item.pr_secundary_crop,
+            province: item.pr_dpto
         }));
     }
 
-    // static extractProvinces(events: DataFormat[]): string[] {
-    //     const provinces = events.map(event => event.province);
-    //     return Array.from(new Set(provinces));
-    // }
+    static extractProvinces(events: DataFormat[]): string[] {
+        const provinces = events.map(event => event.pr_dpto);
+        return Array.from(new Set(provinces));
+    }
 
     static filterEventsByCrop(events: DataFormat[], crop: string): DataFormat[] {
         if (crop === "") {
