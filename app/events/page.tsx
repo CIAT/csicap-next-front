@@ -375,7 +375,7 @@ const EventPage: NextPage = () => {
           },
           label: function (tooltipItem: any) {
             const index = tooltipItem.dataIndex;
-            return `${shortenedLabels[index]}: ${tooltipItem.raw}`; // Show shortened label in the tooltip
+            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
           },
         },
       },
@@ -390,7 +390,7 @@ const EventPage: NextPage = () => {
         display: false,
       },
       tooltip: {
-        enabled: true,
+        enabled: false,
         callbacks: {
           title: function() {
             return '';
