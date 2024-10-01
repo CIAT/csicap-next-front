@@ -292,8 +292,8 @@ const EventPage: NextPage = () => {
         borderWidth: 0,
         labels: {
           display: true,
-          align: "center",	
-          position: "top",
+          align: "center" as const,	
+          position: "top" as const,
           color: "white",
           formatter: (ctx: any) => {
             console.log(ctx);
