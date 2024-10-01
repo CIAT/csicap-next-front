@@ -16,6 +16,7 @@ import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
 import {className} from "postcss-selector-parser";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 
 export default function DataCalendarResults() {
@@ -148,7 +149,7 @@ export default function DataCalendarResults() {
           </div>
         </>
       ) : dataCalendarResp === 0 ? (
-        "Loading..."
+        <LoadingAnimation/>
       ) : (
         "Ups! something went wrong, try later"
       )},

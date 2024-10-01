@@ -26,6 +26,8 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { wrap } from "module";
+import LoadingAnimation from "@/components/loadingAnimation";
+import { callback } from "chart.js/helpers";
 
 interface Event {
   date: string;
@@ -333,28 +335,10 @@ const EventPage: NextPage = () => {
       {
         label: "Tipo de participantes",
         data: guestTypeData,
-        backgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array
-        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array for hover
+        backgroundColor: colors.slice(0, guestTypeLabels.length), 
+        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length),
       },
     ],
-  };
-
-  const config = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          boxWidth: 10,
-          padding: 3,
-          font: {
-            size: 10,
-          },
-          usePointStyle: true,
-        },
-        position: "bottom" as const,
-      },
-    },
   };
 
   const config2 = {
@@ -366,7 +350,7 @@ const EventPage: NextPage = () => {
           boxWidth: 10,
           padding: 3,
           font: {
-            size: 7.5,
+            size: 8,
           },
           usePointStyle: true,
         },
@@ -374,6 +358,9 @@ const EventPage: NextPage = () => {
       },
       tooltip: {
         callbacks: {
+          title: function() {
+            return '';
+          },
           label: function (tooltipItem: any) {
             const index = tooltipItem.dataIndex;
             return `${shortenedLabels[index]}: ${tooltipItem.raw}`; // Show shortened label in the tooltip
@@ -393,6 +380,9 @@ const EventPage: NextPage = () => {
       tooltip: {
         enabled: true,
         callbacks: {
+          title: function() {
+            return '';
+          },
           label: (context: any) => {
             const data = context.dataset.tree[context.dataIndex];
             return `${data.name}: ${data.value}`;
@@ -446,7 +436,7 @@ const EventPage: NextPage = () => {
           {treemapData.length > 0 ? (
             <ReactChart type="treemap" data={treemapChartData} options={options} />
           ) : (
-            <div className="flex justify-center items-center h-full">Seleccione un filtro para ver los datos</div>
+            <LoadingAnimation/>
           )}
         </ChartCardComponent>
       </div>
@@ -454,22 +444,38 @@ const EventPage: NextPage = () => {
       <div className={styles.card_container}>
         <CardComponent title="Total Eventos">
           <div className="w-full h-full">
-            <Doughnut data={eventsTotal} options={config} />
+            {allEventData.length > 0 ? (
+              <Doughnut data={eventsTotal} options={config2} />
+            ) : (
+              <LoadingAnimation/>
+            )}
           </div>
         </CardComponent>
         <CardComponent title="Ejes por evento">
           <div className="w-full h-full">
-            <Doughnut data={ejesChartData} options={config2} />
+          {allEventData.length > 0 ? (
+              <Doughnut data={ejesChartData} options={config2} />
+            ) : (
+              <LoadingAnimation/>
+            )}
           </div>
         </CardComponent>
         <CardComponent title="Tipo de Participantes por evento">
           <div className="w-full h-full">
-            <Doughnut data={guestTypesChartData} options={config} />
+            {allEventData.length > 0 ? (
+              <Doughnut data={guestTypesChartData} options={config2} />
+            ) : (
+              <LoadingAnimation/>
+            )}
           </div>
         </CardComponent>
         <CardComponent title="Instituciones participantes">
           <div className="w-full h-full">
-            <Bar data={institutionsChartData} options={barChartOptions} />
+          {allEventData.length > 0 ? (
+              <Bar data={institutionsChartData} options={barChartOptions} />
+            ) : (
+              <LoadingAnimation/>
+            )}
           </div>
         </CardComponent>
       </div>
