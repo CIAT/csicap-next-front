@@ -288,6 +288,18 @@ const EventPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length]; // Reuse colors array
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center",	
+          position: "top",
+          color: "white",
+          formatter: (ctx: any) => {
+            console.log(ctx);
+            return `${ctx.raw.g}: ${ctx.raw.v}`;
+          }
+        }
       },
     ],
   };
