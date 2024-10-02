@@ -47,14 +47,14 @@ interface Event {
 }
 
 Chart.register(
-  Tooltip,
-  Legend,
-  ArcElement,
-  CategoryScale,
-  BarElement,
-  LinearScale,
-  TreemapController,
-  TreemapElement
+    Tooltip,
+    Legend,
+    ArcElement,
+    CategoryScale,
+    BarElement,
+    LinearScale,
+    TreemapController,
+    TreemapElement
 );
 
 const shortenedLabels = [
@@ -83,7 +83,7 @@ const colors = [
 
 async function getEventData(): Promise<{ data: Event[] }> {
   const response = await fetch(
-    "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
+      "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
   );
   const data = await response.json();
   return data;
@@ -189,7 +189,7 @@ const EventPage: NextPage = () => {
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [treemapData, setTreemapData] = useState<
-    { name: string; value: number }[]
+      { name: string; value: number }[]
   >([]);
   const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
 
@@ -205,7 +205,7 @@ const EventPage: NextPage = () => {
 
       // Calculate finished/in-progress events
       const { finishedEvents, inProgressEvents, programmedEvents } =
-        calculateEventStatus(dataset.data);
+          calculateEventStatus(dataset.data);
       setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
 
       // Calculate eje counts
@@ -288,8 +288,8 @@ const EventPage: NextPage = () => {
         borderWidth: 0,
         labels: {
           display: true,
-          align: "center" as "center", // Asegúrate de que el valor sea uno de los permitidos
-          position: "top",
+          align: "center" as const, // Asegúrate de que el valor sea uno de los permitidos
+          position: "top" as const,
           color: "white",
           formatter: (ctx: any) => {
             const data = ctx.raw;
@@ -382,27 +382,27 @@ const EventPage: NextPage = () => {
     },
   };
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      enabled: true,
-      callbacks: {
-        title: function () {
-          return "";
-        },
-        label: (context: any) => {
-          const data = context.raw;
-          return `${data.g}: ${data.v}`;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: (context: any) => {
+            const data = context.raw;
+            return `${data.g}: ${data.v}`;
+          },
         },
       },
     },
-  },
-};
+  };
 
   const barChartOptions = {
     responsive: true,
@@ -423,79 +423,79 @@ const options = {
   };
 
   return (
-    <div className={styles.event_page}>
-      <div className={styles.div}>
-        <ChartCardComponent
-          title="Numero de eventos por cultivos"
-          header={
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={selectedFilter}
-                onChange={handleFilterChange}
-                label="Filtrar"
-              >
-                <MenuItem value="crop">Cultivo</MenuItem>
-                <MenuItem value="ejes">Eje</MenuItem>
-                <MenuItem value="city">Lugar</MenuItem>
-                <MenuItem value="institution">Institución</MenuItem>
-              </Select>
-            </FormControl>
-          }
-        >
-          {treemapData.length > 0 ? (
-            <ReactChart
-              type="treemap"
-              data={treemapChartData}
-              options={options}
-            />
-          ) : (
-            <LoadingAnimation />
-          )}
-        </ChartCardComponent>
-      </div>
+      <div className={styles.event_page}>
+        <div className={styles.div}>
+          <ChartCardComponent
+              title="Numero de eventos por cultivos"
+              header={
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+                  <Select
+                      labelId="demo-select-small-label"
+                      id="demo-select-small"
+                      value={selectedFilter}
+                      onChange={handleFilterChange}
+                      label="Filtrar"
+                  >
+                    <MenuItem value="crop">Cultivo</MenuItem>
+                    <MenuItem value="ejes">Eje</MenuItem>
+                    <MenuItem value="city">Lugar</MenuItem>
+                    <MenuItem value="institution">Institución</MenuItem>
+                  </Select>
+                </FormControl>
+              }
+          >
+            {treemapData.length > 0 ? (
+                <ReactChart
+                    type="treemap"
+                    data={treemapChartData}
+                    options={options}
+                />
+            ) : (
+                <LoadingAnimation />
+            )}
+          </ChartCardComponent>
+        </div>
 
-      <div className={styles.card_container}>
-        <CardComponent title="Total Eventos">
-          <div className="w-full h-full">
-            {allEventData.length > 0 ? (
-              <Doughnut data={eventsTotal} options={config2} />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
-        <CardComponent title="Ejes por evento">
-          <div className="w-full h-full">
-            {allEventData.length > 0 ? (
-              <Doughnut data={ejesChartData} options={config2} />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
-        <CardComponent title="Tipo de Participantes por evento">
-          <div className="w-full h-full">
-            {allEventData.length > 0 ? (
-              <Doughnut data={guestTypesChartData} options={config2} />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
-        <CardComponent title="Instituciones participantes">
-          <div className="w-full h-full">
-            {allEventData.length > 0 ? (
-              <Bar data={institutionsChartData} options={barChartOptions} />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
+        <div className={styles.card_container}>
+          <CardComponent title="Total Eventos">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Doughnut data={eventsTotal} options={config2} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent title="Ejes por evento">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Doughnut data={ejesChartData} options={config2} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent title="Tipo de Participantes por evento">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Doughnut data={guestTypesChartData} options={config2} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent title="Instituciones participantes">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Bar data={institutionsChartData} options={barChartOptions} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+        </div>
       </div>
-    </div>
   );
 };
 
