@@ -21,7 +21,7 @@ import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import { useEffect, useState } from "react";
-import { EventsData } from "@/interfaces";
+import {EventsData, sectionStateData} from "@/interfaces";
 
 interface Assistance {
   data: {
@@ -343,6 +343,10 @@ const AssistancePage: NextPage = () => {
     ],
   };
 
+  const filterAssistants = (state: sectionStateData) => {
+
+  };
+
   return (
     <div className={styles.div}>
       <div className={styles.top_div}>
@@ -443,8 +447,9 @@ const AssistancePage: NextPage = () => {
           <ChartCardComponent title="Mapa Colombia" header={<></>}>
             <div className="w-full h-full">
               <MapComponent
-                provinces={CalendarController.extractProvinces(filteredEvents)}
-              />
+                polygons={CalendarController.extractProvinces(filteredEvents)}
+                data={{}}
+                filterData={(newState: sectionStateData) => filterAssistants(newState)}/>
             </div>
           </ChartCardComponent>
         </div>

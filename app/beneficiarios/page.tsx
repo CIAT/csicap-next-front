@@ -16,7 +16,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { useEffect, useState } from "react";
-import { EventsData } from "@/interfaces";
+import {EventsData, sectionStateData} from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import BeneficiariesRepository from "@/helpers/Component/Repository/BeneficiariesRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
@@ -278,6 +278,10 @@ const BeneficiariosPage: NextPage = () => {
     },
   };
 
+  const filterBeneficiaries = (state: sectionStateData) => {
+
+  };
+
   return (
     <div className="w-full h-full flex flex-wrap">
       <Tabs aria-label="Options">
@@ -331,7 +335,10 @@ const BeneficiariosPage: NextPage = () => {
                 <div className={styles.width}>
                   <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
-                      <MapComponent provinces={BeneficiariesController.extractProvinces(filteredEvents)} />
+                      <MapComponent
+                        polygons={BeneficiariesController.extractProvinces(filteredEvents)}
+                        data={{}}
+                        filterData={(newState: sectionStateData) => filterBeneficiaries(newState)}/>
                     </div>
                   </CardComponent>
                 </div>
@@ -391,7 +398,11 @@ const BeneficiariosPage: NextPage = () => {
                 <div className={styles.width}>
                   <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
-                      <MapComponent provinces={BeneficiariesController.extractProvinces(filteredEvents)} />
+                      <MapComponent
+                        polygons={BeneficiariesController.extractProvinces(filteredEvents)}
+                        data={{}}
+                        filterData={(newState: sectionStateData) => filterBeneficiaries(newState)}
+                      />
                     </div>
                   </CardComponent>
                 </div>

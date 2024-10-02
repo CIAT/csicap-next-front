@@ -9,4 +9,5 @@ export interface MapSelectInterface {
     setSelected: Function;
     atrName: string;
     id: string;
+    label: string;
 }

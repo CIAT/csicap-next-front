@@ -34,13 +34,13 @@ const Header = () => {
             <Link href="/events" onClick={closeMenu}>Eventos</Link>
           </li>
           <li className={styles.header_nav_item}>
-            <Link href="/assistance" onClick={closeMenu}>Assistencia</Link>
+            <Link href="/assistance" onClick={closeMenu}>Asistentes</Link>
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/beneficiarios" onClick={closeMenu}>Beneficiarios</Link>
           </li>
           <li className={styles.header_nav_item}>
-            <Link href="/tecnicos" onClick={closeMenu}>Tecnicos</Link>
+            <Link href="/tecnicos" onClick={closeMenu}>Técnicos</Link>
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>

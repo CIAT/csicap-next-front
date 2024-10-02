@@ -1,4 +1,3 @@
-// src/components/data/Map/MapComponent.tsx
 import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import style from "./map.module.css";
@@ -6,10 +5,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 
-// Add your Mapbox access token here
 mapboxgl.accessToken = "pk.eyJ1IjoiZXNwZXJhbnphb3JvemNvIiwiYSI6ImNsYm5ya3ZzNzA3aG4zb3FzY3Z0NTVuMm0ifQ.zzzCxKwH2AuC9jI-EsAdng";
 
-const MapComponent: React.FC<MapComponentProps> = ({ provinces }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data}) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapInitialized, setMapInitialized] = useState(false);
@@ -27,7 +25,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ provinces }) => {
         });
 
         map.on("load", () => {
-          MapController.highlightProvinces(map, provinces);
+          MapController.highlightPolygons(map, polygons, filterData, data);
         });
 
         mapRef.current = map;
@@ -37,13 +35,13 @@ const MapComponent: React.FC<MapComponentProps> = ({ provinces }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [mapInitialized, provinces]);
+  }, [mapInitialized, polygons, data]);
 
   useEffect(() => {
     if (mapInitialized && mapRef.current) {
-      MapController.highlightProvinces(mapRef.current, provinces);
+      MapController.highlightPolygons(mapRef.current, polygons, filterData, data);
     }
-  }, [provinces]);
+  }, [polygons, data]);
 
   return <div ref={mapContainerRef} id="map" className={style["mapContainer"]} />;
 };

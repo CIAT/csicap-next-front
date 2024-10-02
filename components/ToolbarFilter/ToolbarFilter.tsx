@@ -7,7 +7,7 @@ import { ToolbarFilterProps } from "@/interfaces/Components/ToolbarFilter";
 const ToolbarFilter: React.FC<ToolbarFilterProps> = ({
     axesState,
     cropState,
-    provinceState,
+    cityState,
     sectionState,
     setSectionState,
     filterEvents
@@ -30,7 +30,7 @@ const ToolbarFilter: React.FC<ToolbarFilterProps> = ({
                     setShowFilter={setShowFilter}
                     axesState={axesState}
                     cropState={cropState}
-                    provinceState={provinceState}
+                    cityState={cityState}
                     sectionState={sectionState}
                     setSectionState={setSectionState}
                 />

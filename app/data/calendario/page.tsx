@@ -15,8 +15,7 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
-import {className} from "postcss-selector-parser";
-
+import MapController from "@/helpers/Component/Controller/MapController";
 
 export default function DataCalendarResults() {
   const [events, setEvents] = useState<EventsData[]>([]);
@@ -29,15 +28,15 @@ export default function DataCalendarResults() {
   const [sectionState, setSectionState] = useState<sectionStateData>({
     axe: "",
     crop: "",
-    province: ""
+    city: ""
   });
   const [cropState, setCropState] = useState<string[]>([]);
   const [axesState, setAxesState] = useState<string[]>([]);
-  const [provinceState, setProvinceState] = useState<string[]>([]);
+  const [cityState, setCityState] = useState<string[]>([]);
+  const [counts, setCounts] = useState<Record<string, string>>({});
 
   const handleEventClick = (clickInfo: any) => {
-    console.log(clickInfo.event.extendedProps)
-    setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
+    setSelectedEvent(clickInfo.event.extendedProps);
     setModalIsOpen(true);
   };
 
@@ -49,20 +48,28 @@ export default function DataCalendarResults() {
   useEffect(() => {
     CalendarRepository.fetchEvents()
       .then((data: DataFormat) => {
-        const formattedEvents = CalendarController.formatEvents(data);
+        const formattedEvents = CalendarController.formatEvents(data).map(event => ({
+          ...event,
+          axe: event.eje.map(eje => eje.toLowerCase()),
+          crop: event.crop.map(crop => crop.toLowerCase()),
+          city: event.city.toLowerCase(),
+        }));
+
+        setCounts(MapController.updateCountEventsByCity(formattedEvents));
+
         const uniqueAxes = CalendarController.getUniqueAxes(formattedEvents);
         const uniqueCrop = CalendarController.getUniqueCrops(formattedEvents);
-        const uniqueProvinces = CalendarController.extractProvinces(formattedEvents);
+        const uniqueCities = CalendarController.extractCities(formattedEvents);
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
         setAxesState([...uniqueAxes]);
         setCropState([...uniqueCrop]);
-        setProvinceState([...uniqueProvinces]);
+        setCityState([...uniqueCities]);
         setDataCalendarResp(200);
       })
       .catch(error => {
         console.error("Error fetching events:", error);
-        setDataCalendarResp(-1); // Set error state
+        setDataCalendarResp(-1);
       });
   }, []);
 
@@ -71,12 +78,24 @@ export default function DataCalendarResults() {
   }, [sectionState]);
 
   const filterEvents = (state: sectionStateData) => {
-    let tempEvens: EventsData[] = [];
-    tempEvens = CalendarController.filterEventsByCrop(events, state.crop);
-    tempEvens = CalendarController.filterEventsByProvince(tempEvens, state.province);
-    tempEvens = CalendarController.filterEventsByAxe(tempEvens, state.axe);
+    let tempEvents: EventsData[] = [];
 
-    setFilteredEvents(tempEvens);
+    const normalizedState = {
+      axe: state.axe.toLowerCase(),
+      crop: state.crop.toLowerCase(),
+      city: state.city.toLowerCase(),
+    };
+
+    tempEvents = CalendarController.filterEventsByCrop(events, normalizedState.crop.toLowerCase());
+    tempEvents = CalendarController.filterEventsByCities(tempEvents, normalizedState.city.toLowerCase());
+    tempEvents = CalendarController.filterEventsByAxe(tempEvents, normalizedState.axe.toLowerCase());
+
+    setSectionState((prev: sectionStateData) => ({
+      ...prev,
+      city: normalizedState.city,
+    }));
+
+    setFilteredEvents(tempEvents);
   };
 
 
@@ -96,7 +115,7 @@ export default function DataCalendarResults() {
                     filterEvents={(newState: sectionStateData) => filterEvents(newState)}
                     axesState={axesState}
                     cropState={cropState}
-                    provinceState={provinceState}
+                    cityState={cityState}
                     sectionState={sectionState}
                     setSectionState={setSectionState}
                 />
@@ -128,8 +147,6 @@ export default function DataCalendarResults() {
                       borderColor = '#FECF00';
                     }
 
-
-
                     return {
                       ...event,
                       backgroundColor,
@@ -143,7 +160,11 @@ export default function DataCalendarResults() {
           </div>
           <div className={styles.card_container}>
             <ChartCardComponent title="Eventos por departamento" header={<></>}>
-              <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
+              <MapComponent
+                  data={counts}
+                  polygons={CalendarController.extractCities(filteredEvents).map(city => city.toLowerCase())}
+                  filterData={(newState: sectionStateData) => filterEvents(newState)}
+              />
             </ChartCardComponent>
           </div>
         </>
