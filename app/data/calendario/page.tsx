@@ -15,6 +15,9 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
+import {className} from "postcss-selector-parser";
+import LoadingAnimation from "@/components/loadingAnimation";
+
 import MapController from "@/helpers/Component/Controller/MapController";
 
 export default function DataCalendarResults() {
@@ -101,7 +104,7 @@ export default function DataCalendarResults() {
 
   return (
     <div className={styles.container}>
-      {dataCalendarResp === 200 ? (
+      { dataCalendarResp === 200 ? (
         <>
           <div className={styles.card_container}>
             <div className={styles.overview}>
@@ -169,12 +172,16 @@ export default function DataCalendarResults() {
           </div>
         </>
       ) : dataCalendarResp === 0 ? (
-        "Loading..."
+          <div className={styles.loading_container}>
+            <div className={styles.loading}>
+              <LoadingAnimation/>
+            </div>
+          </div>
       ) : (
-        "Ups! something went wrong, try later"
+          "Ups! something went wrong, try later"
       )},
       {
-        selectedEvent && (
+      selectedEvent && (
           <CalendarModal
             title={selectedEvent.name}
             show={modalIsOpen}

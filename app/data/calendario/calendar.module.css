@@ -29,6 +29,16 @@
   width: 100%;
 }
 
+.loading {
+  margin: auto;
+}
+
+.loading_container {
+  margin: auto;
+  height: 90vh;
+  display: flex;
+}
+
 .div {
   padding: 30px 30px 30px 5px;
   width: 50%;

@@ -26,6 +26,8 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { wrap } from "module";
+import LoadingAnimation from "@/components/loadingAnimation";
+import { callback } from "chart.js/helpers";
 
 interface Event {
   date: string;
@@ -191,7 +193,6 @@ const EventPage: NextPage = () => {
   >([]);
   const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
 
-
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
     setSelectedFilter(newFilter);
@@ -203,9 +204,8 @@ const EventPage: NextPage = () => {
       const dataset = await getEventData();
 
       // Calculate finished/in-progress events
-      const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(
-        dataset.data
-      );
+      const { finishedEvents, inProgressEvents, programmedEvents } =
+        calculateEventStatus(dataset.data);
       setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
 
       // Calculate eje counts
@@ -226,7 +226,6 @@ const EventPage: NextPage = () => {
     fetchAndProcessData();
   }, []);
 
-  
   useEffect(() => {
     async function fetchData() {
       const dataset = await getEventData();
@@ -236,7 +235,6 @@ const EventPage: NextPage = () => {
 
     fetchData();
   }, []);
-
 
   const initializeTreemapData = (data: Event[]) => {
     let filterData = countCrops(data); // Using "crop" as the default filter
@@ -286,6 +284,18 @@ const EventPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length]; // Reuse colors array
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as "center", // Asegúrate de que el valor sea uno de los permitidos
+          position: "top",
+          color: "white",
+          formatter: (ctx: any) => {
+            const data = ctx.raw;
+            return `${data.g}: ${data.v}`;
+          }
+        }
       },
     ],
   };
@@ -304,13 +314,17 @@ const EventPage: NextPage = () => {
   };
 
   const eventsTotal = {
-    labels: ["Eventos Finalizados", "Eventos sin Cerrar", "Eventos Programados"],
+    labels: [
+      "Eventos Finalizados",
+      "Eventos sin Cerrar",
+      "Eventos Programados",
+    ],
     datasets: [
       {
         label: "Event Status",
         data: eventStatusData, // Dynamically set the data here
-        backgroundColor: ["#80C41C","#c84e42","#FECF00"],
-        hoverBackgroundColor: ["#80C41C","#c84e42","#FECF00"],
+        backgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
+        hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
       },
     ],
   };
@@ -333,28 +347,10 @@ const EventPage: NextPage = () => {
       {
         label: "Tipo de participantes",
         data: guestTypeData,
-        backgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array
-        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array for hover
+        backgroundColor: colors.slice(0, guestTypeLabels.length),
+        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length),
       },
     ],
-  };
-
-  const config = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          boxWidth: 10,
-          padding: 3,
-          font: {
-            size: 10,
-          },
-          usePointStyle: true,
-        },
-        position: "bottom" as const,
-      },
-    },
   };
 
   const config2 = {
@@ -366,7 +362,7 @@ const EventPage: NextPage = () => {
           boxWidth: 10,
           padding: 3,
           font: {
-            size: 7.5,
+            size: 8,
           },
           usePointStyle: true,
         },
@@ -374,33 +370,39 @@ const EventPage: NextPage = () => {
       },
       tooltip: {
         callbacks: {
+          title: function () {
+            return "";
+          },
           label: function (tooltipItem: any) {
             const index = tooltipItem.dataIndex;
-            return `${shortenedLabels[index]}: ${tooltipItem.raw}`; // Show shortened label in the tooltip
+            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
           },
         },
       },
     },
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: (context: any) => {
-            const data = context.dataset.tree[context.dataIndex];
-            return `${data.name}: ${data.value}`;
-          },
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      enabled: true,
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: (context: any) => {
+          const data = context.raw;
+          return `${data.g}: ${data.v}`;
         },
       },
     },
-  };
+  },
+};
 
   const barChartOptions = {
     responsive: true,
@@ -444,9 +446,13 @@ const EventPage: NextPage = () => {
           }
         >
           {treemapData.length > 0 ? (
-            <ReactChart type="treemap" data={treemapChartData} options={options} />
+            <ReactChart
+              type="treemap"
+              data={treemapChartData}
+              options={options}
+            />
           ) : (
-            <div className="flex justify-center items-center h-full">Seleccione un filtro para ver los datos</div>
+            <LoadingAnimation />
           )}
         </ChartCardComponent>
       </div>
@@ -454,22 +460,38 @@ const EventPage: NextPage = () => {
       <div className={styles.card_container}>
         <CardComponent title="Total Eventos">
           <div className="w-full h-full">
-            <Doughnut data={eventsTotal} options={config} />
+            {allEventData.length > 0 ? (
+              <Doughnut data={eventsTotal} options={config2} />
+            ) : (
+              <LoadingAnimation />
+            )}
           </div>
         </CardComponent>
         <CardComponent title="Ejes por evento">
           <div className="w-full h-full">
-            <Doughnut data={ejesChartData} options={config2} />
+            {allEventData.length > 0 ? (
+              <Doughnut data={ejesChartData} options={config2} />
+            ) : (
+              <LoadingAnimation />
+            )}
           </div>
         </CardComponent>
         <CardComponent title="Tipo de Participantes por evento">
           <div className="w-full h-full">
-            <Doughnut data={guestTypesChartData} options={config} />
+            {allEventData.length > 0 ? (
+              <Doughnut data={guestTypesChartData} options={config2} />
+            ) : (
+              <LoadingAnimation />
+            )}
           </div>
         </CardComponent>
         <CardComponent title="Instituciones participantes">
           <div className="w-full h-full">
-            <Bar data={institutionsChartData} options={barChartOptions} />
+            {allEventData.length > 0 ? (
+              <Bar data={institutionsChartData} options={barChartOptions} />
+            ) : (
+              <LoadingAnimation />
+            )}
           </div>
         </CardComponent>
       </div>
