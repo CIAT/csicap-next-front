@@ -120,40 +120,62 @@ function calculateEventStatus(events: Event[]) {
 // Count occurrences of each "eje"
 function countEjes(events: Event[]) {
   const ejeCount: { [key: string]: number } = {};
+  let multiejeCount = 0;
 
   events.forEach((event) => {
-    event.eje.forEach((eje) => {
-      ejeCount[eje] = (ejeCount[eje] || 0) + 1;
-    });
+    if (event.eje.length >= 2) {
+      multiejeCount += 1;
+    } else {
+      event.eje.forEach((eje) => {
+        ejeCount[eje] = (ejeCount[eje] || 0) + 1;
+      });
+    }
   });
-
+  if (multiejeCount > 0) {
+    ejeCount["Multi-Ejes"] = multiejeCount;
+  }
   return ejeCount;
 }
 
 // Count occurrences of each "institution"
 function countInstitutions(events: Event[]) {
   const institutionCount: { [key: string]: number } = {};
+  let multiInstitutionCount = 0;
 
   events.forEach((event) => {
-    event.institution.forEach((institution) => {
-      institutionCount[institution] = (institutionCount[institution] || 0) + 1;
-    });
+    if (event.institution.length >= 2) {
+      multiInstitutionCount += 1;
+    } else {
+      event.institution.forEach((institution) => {
+        institutionCount[institution] =
+          (institutionCount[institution] || 0) + 1;
+      });
+    }
   });
-
+  if (multiInstitutionCount > 0) {
+    institutionCount["Multi-Institucional"] = multiInstitutionCount;
+  }
   return institutionCount;
 }
 
-// Count occurrences of each "guest_type"
-function countGuestTypes(events: Event[]) {
-  const guestTypeCount: { [key: string]: number } = {};
+function countCrop(events: Event[]) {
+  const cropCount: { [key: string]: number } = {};
+  let multicultivoCount = 0;
 
   events.forEach((event) => {
-    event.guess_type.forEach((guest) => {
-      guestTypeCount[guest] = (guestTypeCount[guest] || 0) + 1;
-    });
+    if (event.crop.length >= 2 || event.crop.includes("Todas")) {
+      multicultivoCount += 1;
+    } else {
+      event.crop.forEach((crop) => {
+        cropCount[crop] = (cropCount[crop] || 0) + 1;
+      });
+    }
   });
-
-  return guestTypeCount;
+  // Añadir el conteo de multicultivos al objeto cropCount
+  if (multicultivoCount > 0) {
+    cropCount["Multi-Cultivos"] = multicultivoCount;
+  }
+  return cropCount;
 }
 
 // Count occurrences for cities
@@ -167,17 +189,17 @@ function countCities(events: Event[]) {
   return cityCount;
 }
 
-// Count occurrences for crops
-function countCrops(events: Event[]) {
-  const cropCount: { [key: string]: number } = {};
+// Count occurrences of each "guest_type"
+function countGuestTypes(events: Event[]) {
+  const guestTypeCount: { [key: string]: number } = {};
 
   events.forEach((event) => {
-    event.crop.forEach((crop) => {
-      cropCount[crop] = (cropCount[crop] || 0) + 1;
+    event.guess_type.forEach((guest) => {
+      guestTypeCount[guest] = (guestTypeCount[guest] || 0) + 1;
     });
   });
 
-  return cropCount;
+  return guestTypeCount;
 }
 
 const EventPage: NextPage = () => {
@@ -237,7 +259,7 @@ const EventPage: NextPage = () => {
   }, []);
 
   const initializeTreemapData = (data: Event[]) => {
-    let filterData = countCrops(data); // Using "crop" as the default filter
+    let filterData = countCrop(data); // Usar countCrop en lugar de countCrops
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
       value: filterData[key],
@@ -250,7 +272,7 @@ const EventPage: NextPage = () => {
 
     switch (filter) {
       case "crop":
-        filterData = countCrops(data);
+        filterData = countCrop(data); // Usar countCrop en lugar de countCrops
         break;
       case "ejes":
         filterData = countEjes(data);
@@ -265,7 +287,7 @@ const EventPage: NextPage = () => {
         return;
     }
 
-    // Create treemap data
+    // Crear datos para el treemap
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
       value: filterData[key],
@@ -289,13 +311,15 @@ const EventPage: NextPage = () => {
         labels: {
           display: true,
           align: "center" as "center", // Asegúrate de que el valor sea uno de los permitidos
-          position: "top",
+          position: "top" as "top", // Ensure the value is one of the allowed types
           color: "white",
+          wrap: true,
           formatter: (ctx: any) => {
             const data = ctx.raw;
-            return `${data.g}: ${data.v}`;
-          }
-        }
+            const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+            return `${label}: ${data.v}`;
+          },
+        },
       },
     ],
   };
@@ -382,27 +406,28 @@ const EventPage: NextPage = () => {
     },
   };
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      enabled: true,
-      callbacks: {
-        title: function () {
-          return "";
-        },
-        label: (context: any) => {
-          const data = context.raw;
-          return `${data.g}: ${data.v}`;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const data = tooltipItem.raw;
+            const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+            return `${label}: ${data.v}`;
+          },
         },
       },
     },
-  },
-};
+  };
 
   const barChartOptions = {
     responsive: true,
