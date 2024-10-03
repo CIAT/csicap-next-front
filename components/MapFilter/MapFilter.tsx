@@ -4,21 +4,21 @@ import style from "./mapFilter.module.css";
 import {MapFilterProps} from "@/interfaces/Components/MapFilter";
 
 const MapFilter: React.FC<MapFilterProps> = ({
-    setShowFilter,
-    filterEvents,
-    axesState,
-    cropState,
-    provinceState,
-    sectionState,
-    setSectionState
-   }) => {
+                                                 setShowFilter,
+                                                 filterEvents,
+                                                 axesState,
+                                                 cropState,
+                                                 cityState,
+                                                 sectionState,
+                                                 setSectionState
+                                             }) => {
 
     const handleReset = () => {
         setSectionState(() => {
             const newState = {
                 axe: "",
                 crop: "",
-                province: ""
+                city: ""
             };
             filterEvents(newState);
             return newState;
@@ -56,6 +56,7 @@ const MapFilter: React.FC<MapFilterProps> = ({
                     setSelected={setSectionState}
                     atrName="axe"
                     id={"axe-filter"}
+                    label="eje"
                 />
                 <div className={style["select-title"]}>
                     <div>
@@ -71,21 +72,23 @@ const MapFilter: React.FC<MapFilterProps> = ({
                     setSelected={setSectionState}
                     atrName="crop"
                     id={"crop-filter"}
+                    label="cultivo"
                 />
                 <div className={style["select-title"]}>
                     <div>
                         Departamento
                     </div>
-                    <button className={style["select-clear"]} onClick={() => setSectionState(prev => ({ ...prev, province: "" }))}>
+                    <button className={style["select-clear"]} onClick={() => setSectionState(prev => ({ ...prev, city: "" }))}>
                         Clear
                     </button>
                 </div>
                 <MapSelect
-                    options={{values: provinceState, names: provinceState}}
-                    selected={sectionState.province}
+                    options={{values: cityState, names: cityState}}
+                    selected={sectionState.city}
                     setSelected={setSectionState}
-                    atrName="province"
-                    id={"province-filter"}
+                    atrName="city"
+                    id={"city-filter"}
+                    label="municipio"
                 />
             </div>
             <div className={style["popup-footer"]}>

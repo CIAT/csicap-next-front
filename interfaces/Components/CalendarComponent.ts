@@ -24,5 +24,5 @@ export interface DataFormat {
 export interface sectionStateData {
     axe: string;
     crop: string;
-    province: string;
+    city: string;
 }

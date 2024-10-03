@@ -21,7 +21,6 @@ import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import { useEffect, useState } from "react";
-import { EventsData } from "@/interfaces";
 import {
   FormControl,
   InputLabel,
@@ -31,6 +30,7 @@ import {
 } from "@mui/material";
 import { As } from "@nextui-org/react";
 import LoadingAnimation from "@/components/loadingAnimation";
+import {EventsData, sectionStateData} from "@/interfaces";
 
 interface Assistance {
   main_occupation: string;
@@ -224,7 +224,7 @@ const AssistancePage: NextPage = () => {
       "51+": 0,
       "N/N": 0, // For invalid or missing ages
     };
-  
+
     let occupationCount: { [key: string]: number } = {
       "Tecnico/profesional": 0,
       "Productor(a) agropecuario(a)": 0,
@@ -235,9 +235,9 @@ const AssistancePage: NextPage = () => {
     let menCount = 0;
     let womenCount = 0;
     let otherCount = 0;
-  
+
     const currentYear = new Date().getFullYear(); // Current year
-  
+
     allAssistanceData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
       const occupation = item?.main_occupation;
@@ -263,7 +263,7 @@ const AssistancePage: NextPage = () => {
       } else {
         occupationCount["Otro"]++; // Increment "Otro" for null/undefined occupations
       }
-  
+
       // Count age
       if (age !== null) {
         if (age >= 20 && age <= 25) {
@@ -288,7 +288,7 @@ const AssistancePage: NextPage = () => {
     setAgeStats(ageCount);
     setOccupationStats(occupationCount);
   }
-  
+
 
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
@@ -392,6 +392,10 @@ const AssistancePage: NextPage = () => {
     ],
   };
 
+  const filterAssistants = (state: sectionStateData) => {
+
+  };
+
   return (
     <div className={styles.div}>
       <div className="w-full h-full flex flex-wrap">
@@ -465,9 +469,12 @@ const AssistancePage: NextPage = () => {
 
         <div className={styles.width}>
           <ChartCardComponent title="Mapa Colombia" header={<></>}>
-            <MapComponent
-              provinces={CalendarController.extractProvinces(filteredEvents)}
-            />
+            <div className="w-full h-full">
+              <MapComponent
+                polygons={CalendarController.extractProvinces(filteredEvents)}
+                data={{}}
+                filterData={(newState: sectionStateData) => filterAssistants(newState)}/>
+            </div>
           </ChartCardComponent>
         </div>
       </div>

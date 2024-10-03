@@ -2,6 +2,10 @@ import { DataFormat, EventsData } from "@/interfaces";
 import dayjs from "dayjs";
 
 class CalendarController {
+    static removeAccents(input: string): string {
+        return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
     static getUniqueAxes(data: EventsData[]): string[] {
         const axes: string[] = data.flatMap(data => data.eje);
         return Array.from(new Set(axes));
@@ -37,25 +41,53 @@ class CalendarController {
         return Array.from(new Set(provinces));
     }
 
+    static extractCities(events: { city: string }[]): string[] {
+        const cities = events.map(event => event.city);
+        return Array.from(new Set(cities));
+    }
+
     static filterEventsByCrop(events: EventsData[], crop: string): EventsData[] {
         if (crop === "") {
             return events;
         }
-        return events.filter(event => event.crop.includes(crop));
+        const normalizedCrop = CalendarController.removeAccents(crop.toUpperCase());
+        return events.filter(event =>
+            event.crop.some(eventCrop =>
+                CalendarController.removeAccents(eventCrop.toUpperCase()) === normalizedCrop
+            )
+        );
     }
 
     static filterEventsByProvince(events: EventsData[], province: string): EventsData[] {
         if (province === "") {
             return events;
         }
-        return events.filter(event => event.province.includes(province));
+        const normalizedProvince = CalendarController.removeAccents(province.toUpperCase());
+        return events.filter(event =>
+            CalendarController.removeAccents(event.province.toUpperCase()) === normalizedProvince
+        );
+    }
+
+    static filterEventsByCities(events: EventsData[], city: string): EventsData[] {
+        if (city === "") {
+            return events;
+        }
+        const normalizedCity = CalendarController.removeAccents(city.toUpperCase());
+        return events.filter(event =>
+            CalendarController.removeAccents(event.city.toUpperCase()) === normalizedCity
+        );
     }
 
     static filterEventsByAxe(events: EventsData[], axe: string): EventsData[] {
         if (axe === "") {
             return events;
         }
-        return events.filter(event => event.eje.includes(axe));
+        const normalizedAxe = CalendarController.removeAccents(axe.toUpperCase());
+        return events.filter(event =>
+            event.eje.some(eventAxe =>
+                CalendarController.removeAccents(eventAxe.toUpperCase()) === normalizedAxe
+            )
+        );
     }
 }
 

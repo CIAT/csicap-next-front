@@ -30,6 +30,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { colors } from "@nextui-org/react";
+import {sectionStateData} from "@/interfaces";
 
 Chart.register(
   ArcElement,
@@ -314,6 +315,10 @@ const BeneficiariosPage: NextPage = () => {
     },
   };
 
+  const filterTechnicians = (state: sectionStateData) => {
+
+  };
+
   return (
       <div className="w-full h-full flex flex-wrap">
         {/* Card superior */}
@@ -377,8 +382,9 @@ const BeneficiariosPage: NextPage = () => {
                 <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
                   <div className="w-full h-full">
                     <MapComponent
-                        provinces={TechnicalController.extractProvinces(TechnicalController.transformToFormattedBeneficiary(filteredEvents))}
-                    />
+                     polygons={TechnicalController.extractProvinces(TechnicalController.transformToFormattedBeneficiary(filteredEvents))}
+                     data={{}}
+                     filterData={(newState: sectionStateData) => filterTechnicians(newState)}/>
                   </div>
                 </CardComponent>
               </div>

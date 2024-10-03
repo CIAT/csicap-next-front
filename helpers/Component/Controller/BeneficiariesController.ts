@@ -12,8 +12,8 @@ class BeneficiariesController {
             ...item, // Extraer los datos de la propiedad `data`
             gremio: item.gremio,
             sexo: item.gen_name,
-            etnia: item.etnia,
-            propiedad: item.propiedad,
+            etnia: item.pr_ethnic_group,
+            propiedad: item.type_property,
             produccion: item.produccion,
             edad: item.edad,
             cultivo1: item.pr_primary_crop,
