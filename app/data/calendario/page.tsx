@@ -148,7 +148,7 @@ export default function DataCalendarResults() {
                     />
                     {filtersApplied && (
                         <button onClick={resetFilters} className={`${styles.button} ${styles.reset_button}`}>
-                          Resetear
+                          Restaurar
                         </button>
                     )}
                   </div>

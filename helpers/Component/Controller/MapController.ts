@@ -92,15 +92,15 @@ class MapController {
                         const tooltipWidth = tooltip.offsetWidth;
                         const tooltipHeight = tooltip.offsetHeight;
 
-                        let left = e.point.x - 30;
-                        let top = e.point.y - 45;
+                        let left = e.point.x - 10;
+                        let top = e.point.y - 60;
 
                         if (left + tooltipWidth > mapWidth) {
-                            left = mapWidth - tooltipWidth - 30;
+                            left = mapWidth - tooltipWidth - 10;
                         }
 
                         if (top + tooltipHeight > mapHeight) {
-                            top = mapHeight - tooltipHeight - 45;
+                            top = mapHeight - tooltipHeight - 60;
                         }
 
                         tooltip.style.left = `${left}px`;
