@@ -1,8 +1,12 @@
 import colombiaGeoJSONByCities from "@/components/maps/ColombiaDepartments.json";
 import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
+import filter from "@/components/reports/Filter";
+import mapboxgl from "mapbox-gl";
 
 class MapController {
+    static selectedCity: string | null = null;
+
     static removeAccents(input: string): string {
         return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     }
@@ -14,16 +18,20 @@ class MapController {
 
     static highlightPolygons(map: mapboxgl.Map, polygons: string[], filterEvents: (newState: sectionStateData) => void, counts: Record<string, string>) {
         let hoveredStateId: number | string | null = null;
-        const tooltip = document.createElement('div');
-        tooltip.classList.add(style.tooltip);
-        tooltip.id = 'map-tooltip';
-        tooltip.style.position = 'absolute';
-        tooltip.style.backgroundColor = '#fff';
-        tooltip.style.padding = '5px';
-        tooltip.style.borderRadius = '5px';
-        tooltip.style.display = 'none';
-        tooltip.style.pointerEvents = 'none';
-        map.getContainer().appendChild(tooltip);
+        let tooltip = document.getElementById('map-tooltip');
+
+        if(!tooltip){
+            tooltip = document.createElement('div');
+            tooltip.classList.add(style.tooltip);
+            tooltip.id = 'map-tooltip';
+            tooltip.style.position = 'absolute';
+            tooltip.style.backgroundColor = '#fff';
+            tooltip.style.padding = '5px';
+            tooltip.style.borderRadius = '5px';
+            tooltip.style.display = 'none';
+            tooltip.style.pointerEvents = 'none';
+            map.getContainer().appendChild(tooltip);
+        }
 
         const provinceFeatures = polygons.map(polygonName => {
             return colombiaGeoJSONByCities.features.find((feature: any) =>
@@ -141,11 +149,24 @@ class MapController {
 
             map.on('click', 'highlightPolygons-fill', (e: any) => {
                 const clickedCity = e.features[0].properties.mpio_cnmbr;
-                filterEvents({
+                const filterObject = {
                     axe: "",
                     crop: "",
-                    city: clickedCity
-                });
+                    city: ""
+                };
+
+                if(MapController.selectedCity === clickedCity){
+                    filterEvents(filterObject);
+                    MapController.resetSelectedCity();
+                    MapController.cleanMap(map);
+                    return;
+                }
+
+                MapController.cleanMap(map);
+                filterObject.city = clickedCity;
+                filterEvents(filterObject);
+                MapController.selectedCity = clickedCity;
+                MapController.highlightPolygons(map, [clickedCity], filterEvents, counts);
             });
             return;
         }
@@ -168,6 +189,18 @@ class MapController {
             }
 
             console.log("No provinces found to highlight.");
+        }
+    }
+
+    static resetSelectedCity() {
+        MapController.selectedCity = null;
+    }
+
+    static cleanMap(map: mapboxgl.Map): void {
+        if (map.getSource("highlightPolygons")) {
+            map.removeLayer("highlightPolygons-fill");
+            map.removeLayer("highlightPolygons-outline");
+            map.removeSource("highlightPolygons");
         }
     }
 

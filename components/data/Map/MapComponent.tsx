@@ -24,6 +24,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data}
           zoom: 5
         });
 
+        // disable map rotation using right click + drag
+        map.dragRotate.disable();
+        // disable map rotation using touch rotation gesture
+        map.touchZoomRotate.disableRotation();
+
         map.on("load", () => {
           MapController.highlightPolygons(map, polygons, filterData, data);
         });
