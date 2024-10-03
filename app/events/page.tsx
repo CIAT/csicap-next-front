@@ -419,9 +419,10 @@ const options = {
         title: function () {
           return "";
         },
-        label: (context: any) => {
-          const data = context.raw;
-          return `${data.g}: ${data.v}`;
+        label: function (tooltipItem: any) {
+          const data = tooltipItem.raw;
+          const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+          return `${label}: ${data.v}`;
         },
       },
     },
