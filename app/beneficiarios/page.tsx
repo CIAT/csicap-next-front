@@ -16,7 +16,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { useEffect, useState } from "react";
-import {EventsData, sectionStateData} from "@/interfaces";
+import { EventsData, sectionStateData } from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import BeneficiariesRepository from "@/helpers/Component/Repository/BeneficiariesRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
@@ -65,22 +65,22 @@ function countGenders(data: { gen_name: string }[]) {
   return genderCount;
 }
 
-function countTypeOfHousing(data: { propiedad: string }[]) {
+function countTypeOfHousing(data: { type_property: string }[]) {
   const housingCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const house = item.propiedad;
+    const house = item.type_property;
     housingCount[house] = (housingCount[house] || 0) + 1;
   });
 
   return housingCount;
 }
 
-function countEthnicity(data: { etnia: string }[]) {
+function countEthnicity(data: { pr_ethnic_group: string }[]) {
   const ethnicityCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const ethnicity = item.etnia;
+    const ethnicity = item.pr_ethnic_group;
     ethnicityCount[ethnicity] = (ethnicityCount[ethnicity] || 0) + 1;
   });
 
@@ -96,6 +96,17 @@ function countOrganizations(data: DataFormat[]): { [key: string]: number } {
   });
 
   return organizationCount;
+}
+
+function countPrimaryCrop(data: DataFormat[]): { [key: string]: number } {
+  const primaryCropCount: { [key: string]: number } = {};
+
+  data.forEach(item => {
+    const primaryCrop = item.pr_primary_crop;
+    primaryCropCount[primaryCrop] = (primaryCropCount[primaryCrop] || 0) + 1;
+  });
+
+  return primaryCropCount;
 }
 
 const BeneficiariosPage: NextPage = () => {
@@ -140,13 +151,13 @@ const BeneficiariosPage: NextPage = () => {
         setEthnicityLabel(Object.keys(ethnicityCount));
         setEthnicityNumber(Object.values(ethnicityCount));
 
-        let organizationData: { [key: string]: number };
+        let primaryCropData: { [key: string]: number };
 
-        organizationData = countOrganizations(data)
+        primaryCropData = countPrimaryCrop(data)
 
-        const treemapData = Object.keys(organizationData).map((key) => ({
+        const treemapData = Object.keys(primaryCropData).map((key) => ({
           name: key,
-          value: organizationData[key],
+          value: primaryCropData[key],
         }));
 
         setTreemapData(treemapData);
@@ -338,7 +349,7 @@ const BeneficiariosPage: NextPage = () => {
                       <MapComponent
                         polygons={BeneficiariesController.extractProvinces(filteredEvents)}
                         data={{}}
-                        filterData={(newState: sectionStateData) => filterBeneficiaries(newState)}/>
+                        filterData={(newState: sectionStateData) => filterBeneficiaries(newState)} />
                     </div>
                   </CardComponent>
                 </div>
