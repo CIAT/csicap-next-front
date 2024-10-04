@@ -25,10 +25,8 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { wrap } from "module";
 import LoadingAnimation from "@/components/loadingAnimation";
-import { callback } from "chart.js/helpers";
-
+import { parseISO } from 'date-fns';
 interface Event {
   date: string;
   eje: string[];
@@ -44,6 +42,7 @@ interface Event {
   crop: string[];
   email: string | null;
   event_objective: string;
+  event_id: string;
 }
 
 Chart.register(
@@ -95,21 +94,24 @@ function calculateEventStatus(events: Event[]) {
   let inProgressEvents = 0;
   let programmedEvents = 0;
   const currentDate = new Date();
-
+  currentDate.setHours(0, 0, 0, 0);
+  
   events.forEach((event) => {
-    const eventEndDate = new Date(event.datesEnd);
+    const eventEndDate = parseISO(event.datesEnd);
 
     if (event.form_state === "0") {
       // If form_state is 0, count it as finished
       finishedEvents += 1;
     } else if (event.form_state === "1") {
       // If form_state is 1, check the date
-      if (eventEndDate < currentDate) {
-        // If end date has passed, count it as in-progress
-        inProgressEvents += 1;
-      } else {
-        // If end date hasn't passed, count it as programmed
+      if (eventEndDate >= currentDate){
         programmedEvents += 1;
+      } else {
+        console.log(event.event_id);
+        console.log(eventEndDate);
+        console.log(currentDate);
+        // eventos sin cerrar
+        inProgressEvents += 1;
       }
     }
   });
@@ -214,6 +216,7 @@ const EventPage: NextPage = () => {
       { name: string; value: number }[]
   >([]);
   const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
+  const [fontSize, setFontSize] = useState(10); // Default font size
 
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
@@ -257,6 +260,32 @@ const EventPage: NextPage = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const getFontSize = () => {
+      if (window.innerWidth > 2000) {
+        return 12; // Larger font size for larger screens
+      } else {
+        return 10; // Default font size
+      }
+    };
+
+    const handleResize = () => {
+      setFontSize(getFontSize());
+    };
+
+    // Set initial font size
+    setFontSize(getFontSize());
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
 
   const initializeTreemapData = (data: Event[]) => {
     let filterData = countCrop(data); // Usar countCrop en lugar de countCrops
@@ -386,7 +415,7 @@ const EventPage: NextPage = () => {
           boxWidth: 10,
           padding: 3,
           font: {
-            size: 8,
+            size: fontSize,
           },
           usePointStyle: true,
         },
@@ -405,6 +434,7 @@ const EventPage: NextPage = () => {
       },
     },
   };
+
 
 const options = {
   responsive: true,

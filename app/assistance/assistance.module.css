@@ -134,4 +134,9 @@
     width: 100%;
     height: 350px;
   }
+
+  .top_div {
+    flex-direction: column;
+    height: auto;
+  }
 }

@@ -422,7 +422,6 @@ const AssistancePage: NextPage = () => {
 
   return (
     <div className={styles.div}>
-      <div className="w-full h-full flex flex-wrap">
         <div className={styles.top_div}>
           {/* Card: Total asistentes */}
           <CardComponent title="Total asistentes" styles={styleTechnical}>
@@ -462,7 +461,6 @@ const AssistancePage: NextPage = () => {
             )}
           </CardComponent>
         </div>
-      </div>
 
       <div className={styles.bottom_div}>
         <div className={styles.width}>
@@ -487,7 +485,7 @@ const AssistancePage: NextPage = () => {
             }
           >
             {/* <ReactChart type="treemap" data={treeData} options={options} /> */}
-            <label>Loading...</label>
+            <LoadingAnimation/>
           </ChartCardComponent>
         </div>
 
