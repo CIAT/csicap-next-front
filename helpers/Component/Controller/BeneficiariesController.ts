@@ -1,7 +1,6 @@
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
 
 class BeneficiariesController {
-
     static getUniqueCrops(data: DataFormat[]): string[] {
         const crops: string[] = data.flatMap(data => data.produccion);
         return Array.from(new Set(crops));

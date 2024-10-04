@@ -46,6 +46,11 @@ class CalendarController {
         return Array.from(new Set(cities));
     }
 
+    static extractProvincesAndCities(events: { province: string, city: string}[]): string[][]{
+        const provincesAndCities = events.map(event => [event.province, event.city]);
+        return Array.from(new Set(provincesAndCities));
+    }
+
     static filterEventsByCrop(events: EventsData[], crop: string): EventsData[] {
         if (crop === "") {
             return events;

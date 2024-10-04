@@ -349,7 +349,7 @@ const BeneficiariosPage: NextPage = () => {
                       <MapComponent
                         polygons={BeneficiariesController.extractProvinces(filteredEvents)}
                         data={{}}
-                        filterData={(newState: sectionStateData) => filterBeneficiaries(newState)} />
+                      />
                     </div>
                   </CardComponent>
                 </div>
@@ -412,7 +412,6 @@ const BeneficiariosPage: NextPage = () => {
                       <MapComponent
                         polygons={BeneficiariesController.extractProvinces(filteredEvents)}
                         data={{}}
-                        filterData={(newState: sectionStateData) => filterBeneficiaries(newState)}
                       />
                     </div>
                   </CardComponent>

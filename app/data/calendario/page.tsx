@@ -15,10 +15,10 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
-import {className} from "postcss-selector-parser";
 import LoadingAnimation from "@/components/loadingAnimation";
 
 import MapController from "@/helpers/Component/Controller/MapController";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
 export default function DataCalendarResults() {
   const [events, setEvents] = useState<EventsData[]>([]);
@@ -38,7 +38,7 @@ export default function DataCalendarResults() {
   const [cropState, setCropState] = useState<string[]>([]);
   const [axesState, setAxesState] = useState<string[]>([]);
   const [cityState, setCityState] = useState<string[]>([]);
-  const [counts, setCounts] = useState<Record<string, string>>({});
+  const [counts, setCounts] = useState<NestedDictionary>({});
 
   const handleEventClick = (clickInfo: any) => {
     setSelectedEvent(clickInfo.event.extendedProps);
@@ -101,7 +101,7 @@ export default function DataCalendarResults() {
     }));
 
     if (normalizedState.city === '') {
-      MapController.resetSelectedCity();
+      MapController.resetSelectedProvinceAndCity();
     }
 
     setFilteredEvents(tempEvents);
@@ -120,7 +120,7 @@ export default function DataCalendarResults() {
       crop: "",
       city: ""
     });
-    MapController.resetSelectedCity();
+    MapController.resetSelectedProvinceAndCity();
     setFilteredEvents(events);
     setFiltersApplied(false);
   };
@@ -195,7 +195,7 @@ export default function DataCalendarResults() {
               <ChartCardComponent title="Eventos por departamento" header={<></>}>
                 <MapComponent
                     data={counts}
-                    polygons={CalendarController.extractCities(filteredEvents).map(city => city.toLowerCase())}
+                    polygons={CalendarController.extractProvincesAndCities(filteredEvents).map(element => element)}
                     filterData={(newState: sectionStateData) => filterEvents(newState)}
                 />
               </ChartCardComponent>

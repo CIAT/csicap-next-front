@@ -30,7 +30,10 @@ import {
 } from "@mui/material";
 import { As } from "@nextui-org/react";
 import LoadingAnimation from "@/components/loadingAnimation";
-import {EventsData, sectionStateData} from "@/interfaces";
+import {DataFormat, EventsData, sectionStateData} from "@/interfaces";
+import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
+import MapController from "@/helpers/Component/Controller/MapController";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
 interface Assistance {
   main_occupation: string;
@@ -84,6 +87,10 @@ async function getAssistanceData(): Promise<Assistance[]> {
   const data = await response.json();
   console.log("Assistance data:", data);
   return data;
+}
+
+async function getEventsData(): Promise<DataFormat> {
+  return CalendarRepository.fetchEvents();
 }
 
 // async function getAssistanceData(): Promise<Assistance[]> {
@@ -182,6 +189,8 @@ const AssistancePage: NextPage = () => {
   const [totalAssistants, setTotalAssistants] = useState<number>(); // State to hold total assistants
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(events);
+  const [counts, setCounts] = useState<NestedDictionary>({});
+
   const [genderStats, setGenderStats] = useState({
     men: 0,
     women: 0,
@@ -198,6 +207,25 @@ const AssistancePage: NextPage = () => {
   const [allAssistanceData, setAllAssistanceData] = useState<Assistance[]>([]);
 
   useEffect(() => {
+
+  }, []);
+
+  useEffect(() => {
+    CalendarRepository.fetchEvents()
+        .then((data: DataFormat) => {
+          const formattedEvents = CalendarController.formatEvents(data).map(event => ({
+            ...event,
+            city: event.city.toLowerCase(),
+          }));
+          setCounts(MapController.updateCountAssistantsByGender(formattedEvents));
+          console.log(counts)
+          setEvents(formattedEvents);
+          setFilteredEvents(formattedEvents);
+        })
+        .catch(error => {
+          console.error("Error fetching events:", error);
+        });
+
     async function fetchData() {
       const dataset = await getAssistanceData();
       setAllAssistanceData(dataset);
@@ -392,10 +420,6 @@ const AssistancePage: NextPage = () => {
     ],
   };
 
-  const filterAssistants = (state: sectionStateData) => {
-
-  };
-
   return (
     <div className={styles.div}>
       <div className="w-full h-full flex flex-wrap">
@@ -471,9 +495,9 @@ const AssistancePage: NextPage = () => {
           <ChartCardComponent title="Mapa Colombia" header={<></>}>
             <div className="w-full h-full">
               <MapComponent
-                polygons={CalendarController.extractProvinces(filteredEvents)}
-                data={{}}
-                filterData={(newState: sectionStateData) => filterAssistants(newState)}/>
+                polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
+                data={counts}
+              />
             </div>
           </ChartCardComponent>
         </div>

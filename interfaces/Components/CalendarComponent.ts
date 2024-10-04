@@ -4,6 +4,9 @@ export interface EventsData {
     name: string;
     province: string;
     responsable: string | null;
+    female_participants: string;
+    male_participants: string;
+    other_participants: string;
     city: string;
     crop: string[];
     eje: string[];

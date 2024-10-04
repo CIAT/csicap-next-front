@@ -30,7 +30,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data}
         map.touchZoomRotate.disableRotation();
 
         map.on("load", () => {
-          MapController.highlightPolygons(map, polygons, filterData, data);
+          MapController.highlightPolygons(map, polygons, data, filterData);
         });
 
         mapRef.current = map;
@@ -44,7 +44,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data}
 
   useEffect(() => {
     if (mapInitialized && mapRef.current) {
-      MapController.highlightPolygons(mapRef.current, polygons, filterData, data);
+      MapController.highlightPolygons(mapRef.current, polygons, data, filterData);
     }
   }, [polygons, data]);
 
