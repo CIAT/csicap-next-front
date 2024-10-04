@@ -108,8 +108,9 @@ class MapController {
 
                         let tooltipHtmlContent = `<strong>${e.features[0].properties.mpio_cnmbr}</strong>`;
 
-                        const cityName = String(e.features[0].properties.mpio_cnmbr).toLowerCase();
-
+                        const cityName = this.removeAccents(String(e.features[0].properties.mpio_cnmbr));
+                        console.log(counts)
+                        console.log(cityName)
                         if (counts && counts[cityName]) {
                             tooltipHtmlContent += `<br><strong>${counts[cityName]}</strong>`;
                         }
@@ -208,7 +209,7 @@ class MapController {
         const cityEventCounts: Record<string, string> = {};
 
         events.forEach(event => {
-            const city = event.city;
+            const city = this.removeAccents(event.city);
 
             if (cityEventCounts[city]) {
                 const currentCount = parseInt(cityEventCounts[city].replace(/\D/g, ''), 10);
@@ -218,7 +219,6 @@ class MapController {
 
             cityEventCounts[city] = 'Eventos: 1';
         });
-
         return cityEventCounts;
     }
 }
