@@ -347,7 +347,7 @@ const BeneficiariosPage: NextPage = () => {
                   <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
                       <MapComponent
-                        polygons={BeneficiariesController.extractProvinces(filteredEvents)}
+                        polygons={[]}
                         data={{}}
                       />
                     </div>
@@ -359,67 +359,67 @@ const BeneficiariosPage: NextPage = () => {
         </Tab>
 
         {/* Tab Cultivos Priorizados */}
-        <Tab key="cultivos" title="Cultivos Priorizados" className="w-full h-full flex flex-wrap">
-          <div className="w-full h-full flex flex-wrap">
-            {/* Card superior */}
-            <div className={styles.top_div}>
-              <CardComponent
-                title="Total Hectáreas"
-                styles={styleBeneficiaries}
-              >
-                <div className={styles.top_div_division}>
-                  <label className={styles.top_card_label}>9557</label>
-                </div>
-              </CardComponent>
-              <CardComponent
-                title="Género"
-                styles={styleBeneficiaries}
-              >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={sex} options={config} />
-                </div>
-              </CardComponent>
+        {/*<Tab key="cultivos" title="Cultivos Priorizados" className="w-full h-full flex flex-wrap">*/}
+        {/*  <div className="w-full h-full flex flex-wrap">*/}
+        {/*    /!* Card superior *!/*/}
+        {/*    <div className={styles.top_div}>*/}
+        {/*      <CardComponent*/}
+        {/*        title="Total Hectáreas"*/}
+        {/*        styles={styleBeneficiaries}*/}
+        {/*      >*/}
+        {/*        <div className={styles.top_div_division}>*/}
+        {/*          <label className={styles.top_card_label}>9557</label>*/}
+        {/*        </div>*/}
+        {/*      </CardComponent>*/}
+        {/*      <CardComponent*/}
+        {/*        title="Género"*/}
+        {/*        styles={styleBeneficiaries}*/}
+        {/*      >*/}
+        {/*        <div className={styles.doughnut_chart}>*/}
+        {/*          <Doughnut data={sex} options={config} />*/}
+        {/*        </div>*/}
+        {/*      </CardComponent>*/}
 
-              {/* Doughnut: Tipo de propiedad */}
-              <CardComponent
-                title="Tipo de propiedad"
-                styles={styleBeneficiaries}
-              >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={typeOfHousing} options={config2} />
-                </div>
-              </CardComponent>
-              {/* Doughnut: Etnia */}
-              <CardComponent
-                title="Etnia"
-                styles={styleBeneficiaries}
-              >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={etnia} options={config3} />
-                </div>
-              </CardComponent>
-            </div>
-            <div className={styles.bottom_div}>
-              <div className={styles.flex_container}>
-                <div className={styles.width}>
-                  <CardComponent title="TreeMap" styles={styleBeneficiaries}>
-                    <ReactChart type="treemap" data={data} options={options} />
-                  </CardComponent>
-                </div>
-                <div className={styles.width}>
-                  <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
-                    <div className="w-full h-full">
-                      <MapComponent
-                        polygons={BeneficiariesController.extractProvinces(filteredEvents)}
-                        data={{}}
-                      />
-                    </div>
-                  </CardComponent>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Tab>
+        {/*      /!* Doughnut: Tipo de propiedad *!/*/}
+        {/*      <CardComponent*/}
+        {/*        title="Tipo de propiedad"*/}
+        {/*        styles={styleBeneficiaries}*/}
+        {/*      >*/}
+        {/*        <div className={styles.doughnut_chart}>*/}
+        {/*          <Doughnut data={typeOfHousing} options={config2} />*/}
+        {/*        </div>*/}
+        {/*      </CardComponent>*/}
+        {/*      /!* Doughnut: Etnia *!/*/}
+        {/*      <CardComponent*/}
+        {/*        title="Etnia"*/}
+        {/*        styles={styleBeneficiaries}*/}
+        {/*      >*/}
+        {/*        <div className={styles.doughnut_chart}>*/}
+        {/*          <Doughnut data={etnia} options={config3} />*/}
+        {/*        </div>*/}
+        {/*      </CardComponent>*/}
+        {/*    </div>*/}
+        {/*    <div className={styles.bottom_div}>*/}
+        {/*      <div className={styles.flex_container}>*/}
+        {/*        <div className={styles.width}>*/}
+        {/*          <CardComponent title="TreeMap" styles={styleBeneficiaries}>*/}
+        {/*            <ReactChart type="treemap" data={data} options={options} />*/}
+        {/*          </CardComponent>*/}
+        {/*        </div>*/}
+        {/*        <div className={styles.width}>*/}
+        {/*          <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>*/}
+        {/*            <div className="w-full h-full">*/}
+        {/*              <MapComponent*/}
+        {/*                polygons={[]}*/}
+        {/*                data={{}}*/}
+        {/*              />*/}
+        {/*            </div>*/}
+        {/*          </CardComponent>*/}
+        {/*        </div>*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</Tab>*/}
       </Tabs>
     </div>
   );

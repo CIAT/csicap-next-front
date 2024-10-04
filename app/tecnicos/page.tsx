@@ -382,7 +382,7 @@ const BeneficiariosPage: NextPage = () => {
                 <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
                   <div className="w-full h-full">
                     <MapComponent
-                     polygons={TechnicalController.extractProvinces(TechnicalController.transformToFormattedBeneficiary(filteredEvents))}
+                     polygons={[]}
                      data={{}}
                      filterData={(newState: sectionStateData) => filterTechnicians(newState)}/>
                   </div>
