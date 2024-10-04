@@ -44,6 +44,7 @@ interface Event {
   crop: string[];
   email: string | null;
   event_objective: string;
+  event_id: string;
 }
 
 Chart.register(
@@ -104,12 +105,14 @@ function calculateEventStatus(events: Event[]) {
       finishedEvents += 1;
     } else if (event.form_state === "1") {
       // If form_state is 1, check the date
-      if (eventEndDate < currentDate) {
-        // If end date has passed, count it as in-progress
-        inProgressEvents += 1;
-      } else {
-        // If end date hasn't passed, count it as programmed
+      if (eventEndDate >= currentDate) {
+        // eventos programados
+        console.log(event.event_id);
+        console.log(event.datesEnd);
         programmedEvents += 1;
+      } else {
+        // eventos sin cerrar
+        inProgressEvents += 1;
       }
     }
   });
