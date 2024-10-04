@@ -21,6 +21,8 @@
     "chart.js": "^4.4.4",
     "chartjs-chart-treemap": "^2.3.1",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "framer-motion": "^11.3.28",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
