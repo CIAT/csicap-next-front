@@ -1,7 +1,7 @@
 .first_div {
-    padding: 20px 10px 0 20px;
     width: 50%;
-    height: 100%;
+    padding-top: 20px;
+    height: 100vh;
 }
 
 .second_div{
@@ -11,13 +11,13 @@
 }
 
 .preview_div {
-    padding-top: 20px;
-    height: 85%;
+    padding-top: 10px;
+    height: 90vh;
 }
 
 .filter_div {
     display: flex;
     align-items: center;
-    height: 10%;
+    height: 10vh;
     width: 100%;
 }

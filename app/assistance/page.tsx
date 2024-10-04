@@ -86,29 +86,6 @@ async function getAssistanceData(): Promise<Assistance[]> {
   return data;
 }
 
-// async function getAssistanceData(): Promise<Assistance[]> {
-//   try {
-//     const response = await fetch(
-//       "https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list"
-//     );
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-//     const json = await response.json();
-
-//     // Ensure the response contains the expected "data" array
-//     if (json && Array.isArray(json)) {
-//       return json;
-//     } else {
-//       console.log("API returned unexpected structure.");
-//       return [];
-//     }
-//   } catch (error) {
-//     console.error("Failed to fetch data:", error);
-//     return [];
-//   }
-// }
-
 const config = {
   responsive: true,
   maintainAspectRatio: false,
@@ -398,7 +375,6 @@ const AssistancePage: NextPage = () => {
 
   return (
     <div className={styles.div}>
-      <div className="w-full h-full flex flex-wrap">
         <div className={styles.top_div}>
           {/* Card: Total asistentes */}
           <CardComponent title="Total asistentes" styles={styleTechnical}>
@@ -438,7 +414,6 @@ const AssistancePage: NextPage = () => {
             )}
           </CardComponent>
         </div>
-      </div>
 
       <div className={styles.bottom_div}>
         <div className={styles.width}>
@@ -463,7 +438,7 @@ const AssistancePage: NextPage = () => {
             }
           >
             {/* <ReactChart type="treemap" data={treeData} options={options} /> */}
-            <label>Loading...</label>
+            <LoadingAnimation/>
           </ChartCardComponent>
         </div>
 
