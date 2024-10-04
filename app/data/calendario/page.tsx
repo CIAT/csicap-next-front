@@ -16,28 +16,32 @@ import OverviewCard from "@/components/calendar/overvieww";
 import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
 import {className} from "postcss-selector-parser";
+import LoadingAnimation from "@/components/loadingAnimation";
 
+import MapController from "@/helpers/Component/Controller/MapController";
 
 export default function DataCalendarResults() {
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(
     events
   );
+  const [filtersApplied, setFiltersApplied] = useState(false);
+
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<EventsData | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [sectionState, setSectionState] = useState<sectionStateData>({
     axe: "",
     crop: "",
-    province: ""
+    city: ""
   });
   const [cropState, setCropState] = useState<string[]>([]);
   const [axesState, setAxesState] = useState<string[]>([]);
-  const [provinceState, setProvinceState] = useState<string[]>([]);
+  const [cityState, setCityState] = useState<string[]>([]);
+  const [counts, setCounts] = useState<Record<string, string>>({});
 
   const handleEventClick = (clickInfo: any) => {
-    console.log(clickInfo.event.extendedProps)
-    setSelectedEvent(clickInfo.event.extendedProps); // Use event's extendedProps to pass custom data
+    setSelectedEvent(clickInfo.event.extendedProps);
     setModalIsOpen(true);
   };
 
@@ -49,20 +53,28 @@ export default function DataCalendarResults() {
   useEffect(() => {
     CalendarRepository.fetchEvents()
       .then((data: DataFormat) => {
-        const formattedEvents = CalendarController.formatEvents(data);
+        const formattedEvents = CalendarController.formatEvents(data).map(event => ({
+          ...event,
+          axe: event.eje.map(eje => eje.toLowerCase()),
+          crop: event.crop.map(crop => crop.toLowerCase()),
+          city: event.city.toLowerCase(),
+        }));
+
+        setCounts(MapController.updateCountEventsByCity(formattedEvents));
+
         const uniqueAxes = CalendarController.getUniqueAxes(formattedEvents);
         const uniqueCrop = CalendarController.getUniqueCrops(formattedEvents);
-        const uniqueProvinces = CalendarController.extractProvinces(formattedEvents);
+        const uniqueCities = CalendarController.extractCities(formattedEvents);
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
         setAxesState([...uniqueAxes]);
         setCropState([...uniqueCrop]);
-        setProvinceState([...uniqueProvinces]);
+        setCityState([...uniqueCities]);
         setDataCalendarResp(200);
       })
       .catch(error => {
         console.error("Error fetching events:", error);
-        setDataCalendarResp(-1); // Set error state
+        setDataCalendarResp(-1);
       });
   }, []);
 
@@ -71,89 +83,135 @@ export default function DataCalendarResults() {
   }, [sectionState]);
 
   const filterEvents = (state: sectionStateData) => {
-    let tempEvens: EventsData[] = [];
-    tempEvens = CalendarController.filterEventsByCrop(events, state.crop);
-    tempEvens = CalendarController.filterEventsByProvince(tempEvens, state.province);
-    tempEvens = CalendarController.filterEventsByAxe(tempEvens, state.axe);
+    let tempEvents: EventsData[] = [];
 
-    setFilteredEvents(tempEvens);
+    const normalizedState = {
+      axe: state.axe.toLowerCase(),
+      crop: state.crop.toLowerCase(),
+      city: state.city.toLowerCase(),
+    };
+
+    tempEvents = CalendarController.filterEventsByCrop(events, normalizedState.crop.toLowerCase());
+    tempEvents = CalendarController.filterEventsByCities(tempEvents, normalizedState.city.toLowerCase());
+    tempEvents = CalendarController.filterEventsByAxe(tempEvents, normalizedState.axe.toLowerCase());
+
+    setSectionState((prev: sectionStateData) => ({
+      ...prev,
+      city: normalizedState.city,
+    }));
+
+    if (normalizedState.city === '') {
+      MapController.resetSelectedCity();
+    }
+
+    setFilteredEvents(tempEvents);
+
+    if (normalizedState.axe || normalizedState.crop || normalizedState.city) {
+      setFiltersApplied(true);
+    } else {
+      setFiltersApplied(false);
+    }
   };
 
+
+  const resetFilters = () => {
+    setSectionState({
+      axe: "",
+      crop: "",
+      city: ""
+    });
+    MapController.resetSelectedCity();
+    setFilteredEvents(events);
+    setFiltersApplied(false);
+  };
 
   return (
     <div className={styles.container}>
       {dataCalendarResp === 200 ? (
-        <>
-          <div className={styles.card_container}>
-            <div className={styles.overview}>
-              <CardComponent title="Vision General" header={<></>} style={cardStyle}>
-                <OverviewCard></OverviewCard>
-              </CardComponent>
+          <>
+            <div className={styles.card_container}>
+              <div className={styles.overview}>
+                <CardComponent title="Vision General" header={<></>} style={cardStyle}>
+                  <OverviewCard></OverviewCard>
+                </CardComponent>
+              </div>
+              <div className={styles.sub_card_container}>
+                <ChartCardComponent title="Calendario de eventos" header={
+                  <div className={styles.filter_button_container}>
+                    <ToolbarFilter
+                        filterEvents={(newState: sectionStateData) => filterEvents(newState)}
+                        axesState={axesState}
+                        cropState={cropState}
+                        cityState={cityState}
+                        sectionState={sectionState}
+                        setSectionState={setSectionState}
+                    />
+                    {filtersApplied && (
+                        <button onClick={resetFilters} className={`${styles.button} ${styles.reset_button}`}>
+                          Resetear
+                        </button>
+                    )}
+                  </div>
+                }>
+                  <FullCalendar
+                      plugins={[dayGridPlugin]}
+                      headerToolbar={{
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: ''
+                      }}
+                      height='100%'
+                      fixedWeekCount={false}
+                      events={filteredEvents.map(event => {
+                        const today = new Date();
+                        const eventEndDate = new Date(event.datesEnd);
+
+                        let backgroundColor;
+                        let borderColor;
+
+                        if (event.form_state === '1' && eventEndDate < today) {
+                          backgroundColor = '#c84e42';
+                          borderColor = '#c84e42';
+                        } else if (event.form_state === '0') {
+                          backgroundColor = '#80C41C';
+                          borderColor = '#80C41C';
+                        } else {
+                          backgroundColor = '#FECF00';
+                          borderColor = '#FECF00';
+                        }
+
+                        return {
+                          ...event,
+                          backgroundColor,
+                          borderColor
+                        };
+                      })}
+                      eventClick={handleEventClick}
+                  />
+                </ChartCardComponent>
+              </div>
             </div>
-            <div className={styles.sub_card_container}>
-              <ChartCardComponent title="Calendario de eventos" header={
-                <ToolbarFilter
-                    filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                    axesState={axesState}
-                    cropState={cropState}
-                    provinceState={provinceState}
-                    sectionState={sectionState}
-                    setSectionState={setSectionState}
-                />
-              }>
-                <FullCalendar
-                  plugins={[dayGridPlugin]}
-                  headerToolbar={{
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: ''
-                  }}
-                  height='100%'
-                  fixedWeekCount={false}
-                  events={filteredEvents.map(event => {
-                    const today = new Date();
-                    const eventEndDate = new Date(event.datesEnd);
-
-                    let backgroundColor;
-                    let borderColor;
-
-                    if (event.form_state === '1' && eventEndDate < today) {
-                      backgroundColor = '#c84e42';
-                      borderColor = '#c84e42';
-                    } else if (event.form_state === '0') {
-                      backgroundColor = '#80C41C';
-                      borderColor = '#80C41C';
-                    } else {
-                      backgroundColor = '#FECF00';
-                      borderColor = '#FECF00';
-                    }
-
-
-
-                    return {
-                      ...event,
-                      backgroundColor,
-                      borderColor
-                    };
-                  })}
-                  eventClick={handleEventClick}
+            <div className={styles.card_container}>
+              <ChartCardComponent title="Eventos por departamento" header={<></>}>
+                <MapComponent
+                    data={counts}
+                    polygons={CalendarController.extractCities(filteredEvents).map(city => city.toLowerCase())}
+                    filterData={(newState: sectionStateData) => filterEvents(newState)}
                 />
               </ChartCardComponent>
             </div>
-          </div>
-          <div className={styles.card_container}>
-            <ChartCardComponent title="Eventos por departamento" header={<></>}>
-              <MapComponent provinces={CalendarController.extractProvinces(filteredEvents)} />
-            </ChartCardComponent>
-          </div>
-        </>
+          </>
       ) : dataCalendarResp === 0 ? (
-        "Loading..."
+          <div className={styles.loading_container}>
+            <div className={styles.loading}>
+              <LoadingAnimation/>
+            </div>
+          </div>
       ) : (
-        "Ups! something went wrong, try later"
+          "Ups! something went wrong, try later"
       )},
       {
-        selectedEvent && (
+      selectedEvent && (
           <CalendarModal
             title={selectedEvent.name}
             show={modalIsOpen}

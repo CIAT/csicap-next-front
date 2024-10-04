@@ -1,16 +1,16 @@
 export interface DataFormat {
     gremio: string;
-    vereda: string;
-    sexo: string;
+    gen_name: string;
     declaracion: string;
     finca: string;
-    etnia: string;
-    propiedad: string;
+    pr_ethnic_group: string;
+    type_property: string;
     hash: string;
     produccion: string;
     area: string;
-    cultivo1: string | null;
-    cultivo2: string | null;
+    pr_primary_crop: string;
+    pr_secundary_crop: string | null;
     conflicto: string;
     edad: string;
+    pr_dpto: string
 }

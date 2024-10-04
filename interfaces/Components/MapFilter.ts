@@ -6,15 +6,15 @@ export interface MapFilterProps {
     filterEvents: (newState: sectionStateData) => void;
     axesState: string[];
     cropState: string[];
-    provinceState: string[];
+    cityState: string[];
     sectionState: {
         axe: string;
         crop: string;
-        province: string;
+        city: string;
     };
     setSectionState: React.Dispatch<React.SetStateAction<{
         axe: string;
         crop: string;
-        province: string;
+        city: string;
     }>>;
 }

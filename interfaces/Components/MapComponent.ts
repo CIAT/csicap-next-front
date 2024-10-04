@@ -1,3 +1,7 @@
+import {EventsData, sectionStateData} from "@/interfaces";
+
 export interface MapComponentProps {
-    provinces: string[];
+    data: Record<string, string>;
+    polygons: string[];
+    filterData: (newState: sectionStateData) => void;
 }

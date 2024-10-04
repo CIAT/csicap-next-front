@@ -32,16 +32,16 @@ const Header = () => {
         <ul>
           {/* <li className={styles.header_nav_item}>
             <Link href="/events" onClick={closeMenu}>Eventos</Link>
-          </li> */}
-          {/*<li className={styles.header_nav_item}>
-            <Link href="/assistance" onClick={closeMenu}>Assistencia</Link>
+          </li>
+          <li className={styles.header_nav_item}>
+            <Link href="/assistance" onClick={closeMenu}>Asistentes</Link>
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/beneficiarios" onClick={closeMenu}>Beneficiarios</Link>
           </li>
           <li className={styles.header_nav_item}>
-            <Link href="/tecnicos" onClick={closeMenu}>Tecnicos</Link>
-          </li> */}
+            <Link href="/tecnicos" onClick={closeMenu}>Técnicos</Link>
+          </li>
           <li className={styles.header_nav_item}>
             <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>
           </li>

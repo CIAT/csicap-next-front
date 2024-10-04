@@ -26,6 +26,8 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { wrap } from "module";
+import LoadingAnimation from "@/components/loadingAnimation";
+import { callback } from "chart.js/helpers";
 
 interface Event {
   date: string;
@@ -45,14 +47,14 @@ interface Event {
 }
 
 Chart.register(
-  Tooltip,
-  Legend,
-  ArcElement,
-  CategoryScale,
-  BarElement,
-  LinearScale,
-  TreemapController,
-  TreemapElement
+    Tooltip,
+    Legend,
+    ArcElement,
+    CategoryScale,
+    BarElement,
+    LinearScale,
+    TreemapController,
+    TreemapElement
 );
 
 const shortenedLabels = [
@@ -81,7 +83,7 @@ const colors = [
 
 async function getEventData(): Promise<{ data: Event[] }> {
   const response = await fetch(
-    "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
+      "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
   );
   const data = await response.json();
   return data;
@@ -118,27 +120,73 @@ function calculateEventStatus(events: Event[]) {
 // Count occurrences of each "eje"
 function countEjes(events: Event[]) {
   const ejeCount: { [key: string]: number } = {};
+  let multiejeCount = 0;
 
   events.forEach((event) => {
-    event.eje.forEach((eje) => {
-      ejeCount[eje] = (ejeCount[eje] || 0) + 1;
-    });
+    if (event.eje.length >= 2) {
+      multiejeCount += 1;
+    } else {
+      event.eje.forEach((eje) => {
+        ejeCount[eje] = (ejeCount[eje] || 0) + 1;
+      });
+    }
   });
-
+  if (multiejeCount > 0) {
+    ejeCount["Multi-Ejes"] = multiejeCount;
+  }
   return ejeCount;
 }
 
 // Count occurrences of each "institution"
 function countInstitutions(events: Event[]) {
   const institutionCount: { [key: string]: number } = {};
+  let multiInstitutionCount = 0;
 
   events.forEach((event) => {
-    event.institution.forEach((institution) => {
-      institutionCount[institution] = (institutionCount[institution] || 0) + 1;
-    });
+    if (event.institution.length >= 2) {
+      multiInstitutionCount += 1;
+    } else {
+      event.institution.forEach((institution) => {
+        institutionCount[institution] =
+          (institutionCount[institution] || 0) + 1;
+      });
+    }
+  });
+  if (multiInstitutionCount > 0) {
+    institutionCount["Multi-Institucional"] = multiInstitutionCount;
+  }
+  return institutionCount;
+}
+
+function countCrop(events: Event[]) {
+  const cropCount: { [key: string]: number } = {};
+  let multicultivoCount = 0;
+
+  events.forEach((event) => {
+    if (event.crop.length >= 2 || event.crop.includes("Todas")) {
+      multicultivoCount += 1;
+    } else {
+      event.crop.forEach((crop) => {
+        cropCount[crop] = (cropCount[crop] || 0) + 1;
+      });
+    }
+  });
+  // Añadir el conteo de multicultivos al objeto cropCount
+  if (multicultivoCount > 0) {
+    cropCount["Multi-Cultivos"] = multicultivoCount;
+  }
+  return cropCount;
+}
+
+// Count occurrences for cities
+function countCities(events: Event[]) {
+  const cityCount: { [key: string]: number } = {};
+
+  events.forEach((event) => {
+    cityCount[event.city] = (cityCount[event.city] || 0) + 1;
   });
 
-  return institutionCount;
+  return cityCount;
 }
 
 // Count occurrences of each "guest_type"
@@ -154,30 +202,6 @@ function countGuestTypes(events: Event[]) {
   return guestTypeCount;
 }
 
-// Count occurrences for cities
-function countCities(events: Event[]) {
-  const cityCount: { [key: string]: number } = {};
-
-  events.forEach((event) => {
-    cityCount[event.city] = (cityCount[event.city] || 0) + 1;
-  });
-
-  return cityCount;
-}
-
-// Count occurrences for crops
-function countCrops(events: Event[]) {
-  const cropCount: { [key: string]: number } = {};
-
-  events.forEach((event) => {
-    event.crop.forEach((crop) => {
-      cropCount[crop] = (cropCount[crop] || 0) + 1;
-    });
-  });
-
-  return cropCount;
-}
-
 const EventPage: NextPage = () => {
   const [institutionData, setInstitutionData] = useState<number[]>([]);
   const [institutionLabels, setInstitutionLabels] = useState<string[]>([]);
@@ -187,10 +211,9 @@ const EventPage: NextPage = () => {
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [treemapData, setTreemapData] = useState<
-    { name: string; value: number }[]
+      { name: string; value: number }[]
   >([]);
   const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
-
 
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
@@ -203,9 +226,8 @@ const EventPage: NextPage = () => {
       const dataset = await getEventData();
 
       // Calculate finished/in-progress events
-      const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(
-        dataset.data
-      );
+      const { finishedEvents, inProgressEvents, programmedEvents } =
+          calculateEventStatus(dataset.data);
       setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
 
       // Calculate eje counts
@@ -226,7 +248,6 @@ const EventPage: NextPage = () => {
     fetchAndProcessData();
   }, []);
 
-  
   useEffect(() => {
     async function fetchData() {
       const dataset = await getEventData();
@@ -237,9 +258,8 @@ const EventPage: NextPage = () => {
     fetchData();
   }, []);
 
-
   const initializeTreemapData = (data: Event[]) => {
-    let filterData = countCrops(data); // Using "crop" as the default filter
+    let filterData = countCrop(data); // Usar countCrop en lugar de countCrops
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
       value: filterData[key],
@@ -252,7 +272,7 @@ const EventPage: NextPage = () => {
 
     switch (filter) {
       case "crop":
-        filterData = countCrops(data);
+        filterData = countCrop(data); // Usar countCrop en lugar de countCrops
         break;
       case "ejes":
         filterData = countEjes(data);
@@ -267,7 +287,7 @@ const EventPage: NextPage = () => {
         return;
     }
 
-    // Create treemap data
+    // Crear datos para el treemap
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
       value: filterData[key],
@@ -286,6 +306,20 @@ const EventPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length]; // Reuse colors array
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as const, // Asegúrate de que el valor sea uno de los permitidos
+          position: "top" as const,
+          color: "white",
+          wrap: true,
+          formatter: (ctx: any) => {
+            const data = ctx.raw;
+            const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+            return `${label}: ${data.v}`;
+          },
+        },
       },
     ],
   };
@@ -304,13 +338,17 @@ const EventPage: NextPage = () => {
   };
 
   const eventsTotal = {
-    labels: ["Eventos Finalizados", "Eventos sin Cerrar", "Eventos Programados"],
+    labels: [
+      "Eventos Finalizados",
+      "Eventos sin Cerrar",
+      "Eventos Programados",
+    ],
     datasets: [
       {
         label: "Event Status",
         data: eventStatusData, // Dynamically set the data here
-        backgroundColor: ["#80C41C","#c84e42","#FECF00"],
-        hoverBackgroundColor: ["#80C41C","#c84e42","#FECF00"],
+        backgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
+        hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
       },
     ],
   };
@@ -333,28 +371,10 @@ const EventPage: NextPage = () => {
       {
         label: "Tipo de participantes",
         data: guestTypeData,
-        backgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array
-        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length), // Use colors array for hover
+        backgroundColor: colors.slice(0, guestTypeLabels.length),
+        hoverBackgroundColor: colors.slice(0, guestTypeLabels.length),
       },
     ],
-  };
-
-  const config = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          boxWidth: 10,
-          padding: 3,
-          font: {
-            size: 10,
-          },
-          usePointStyle: true,
-        },
-        position: "bottom" as const,
-      },
-    },
   };
 
   const config2 = {
@@ -366,7 +386,7 @@ const EventPage: NextPage = () => {
           boxWidth: 10,
           padding: 3,
           font: {
-            size: 7.5,
+            size: 8,
           },
           usePointStyle: true,
         },
@@ -374,33 +394,40 @@ const EventPage: NextPage = () => {
       },
       tooltip: {
         callbacks: {
+          title: function () {
+            return "";
+          },
           label: function (tooltipItem: any) {
             const index = tooltipItem.dataIndex;
-            return `${shortenedLabels[index]}: ${tooltipItem.raw}`; // Show shortened label in the tooltip
+            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
           },
         },
       },
     },
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: (context: any) => {
-            const data = context.dataset.tree[context.dataIndex];
-            return `${data.name}: ${data.value}`;
-          },
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      enabled: true,
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem: any) {
+          const data = tooltipItem.raw;
+          const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+          return `${label}: ${data.v}`;
         },
       },
     },
-  };
+  },
+};
 
   const barChartOptions = {
     responsive: true,
@@ -421,59 +448,79 @@ const EventPage: NextPage = () => {
   };
 
   return (
-    <div className={styles.event_page}>
-      <div className={styles.div}>
-        <ChartCardComponent
-          title="Numero de eventos por cultivos"
-          header={
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={selectedFilter}
-                onChange={handleFilterChange}
-                label="Filtrar"
-              >
-                <MenuItem value="crop">Cultivo</MenuItem>
-                <MenuItem value="ejes">Eje</MenuItem>
-                <MenuItem value="city">Lugar</MenuItem>
-                <MenuItem value="institution">Institución</MenuItem>
-              </Select>
-            </FormControl>
-          }
-        >
-          {treemapData.length > 0 ? (
-            <ReactChart type="treemap" data={treemapChartData} options={options} />
-          ) : (
-            <div className="flex justify-center items-center h-full">Seleccione un filtro para ver los datos</div>
-          )}
-        </ChartCardComponent>
-      </div>
+      <div className={styles.event_page}>
+        <div className={styles.div}>
+          <ChartCardComponent
+              title="Numero de eventos por cultivos"
+              header={
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+                  <Select
+                      labelId="demo-select-small-label"
+                      id="demo-select-small"
+                      value={selectedFilter}
+                      onChange={handleFilterChange}
+                      label="Filtrar"
+                  >
+                    <MenuItem value="crop">Cultivo</MenuItem>
+                    <MenuItem value="ejes">Eje</MenuItem>
+                    <MenuItem value="city">Lugar</MenuItem>
+                    <MenuItem value="institution">Institución</MenuItem>
+                  </Select>
+                </FormControl>
+              }
+          >
+            {treemapData.length > 0 ? (
+                <ReactChart
+                    type="treemap"
+                    data={treemapChartData}
+                    options={options}
+                />
+            ) : (
+                <LoadingAnimation />
+            )}
+          </ChartCardComponent>
+        </div>
 
-      <div className={styles.card_container}>
-        <CardComponent title="Total Eventos">
-          <div className="w-full h-full">
-            <Doughnut data={eventsTotal} options={config} />
-          </div>
-        </CardComponent>
-        <CardComponent title="Ejes por evento">
-          <div className="w-full h-full">
-            <Doughnut data={ejesChartData} options={config2} />
-          </div>
-        </CardComponent>
-        <CardComponent title="Tipo de Participantes por evento">
-          <div className="w-full h-full">
-            <Doughnut data={guestTypesChartData} options={config} />
-          </div>
-        </CardComponent>
-        <CardComponent title="Instituciones participantes">
-          <div className="w-full h-full">
-            <Bar data={institutionsChartData} options={barChartOptions} />
-          </div>
-        </CardComponent>
+        <div className={styles.card_container}>
+          <CardComponent title="Total Eventos">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Doughnut data={eventsTotal} options={config2} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent title="Ejes por evento">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Doughnut data={ejesChartData} options={config2} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent title="Tipo de Participantes por evento">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Doughnut data={guestTypesChartData} options={config2} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent title="Instituciones participantes">
+            <div className="w-full h-full">
+              {allEventData.length > 0 ? (
+                  <Bar data={institutionsChartData} options={barChartOptions} />
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+        </div>
       </div>
-    </div>
   );
 };
 
