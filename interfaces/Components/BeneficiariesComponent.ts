@@ -12,5 +12,6 @@ export interface DataFormat {
     pr_secundary_crop: string | null;
     conflicto: string;
     edad: string;
-    pr_dpto: string
+    pr_dpto: string;
+    pr_muni: string;
 }

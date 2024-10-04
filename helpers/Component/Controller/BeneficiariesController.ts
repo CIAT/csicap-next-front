@@ -26,6 +26,11 @@ class BeneficiariesController {
         return Array.from(new Set(provinces));
     }
 
+    static extractProvincesAndCities(events: { pr_dpto: string, pr_muni: string}[]): string[][]{
+        const provincesAndCities = events.map(event => [event.pr_dpto, event.pr_muni]);
+        return Array.from(new Set(provincesAndCities));
+    }
+
     static filterEventsByCrop(events: DataFormat[], crop: string): DataFormat[] {
         if (crop === "") {
             return events;

@@ -23,6 +23,8 @@ import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
 import BeneficiariesController from "@/helpers/Component/Controller/BeneficiariesController";
 import CardComponent from "@/components/ui/card/Card";
 import MapComponent from "@/components/data/Map/MapComponent";
+import MapController from "@/helpers/Component/Controller/MapController";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
 Chart.register(
   ArcElement,
@@ -115,6 +117,9 @@ const BeneficiariosPage: NextPage = () => {
   const [filteredEvents, setFilteredEvents] = useState<DataFormat[]>(
     events
   );
+  const [counts, setCounts] = useState<NestedDictionary>({});
+
+
   const [selectedEvent, setSelectedEvent] = useState<DataFormat | null>(null);
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [totalData, setTotalData] = useState<number>(0);
@@ -135,6 +140,9 @@ const BeneficiariosPage: NextPage = () => {
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
 
+        console.log(data)
+        setCounts(MapController.updateCountBeneficiariesByCity(formattedEvents));
+        console.log(counts)
 
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
@@ -347,8 +355,8 @@ const BeneficiariosPage: NextPage = () => {
                   <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
                       <MapComponent
-                        polygons={[]}
-                        data={{}}
+                        polygons={BeneficiariesController.extractProvincesAndCities(filteredEvents)}
+                        data={counts}
                       />
                     </div>
                   </CardComponent>

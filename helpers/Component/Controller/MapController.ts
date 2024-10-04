@@ -8,6 +8,9 @@ class MapController {
     static selectedProvince: string | null = null;
 
     static removeAccents(input: string): string {
+        if(!input){
+            return input;
+        }
         return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     }
 
@@ -249,6 +252,31 @@ class MapController {
             cityEventCounts[province][city] = 'Eventos: 1';
         });
         return cityEventCounts;
+    }
+
+    static updateCountBeneficiariesByCity(events: {
+        pr_dpto: string;
+        pr_muni: string
+    }[]): NestedDictionary {
+        const cityBeneficiariesCounts: NestedDictionary = {};
+
+        events.forEach(event => {
+            const province = this.removeAccents(event.pr_dpto);
+            const city = this.removeAccents(event.pr_muni);
+
+            if (!cityBeneficiariesCounts[province]) {
+                cityBeneficiariesCounts[province] = {};
+            }
+
+            if (cityBeneficiariesCounts[province][city]) {
+                const currentCount = parseInt(cityBeneficiariesCounts[province][city].replace(/\D/g, ''), 10);
+                cityBeneficiariesCounts[province][city] = `Beneficiarios: ${currentCount + 1}`;
+                return;
+            }
+
+            cityBeneficiariesCounts[province][city] = 'Beneficiarios: 1';
+        });
+        return cityBeneficiariesCounts;
     }
 
     static updateCountAssistantsByGender(events: {
