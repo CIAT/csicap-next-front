@@ -25,7 +25,7 @@ const Header = () => {
         </Link>
       </div>
       <div className={styles.hamburger} onClick={toggleMenu}>
-        <img src="/menu.png" alt="menu"/>
+        <img src="/menu.png" alt="menu" />
         <span className={styles.hamburgerIcon}></span>
       </div>
       <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
@@ -41,11 +41,12 @@ const Header = () => {
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/tecnicos" onClick={closeMenu}>Técnicos</Link>
+
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>
           </li>
-          <li className={styles.header_nav_item}>
+           <li className={styles.header_nav_item}>
             <Link href="/reports" onClick={closeMenu}>Reportes</Link>
           </li>
         </ul>
