@@ -5,11 +5,7 @@ class CalendarRepository {
         const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
         console.log(url)
         if(!url){
-            return {
-                id: '',
-                created_at: '',
-                data: []
-            };
+            return <DataFormat>{};
         }
 
         const response = await fetch(url);

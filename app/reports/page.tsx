@@ -41,9 +41,6 @@ const ReportsPage: NextPage = () => {
           <Filter />
         </div>
         <div className={styles.preview_div}>
-          {
-            //<PDFViewer style={{ width: "100%", height: "80vh"}}><PDFFile data={data} /></PDFViewer>
-          }
         </div>
       </div>
 

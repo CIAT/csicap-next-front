@@ -195,7 +195,7 @@ export default function DataCalendarResults() {
               <ChartCardComponent title="Eventos por departamento" header={<></>}>
                 <MapComponent
                     data={counts}
-                    polygons={CalendarController.extractProvincesAndCities(filteredEvents).map(element => element)}
+                    polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
                     filterData={(newState: sectionStateData) => filterEvents(newState)}
                 />
               </ChartCardComponent>
