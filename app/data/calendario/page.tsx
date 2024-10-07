@@ -19,6 +19,7 @@ import LoadingAnimation from "@/components/loadingAnimation";
 
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import {parseISO} from "date-fns";
 
 export default function DataCalendarResults() {
   const [events, setEvents] = useState<EventsData[]>([]);
@@ -163,19 +164,23 @@ export default function DataCalendarResults() {
                       height='100%'
                       fixedWeekCount={false}
                       events={filteredEvents.map(event => {
-                        const today = new Date();
-                        const eventEndDate = new Date(event.datesEnd);
+                        const currentDate = new Date();
+                        currentDate.setHours(0, 0, 0, 0);
+                        const eventEndDate = event.datesEnd ? parseISO(String(event.datesEnd)) : null;
 
                         let backgroundColor;
                         let borderColor;
 
-                        if (event.form_state === '1' && eventEndDate < today) {
+                        if (eventEndDate && event.form_state === '1' && eventEndDate < currentDate) {
+                          // Si eventEndDate es antes de hoy, se considera terminado
                           backgroundColor = '#c84e42';
                           borderColor = '#c84e42';
                         } else if (event.form_state === '0') {
+                          // Eventos que están completamente finalizados (form_state = 0)
                           backgroundColor = '#80C41C';
                           borderColor = '#80C41C';
-                        } else {
+                        } else if (eventEndDate && eventEndDate >= currentDate) {
+                          // Si el evento aún no ha terminado o es hoy
                           backgroundColor = '#FECF00';
                           borderColor = '#FECF00';
                         }

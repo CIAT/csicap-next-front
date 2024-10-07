@@ -95,22 +95,20 @@ function calculateEventStatus(events: Event[]) {
   let programmedEvents = 0;
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
-  
+
   events.forEach((event) => {
-    const eventEndDate = parseISO(event.datesEnd);
+    // Validar si datesEnd es válido antes de parsearlo
+    const eventEndDate = event.datesEnd ? parseISO(event.datesEnd) : null;
 
     if (event.form_state === "0") {
-      // If form_state is 0, count it as finished
+      // Si form_state es 0, cuenta como finalizado
       finishedEvents += 1;
     } else if (event.form_state === "1") {
-      // If form_state is 1, check the date
-      if (eventEndDate >= currentDate){
+      // Si form_state es 1, revisar la fecha si está presente
+      if (eventEndDate && eventEndDate >= currentDate) {
         programmedEvents += 1;
       } else {
-        console.log(event.event_id);
-        console.log(eventEndDate);
-        console.log(currentDate);
-        // eventos sin cerrar
+        // Eventos sin cerrar o sin fecha válida
         inProgressEvents += 1;
       }
     }
@@ -227,6 +225,7 @@ const EventPage: NextPage = () => {
   useEffect(() => {
     async function fetchAndProcessData() {
       const dataset = await getEventData();
+      console.log(dataset.data)
 
       // Calculate finished/in-progress events
       const { finishedEvents, inProgressEvents, programmedEvents } =

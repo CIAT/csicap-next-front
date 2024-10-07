@@ -1,36 +1,28 @@
 "use client";
 
-import { NextPage } from "next";
+import {NextPage} from "next";
 import styles from "./assistance.module.css";
-import CardComponent from "@/components/ui/card/Card";
 import styleTechnical from "./assistance.module.css";
+import CardComponent from "@/components/ui/card/Card";
 import {
-  Chart as ChartJS,
-  Tooltip as TooltipPlugin,
-  Legend as LegendPlugin,
   ArcElement,
-  CategoryScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend as LegendPlugin,
   LinearScale,
   Title as TitlePlugin,
+  Tooltip as TooltipPlugin,
 } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
-import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
-import { Chart as ReactChart } from "react-chartjs-2";
+import {Doughnut} from "react-chartjs-2";
+import {TreemapController, TreemapElement} from "chartjs-chart-treemap";
 import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
-import { useEffect, useState } from "react";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
-import { As } from "@nextui-org/react";
+import {useEffect, useState} from "react";
+import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent,} from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
-import {DataFormat, EventsData, sectionStateData} from "@/interfaces";
+import {DataFormat, EventsData} from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
@@ -84,9 +76,7 @@ async function getAssistanceData(): Promise<Assistance[]> {
   const response = await fetch(
     "https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list"
   );
-  const data = await response.json();
-  console.log("Assistance data:", data);
-  return data;
+  return await response.json();
 }
 
 async function getEventsData(): Promise<DataFormat> {
