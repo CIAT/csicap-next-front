@@ -66,7 +66,19 @@ const shortenedLabels = [
   "7-Monitoreo y evaluación",
   "8-Ambiental, social y género",
   "Equipo de coordinación",
+  "Inclusión social y de género" 
 ];
+
+const LabelsParticipants = [
+  "Productoras/es agropecuarios",
+  "Trabajadoras/es de entidades públicas",
+  "Estudiantes",
+  "Profesoras/es",
+  "Técnicos/Profesionales",
+  "Investigadores",
+  "Otro"
+];
+
 
 const colors = [
   "#FECF00",
@@ -79,12 +91,16 @@ const colors = [
   "#0E6E8C",
   "#569aaf",
 ];
+let evenData: { data: Event[] } = {
+  data: []  // Puedes empezar con un array vacío para luego agregar los datos
+};
 
 async function getEventData(): Promise<{ data: Event[] }> {
   const response = await fetch(
       "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
   );
   const data = await response.json();
+  evenData = data;
   return data;
 }
 
@@ -225,7 +241,6 @@ const EventPage: NextPage = () => {
   useEffect(() => {
     async function fetchAndProcessData() {
       const dataset = await getEventData();
-      console.log(dataset.data)
 
       // Calculate finished/in-progress events
       const { finishedEvents, inProgressEvents, programmedEvents } =
@@ -240,11 +255,27 @@ const EventPage: NextPage = () => {
       const institutionCount = countInstitutions(dataset.data);
       setInstitutionLabels(Object.keys(institutionCount));
       setInstitutionData(Object.values(institutionCount));
-
-      // Calculate guest type counts
       const guestTypeCount = countGuestTypes(dataset.data);
-      setGuestTypeLabels(Object.keys(guestTypeCount));
-      setGuestTypeData(Object.values(guestTypeCount));
+      let guestTypeLabels = Object.keys(guestTypeCount);
+      let guestTypeData = Object.values(guestTypeCount);
+      guestTypeLabels.push("Otro");
+      guestTypeData.push(0);
+      if (guestTypeData[guestTypeData.length - 1] === undefined) {
+        guestTypeData.push(0); 
+      }
+      
+      for (let i = guestTypeLabels.length - 1; i >= 0; i--) {
+        const label = guestTypeLabels[i];
+      
+        if (!LabelsParticipants.includes(label)) {
+          guestTypeData[guestTypeData.length - 1] += guestTypeData[i];
+          guestTypeLabels.splice(i, 1); 
+          guestTypeData.splice(i, 1);   
+        }
+      }
+      
+      setGuestTypeLabels(guestTypeLabels);
+      setGuestTypeData(guestTypeData);
     }
 
     fetchAndProcessData();
@@ -345,6 +376,8 @@ const EventPage: NextPage = () => {
           formatter: (ctx: any) => {
             const data = ctx.raw;
             const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+
+            
             return `${label}: ${data.v}`;
           },
         },
@@ -380,18 +413,66 @@ const EventPage: NextPage = () => {
       },
     ],
   };
+const ejeCounts: { [key: string]: number } = {};
+evenData.data.forEach((event) => {
+  if (event.eje && Array.isArray(event.eje)) {
+    event.eje.forEach((eje) => {
+      ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
+    });
+  }
+});
 
-  const ejesChartData = {
-    labels: shortenedLabels, // Use shortened labels for both display and tooltips
-    datasets: [
-      {
-        label: "Eje Count",
-        data: ejeData,
-        backgroundColor: colors.slice(0, ejeData.length), // Reuse colors for background
-        hoverBackgroundColor: colors.slice(0, ejeData.length), // Reuse colors for hover
-      },
-    ],
-  };
+let labelsDoughnutEvent = [];
+let dataDoughnutEvent = [];
+let replacedEjeCounts: { [key: string]: number } = {};
+
+for (let key in ejeCounts) {
+  let matchedLabel = shortenedLabels.find(label => key.toLowerCase().startsWith(label.split('-')[0].toLowerCase()));
+
+  if (matchedLabel) {
+    replacedEjeCounts[matchedLabel] = ejeCounts[key];
+  } else {
+    replacedEjeCounts[key] = ejeCounts[key];  
+  }
+}
+
+
+for (let key in replacedEjeCounts) {
+  if (replacedEjeCounts.hasOwnProperty(key)) {
+    labelsDoughnutEvent.push(key);     
+    dataDoughnutEvent.push(replacedEjeCounts[key]);  
+  }
+}
+
+
+const ejesChartData = {
+  labels: labelsDoughnutEvent, // Use shortened labels for both display and tooltips
+  datasets: [
+    {
+      label: "Eje Count",
+      data: dataDoughnutEvent,
+      backgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for background
+      hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for hover
+    },
+  ],
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const guestTypesChartData = {
     labels: guestTypeLabels,
