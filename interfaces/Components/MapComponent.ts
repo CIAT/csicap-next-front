@@ -3,6 +3,6 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
 export interface MapComponentProps {
     data: NestedDictionary;
-    polygons: string[][];
+    polygons: string[][] | string[];
     filterData?: (newState: sectionStateData) => void;
 }

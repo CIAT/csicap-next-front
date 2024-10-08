@@ -26,15 +26,8 @@ import {DataFormat, EventsData} from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-
-interface Assistance {
-  main_occupation: string;
-  organization_affiliation: null;
-  birth_date: string;
-  event_id: string;
-  sex_complete: string;
-  fecha: string;
-}
+import {Assistance} from "@/interfaces/Components/AssistanceComponent";
+import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 
 ChartJS.register(
   TooltipPlugin,
@@ -71,13 +64,6 @@ const borderColors = [
   "#D2D200",
   "#569aaf",
 ];
-
-async function getAssistanceData(): Promise<Assistance[]> {
-  const response = await fetch(
-    "https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list"
-  );
-  return await response.json();
-}
 
 async function getEventsData(): Promise<DataFormat> {
   return CalendarRepository.fetchEvents();
@@ -208,7 +194,7 @@ const AssistancePage: NextPage = () => {
             city: event.city.toLowerCase(),
           }));
           setCounts(MapController.updateCountAssistantsByGender(formattedEvents));
-          console.log(counts)
+          console.log("counts", counts)
           setEvents(formattedEvents);
           setFilteredEvents(formattedEvents);
         })
@@ -217,7 +203,7 @@ const AssistancePage: NextPage = () => {
         });
 
     async function fetchData() {
-      const dataset = await getAssistanceData();
+      const dataset =  await AssistanceRepository.getAssistanceData();
       setAllAssistanceData(dataset);
       console.log("Assistance data:", dataset);
       proccesdata();
