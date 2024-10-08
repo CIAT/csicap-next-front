@@ -31,6 +31,8 @@ import {
 } from "@mui/material";
 import { colors } from "@nextui-org/react";
 import {sectionStateData} from "@/interfaces";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import MapController from "@/helpers/Component/Controller/MapController";
 
 Chart.register(
   ArcElement,
@@ -122,8 +124,9 @@ const BeneficiariosPage: NextPage = () => {
   const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
     events
   );
+  const [counts, setCounts] = useState<NestedDictionary>({});
+
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
-  const [provinceState, setProvinceState] = useState<string[]>([]);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
   const [educationaLevelNumber, setEducationalLevelNumber] = useState<number[]>([]);
@@ -141,11 +144,11 @@ const BeneficiariosPage: NextPage = () => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
         const formattedEvents = TechnicalController.formatEvents(data);
-        const uniqueProvinces = TechnicalController.extractProvinces(formattedEvents);
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
-        setProvinceState([...uniqueProvinces]);
         setDataCalendarResp(200);
+        setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
+        console.log(counts)
 
         let filterData: { [key: string]: number };
 
@@ -188,7 +191,7 @@ const BeneficiariosPage: NextPage = () => {
         console.error("Error fetching events:", error);
         setDataCalendarResp(-1); // Set error state
       });
-  }, [selectedFilter]);
+  }, []);
 
   const handleFilterChange = (event: SelectChangeEvent) => {
     setSelectedFilter(event.target.value);
@@ -315,10 +318,6 @@ const BeneficiariosPage: NextPage = () => {
     },
   };
 
-  const filterTechnicians = (state: sectionStateData) => {
-
-  };
-
   return (
       <div className="w-full h-full flex flex-wrap">
         {/* Card superior */}
@@ -382,9 +381,9 @@ const BeneficiariosPage: NextPage = () => {
                 <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
                   <div className="w-full h-full">
                     <MapComponent
-                     polygons={[]}
-                     data={{}}
-                     filterData={(newState: sectionStateData) => filterTechnicians(newState)}/>
+                     polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
+                     data={counts}
+                    />
                   </div>
                 </CardComponent>
               </div>

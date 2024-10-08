@@ -2,7 +2,7 @@ import { DataFormat } from "@/interfaces";
 
 class CalendarRepository {
     static async fetchEvents(): Promise<DataFormat> {
-        const url = "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events";
+        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
         console.log(url)
         if(!url){
             return <DataFormat>{};

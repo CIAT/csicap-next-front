@@ -2,7 +2,7 @@ import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
 
 class BeneficiariesRepository {
     static async fetchEvents(): Promise<DataFormat[]> {
-        const url = "https://adi5xn1pwe.execute-api.us-east-1.amazonaws.com/dev/beneficiaries";
+        const url = process.env.NEXT_PUBLIC_URL_GET_BENEFICIARIES;
         if(!url){
             return <DataFormat[]>{};
         }

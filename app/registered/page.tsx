@@ -305,7 +305,7 @@ const BeneficiariosPage: NextPage = () => {
     <div className="w-full h-full flex flex-wrap">
       <Tabs aria-label="Options">
         {/* Tab Beneficiarios */}
-        <Tab key="beneficiarios" title="Beneficiarios" className="w-full h-full flex flex-wrap">
+        <Tab key="registrados" title="Registrados" className="w-full h-full flex flex-wrap">
           <div className="w-full h-full flex flex-wrap">
             {/* Card superior */}
             <div className={styles.top_div}>

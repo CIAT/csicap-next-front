@@ -171,8 +171,10 @@ export default function DataCalendarResults() {
                         let backgroundColor;
                         let borderColor;
 
-                        if (eventEndDate && event.form_state === '1' && eventEndDate < currentDate) {
-                          // Si eventEndDate es antes de hoy, se considera terminado
+                        if(event.change_selection === 'EL EVENTO HA SIDO CANCELADO'){
+                          backgroundColor = '#b9b9b9';
+                          borderColor = '#b9b9b9';
+                        } else if (eventEndDate && event.form_state === '1' && eventEndDate < currentDate) {
                           backgroundColor = '#c84e42';
                           borderColor = '#c84e42';
                         } else if (event.form_state === '0') {
@@ -190,7 +192,7 @@ export default function DataCalendarResults() {
                           backgroundColor,
                           borderColor
                         };
-                      })}
+                      }).filter(event => event !== null)}
                       eventClick={handleEventClick}
                   />
                 </ChartCardComponent>

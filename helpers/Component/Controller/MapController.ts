@@ -2,6 +2,7 @@ import colombiaGeoJSONByCities from "@/components/maps/ColombiaDepartments.json"
 import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import mapboxgl from "mapbox-gl";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -19,9 +20,28 @@ class MapController {
         return Array.from(new Set(provinces));
     }
 
-    static highlightPolygons(map: mapboxgl.Map, polygons: string[][], counts: NestedDictionary, filterEvents?: (newState: sectionStateData) => void) {
+    static highlightPolygons(
+        map: mapboxgl.Map,
+        polygons: string[][] | string[],
+        counts: NestedDictionary,
+        filterEvents?: (newState: sectionStateData) => void
+    )  {
         let hoveredStateId: number | string | null = null;
-        let tooltip = document.getElementById('map-tooltip');
+        let tooltip = this.createOrGetTooltip(map);
+        const polygonsFeatures = this.getPolygons(polygons);
+
+        if (polygonsFeatures.length > 0) {
+            this.addPolygonsToMap(map, polygonsFeatures);
+            this.setupPolygonInteractions(map, hoveredStateId, tooltip, counts, filterEvents);
+            return;
+        }
+
+        this.clearMapIfNoPolygons(map, polygonsFeatures);
+    }
+
+    // Método para crear o obtener el tooltip
+    static createOrGetTooltip(map: mapboxgl.Map): HTMLDivElement {
+        let tooltip = document.getElementById('map-tooltip') as HTMLDivElement;
 
         if (!tooltip) {
             tooltip = document.createElement('div');
@@ -36,169 +56,190 @@ class MapController {
             map.getContainer().appendChild(tooltip);
         }
 
-        // Encontrar los polígonos para las provincias y ciudades dadas
-        const provinceAndCityFeatures = polygons.map(polygon => {
-            const [province, city] = polygon; // Desestructuramos para obtener provincia y ciudad
+        return tooltip;
+    }
 
-            return colombiaGeoJSONByCities.features.find((feature: any) =>
-                MapController.removeAccents(feature.properties.dpto_cnmbr) === MapController.removeAccents(province) &&
-                MapController.removeAccents(feature.properties.mpio_cnmbr) === MapController.removeAccents(city)
-            );
-        }).filter(feature => feature !== undefined);
+    // Método para agregar los polígonos al mapa
+    static addPolygonsToMap(map: mapboxgl.Map, polygonsFeatures: any) {
+        const provinceGeoJSON = {
+            type: "FeatureCollection",
+            features: polygonsFeatures
+        };
 
-        if (provinceAndCityFeatures.length > 0) {
-            const provinceGeoJSON: any = {
-                type: "FeatureCollection",
-                features: provinceAndCityFeatures
-            };
+        if (map.getSource("highlightPolygons")) {
+            (map.getSource("highlightPolygons") as any).setData(provinceGeoJSON);
+        } else {
+            map.addSource("highlightPolygons", {
+                type: "geojson",
+                data: provinceGeoJSON as any
+            });
 
-            if (map.getSource("highlightPolygons")) {
-                (map.getSource("highlightPolygons") as any).setData(provinceGeoJSON);
-            } else {
-                map.addSource("highlightPolygons", {
-                    type: "geojson",
-                    data: provinceGeoJSON as any
-                });
+            // Capa de relleno
+            map.addLayer({
+                id: "highlightPolygons-fill",
+                type: "fill",
+                source: "highlightPolygons",
+                paint: {
+                    "fill-color": "#569aaf",
+                    "fill-opacity": 0.7
+                }
+            });
 
-                // Capa para rellenar los polígonos
-                map.addLayer({
-                    id: "highlightPolygons-fill",
-                    type: "fill",
-                    source: "highlightPolygons",
-                    paint: {
-                        "fill-color": "#569aaf",
-                        "fill-opacity": 0.7
-                    }
-                });
+            // Capa de contorno
+            map.addLayer({
+                id: "highlightPolygons-outline",
+                type: "line",
+                source: "highlightPolygons",
+                layout: {},
+                paint: {
+                    "line-color": "#0E6E8C",
+                    "line-width": 2
+                }
+            });
+        }
+    }
 
-                // Evento de mousemove para el tooltip y hover
-                map.on('mousemove', 'highlightPolygons-fill', (e) => {
-                    tooltip.style.display = 'none';
+    // Método para configurar las interacciones con los polígonos (hover, tooltip, click)
+    static setupPolygonInteractions(
+        map: mapboxgl.Map,
+        hoveredStateId: number | string | null,
+        tooltip: HTMLDivElement,
+        counts: NestedDictionary,
+        filterEvents?: (newState: sectionStateData) => void
+    ) {
+        map.on('mousemove', 'highlightPolygons-fill', (e) => {
+            this.handleMouseMove(e, map, tooltip, hoveredStateId, counts);
+        });
 
-                    if (e.features && e.features[0].properties && e.features.length > 0) {
-                        const feature = e.features[0];
+        map.on('mouseleave', 'highlightPolygons-fill', () => {
+            this.handleMouseLeave(map, hoveredStateId, tooltip);
+        });
 
-                        if (hoveredStateId !== null) {
-                            map.setFeatureState(
-                                { source: 'highlightPolygons', id: hoveredStateId },
-                                { hover: false }
-                            );
-                        }
+        map.on('mouseenter', 'highlightPolygons-fill', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
 
-                        hoveredStateId = feature.id ?? null;
+        map.on('click', 'highlightPolygons-fill', (e: any) => {
+            this.handlePolygonClick(e, map, counts, filterEvents);
+        });
+    }
 
-                        if (hoveredStateId !== null) {
-                            map.setFeatureState(
-                                { source: 'highlightPolygons', id: hoveredStateId },
-                                { hover: true }
-                            );
-                        }
+    // Método para manejar el movimiento del ratón sobre el mapa
+    static handleMouseMove(e: any, map: mapboxgl.Map, tooltip: HTMLDivElement, hoveredStateId: number | string | null, counts: NestedDictionary) {
+        tooltip.style.display = 'none';
 
-                        tooltip.style.display = 'block';
+        if (e.features && e.features[0].properties && e.features.length > 0) {
+            const feature = e.features[0];
 
-                        const mapWidth = map.getCanvas().clientWidth;
-                        const mapHeight = map.getCanvas().clientHeight;
-                        const tooltipWidth = tooltip.offsetWidth;
-                        const tooltipHeight = tooltip.offsetHeight;
-
-                        let left = e.point.x - tooltipWidth;
-                        let top = e.point.y - tooltipHeight;
-
-                        if (left < 0) {
-                            left += tooltipWidth;
-                        }
-
-                        if(top < 0){
-                            top += tooltipHeight;
-                        }
-
-                        tooltip.style.left = `${left}px`;
-                        tooltip.style.top = `${top}px`;
-
-                        let provinceName = String(e.features[0].properties.dpto_cnmbr);
-                        let cityName = String(e.features[0].properties.mpio_cnmbr);
-
-                        // Mostrar tanto la provincia como la ciudad en el tooltip
-                        let tooltipHtmlContent = `<strong>${provinceName}: ${cityName}</strong>`;
-
-                        provinceName = this.removeAccents(provinceName);
-                        cityName = this.removeAccents(cityName);
-                        if (counts && counts[provinceName][cityName]) {
-                            tooltipHtmlContent += `<br><strong>${counts[provinceName][cityName]}</strong>`;
-                        }
-
-                        tooltip.innerHTML = tooltipHtmlContent;
-                    }
-                });
-
-                // Evento para eliminar hover y esconder el tooltip al salir
-                map.on('mouseleave', 'highlightPolygons-fill', () => {
-                    if (hoveredStateId !== null) {
-                        map.setFeatureState(
-                            { source: 'highlightPolygons', id: hoveredStateId},
-                            { hover: false }
-                        );
-                    }
-                    map.getCanvas().style.cursor = '';
-                    hoveredStateId = null;
-
-                    tooltip.style.display = 'none';
-                });
-
-                // Cambiar el cursor al pasar sobre los polígonos
-                map.on('mouseenter', 'highlightPolygons-fill', () => {
-                    map.getCanvas().style.cursor = 'pointer';
-                });
-
-                // Añadir una capa de contorno alrededor de los polígonos
-                map.addLayer({
-                    id: "highlightPolygons-outline",
-                    type: "line",
-                    source: "highlightPolygons",
-                    layout: {},
-                    paint: {
-                        "line-color": "#0E6E8C",
-                        "line-width": 2
-                    }
-                });
+            if (hoveredStateId !== null) {
+                map.setFeatureState(
+                    { source: 'highlightPolygons', id: hoveredStateId },
+                    { hover: false }
+                );
             }
 
-            // Evento de clic para filtrar y resaltar ciudad/provincia seleccionada
-            // Evento de clic para filtrar y resaltar ciudad/provincia seleccionada
-            map.on('click', 'highlightPolygons-fill', (e: any) => {
-                if(!filterEvents){
-                    return;
-                }
+            hoveredStateId = feature.id ?? null;
 
-                const clickedCity = e.features[0].properties.mpio_cnmbr;
-                const clickedProvince = e.features[0].properties.dpto_cnmbr;
-                const filterObject = {
-                    axe: "",
-                    crop: "",
-                    city: "",
-                    province: ""
-                };
+            if (hoveredStateId !== null) {
+                map.setFeatureState(
+                    { source: 'highlightPolygons', id: hoveredStateId },
+                    { hover: true }
+                );
+            }
 
-                if (MapController.selectedCity === clickedCity && MapController.selectedProvince === clickedProvince) {
-                    filterEvents(filterObject);
-                    MapController.resetSelectedProvinceAndCity();
-                    MapController.cleanMap(map);
-                    return;
-                }
+            this.updateTooltipPosition(e, tooltip, map);
+            this.updateTooltipContent(e, tooltip, counts);
+        }
+    }
 
-                MapController.cleanMap(map);
-                filterObject.city = clickedCity;
-                filterObject.province = clickedProvince;
-                filterEvents(filterObject);
-                MapController.selectedCity = clickedCity;
-                MapController.selectedProvince = clickedProvince;
-                MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, filterEvents);
-            });
+    // Método para actualizar la posición del tooltip
+    static updateTooltipPosition(e: any, tooltip: HTMLDivElement, map: mapboxgl.Map) {
+        tooltip.style.display = 'block';
+
+        const mapWidth = map.getCanvas().clientWidth;
+        const mapHeight = map.getCanvas().clientHeight;
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+
+        let left = e.point.x - tooltipWidth;
+        let top = e.point.y - tooltipHeight;
+
+        if (left < 0) {
+            left += tooltipWidth;
+        }
+
+        if (top < 0) {
+            top += tooltipHeight;
+        }
+
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+    }
+
+    // Método para actualizar el contenido del tooltip
+    static updateTooltipContent(e: any, tooltip: HTMLDivElement, counts: NestedDictionary) {
+        let provinceName = String(e.features[0].properties.dpto_cnmbr);
+        let cityName = String(e.features[0].properties.mpio_cnmbr);
+
+        let tooltipHtmlContent = `<strong>${provinceName}: ${cityName}</strong>`;
+
+        provinceName = this.removeAccents(provinceName);
+        cityName = this.removeAccents(cityName);
+        if (counts && counts[provinceName][cityName]) {
+            tooltipHtmlContent += `<br><strong>${counts[provinceName][cityName]}</strong>`;
+        }
+
+        tooltip.innerHTML = tooltipHtmlContent;
+    }
+
+    // Método para manejar la salida del ratón del mapa
+    static handleMouseLeave(map: mapboxgl.Map, hoveredStateId: number | string | null, tooltip: HTMLDivElement) {
+        if (hoveredStateId !== null) {
+            map.setFeatureState(
+                { source: 'highlightPolygons', id: hoveredStateId },
+                { hover: false }
+            );
+        }
+        map.getCanvas().style.cursor = '';
+        hoveredStateId = null;
+
+        tooltip.style.display = 'none';
+    }
+
+    // Método para manejar el clic sobre los polígonos
+    static handlePolygonClick(e: any, map: mapboxgl.Map, counts: NestedDictionary, filterEvents?: (newState: sectionStateData) => void) {
+        if (!filterEvents) {
             return;
         }
 
-        // Limpiar el mapa si no se encuentran provincias/ciudades
-        if (provinceAndCityFeatures.length === 0) {
+        const clickedCity = e.features[0].properties.mpio_cnmbr;
+        const clickedProvince = e.features[0].properties.dpto_cnmbr;
+        const filterObject = {
+            axe: "",
+            crop: "",
+            city: "",
+            province: ""
+        };
+
+        if (MapController.selectedCity === clickedCity && MapController.selectedProvince === clickedProvince) {
+            filterEvents(filterObject);
+            MapController.resetSelectedProvinceAndCity();
+            MapController.cleanMap(map);
+            return;
+        }
+
+        MapController.cleanMap(map);
+        filterObject.city = clickedCity;
+        filterObject.province = clickedProvince;
+        filterEvents(filterObject);
+        MapController.selectedCity = clickedCity;
+        MapController.selectedProvince = clickedProvince;
+        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, filterEvents);
+    }
+
+    // Método para limpiar el mapa si no hay polígonos encontrados
+    static clearMapIfNoPolygons(map: mapboxgl.Map, polygonsFeatures: any) {
+        if (polygonsFeatures.length === 0) {
             const layersToRemove = [
                 "highlightPolygons-fill",
                 "highlightPolygons-fill-alter",
@@ -231,6 +272,104 @@ class MapController {
             map.removeSource("highlightPolygons");
         }
     }
+
+    static getPolygons(polygons: string[][] | string[]) {
+        if (typeof polygons[0] === 'string'){
+            return this.getPolygonsByCode(polygons as string[]);
+        }
+        return this.getPolygonsByName(polygons as string[][])
+    }
+
+    static getPolygonsByName(polygons: string[][]) {
+        return polygons.map(polygon => {
+            const [province, city] = polygon;
+
+            return colombiaGeoJSONByCities.features.find((feature: any) =>
+                MapController.removeAccents(feature.properties.dpto_cnmbr) === MapController.removeAccents(province) &&
+                MapController.removeAccents(feature.properties.mpio_cnmbr) === MapController.removeAccents(city)
+            );
+        }).filter(feature => feature !== undefined);
+    }
+
+    static getPolygonsByCode(polygons: string[]) {
+        return polygons.map(code => {
+            return colombiaGeoJSONByCities.features.find((feature: any) =>
+                feature.properties.mpio_cdpmp === code);
+        }).filter(feature => feature !== undefined);
+    }
+
+    static updateCountEventsByCityCodes(events: { municipalities_code: string[] }[]): NestedDictionary {
+        const cityCodeTechnicianCounts: NestedDictionary = {};
+        console.log(events)
+
+        // Verificar si events es un arreglo
+        if (!Array.isArray(events)) {
+            throw new Error('El parámetro events debe ser un arreglo');
+        }
+
+        events.forEach(event => {
+            // Verificar que event y municipalities_code no sean nulos o indefinidos
+            if (event && Array.isArray(event.municipalities_code)) {
+                event.municipalities_code.forEach(cityCode => {
+                    // Aquí asumimos que cityCode es un string y no es necesario convertirlo
+                    const cityData = this.getPolygonsByCodeCityAndProvince([cityCode])[0];
+
+                    if (cityData) {
+                        const provinceName = cityData.provinceName;
+                        const cityName = cityData.cityName;
+
+                        // Inicializar la provincia si no existe
+                        if (!cityCodeTechnicianCounts[provinceName]) {
+                            cityCodeTechnicianCounts[provinceName] = {};
+                        }
+
+                        // Sumar el conteo de técnicos para la ciudad
+                        if (cityCodeTechnicianCounts[provinceName][cityName]) {
+                            const currentCount = parseInt(cityCodeTechnicianCounts[provinceName][cityName].replace(/\D/g, ''), 10);
+                            cityCodeTechnicianCounts[provinceName][cityName] = `Técnicos: ${currentCount + 1}`;
+                        } else {
+                            cityCodeTechnicianCounts[provinceName][cityName] = 'Técnicos: 1';
+                        }
+                    }
+                });
+            } else {
+                console.warn('El evento es nulo o municipalities_code no es un arreglo:', event);
+            }
+        });
+
+        return cityCodeTechnicianCounts;
+    }
+
+    static getPolygonsByCodeCityAndProvince(polygons: string[]) {
+        return polygons.map(code => {
+            // Convertir el código del municipio en string para facilitar la manipulación
+            const codeStr = String(code);
+
+            // Los primeros dos dígitos del código representan la provincia
+            const provinceCode = codeStr.substring(0, 2);
+
+            // Encontrar la provincia usando los primeros dos dígitos
+            const provinceFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
+                feature.properties.mpio_cdpmp.startsWith(provinceCode)
+            );
+
+            // Encontrar el municipio usando el código completo
+            const cityFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
+                feature.properties.mpio_cdpmp === code
+            );
+
+            if (cityFeature && provinceFeature) {
+                return {
+                    provinceName: provinceFeature.properties.dpto_cnmbr,
+                    cityName: cityFeature.properties.mpio_cnmbr,
+                    feature: cityFeature
+                };
+            }
+
+            return undefined;
+        }).filter(feature => feature !== undefined);
+    }
+
 
     static updateCountEventsByCity(events: { province: string, city: string }[]): NestedDictionary {
         const cityEventCounts: NestedDictionary = {};
