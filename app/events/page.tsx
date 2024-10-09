@@ -153,6 +153,26 @@ function countEjes(events: Event[]) {
   return ejeCount;
 }
 
+function countInstitutionsTreeMap(events: Event[]) {
+  const institutionCount: { [key: string]: number } = {};
+  let multiInstitutionCount = 0;
+
+  events.forEach((event) => {
+    if (event.institution.length >= 2) {
+      multiInstitutionCount += 1;
+    } else {
+      event.institution.forEach((institution) => {
+        institutionCount[institution] =
+            (institutionCount[institution] || 0) + 1;
+      });
+    }
+  });
+  if (multiInstitutionCount > 0) {
+    institutionCount["Multi-Institucional"] = multiInstitutionCount;
+  }
+  return institutionCount;
+}
+
 // Count occurrences of each "institution"
 function countInstitutions(events: Event[]) {
   const predefinedInstitutions = new Set([
@@ -349,7 +369,7 @@ const EventPage: NextPage = () => {
         filterData = countCities(data);
         break;
       case "institution":
-        filterData = countInstitutions(data);
+        filterData = countInstitutionsTreeMap(data);
         break;
       default:
         return;
