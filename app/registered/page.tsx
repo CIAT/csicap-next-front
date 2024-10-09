@@ -132,6 +132,9 @@ const BeneficiariosPage: NextPage = () => {
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
+  const [treemapDataFiltered, setTreemapDataFiltered] = useState<
+      { name: string; value: number }[]
+  >([]);
 
   useEffect(() => {
     BeneficiariesRepository.fetchEvents()
@@ -140,9 +143,7 @@ const BeneficiariosPage: NextPage = () => {
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
 
-        console.log(data)
         setCounts(MapController.updateCountBeneficiariesByCity(formattedEvents));
-        console.log(counts)
 
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
@@ -175,6 +176,16 @@ const BeneficiariosPage: NextPage = () => {
         setDataCalendarResp(-1); // Set error state
       });
   }, []);
+
+  useEffect(() => {
+    setTreemapDataFiltered(treemapData
+        .sort((a, b) => b.value - a.value)
+        .map(item => ({
+          ...item,
+          value: item.value
+        })));
+    console.log(treemapDataFiltered)
+  }, [treemapData]);
 
   const sex = {
     labels: genderLabel,
@@ -219,7 +230,7 @@ const BeneficiariosPage: NextPage = () => {
     datasets: [
       {
         data: [],
-        tree: treemapData,
+        tree: treemapDataFiltered,
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
@@ -227,6 +238,19 @@ const BeneficiariosPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as const,
+          position: "top" as const,
+          color: "white",
+          wrap: true,
+          formatter: (context: any) => {
+            const data = context.dataset.tree[context.dataIndex];
+            return `${data.name}: ${data.value}`;
+          },
+        },
       },
     ],
   };
@@ -288,6 +312,9 @@ const BeneficiariosPage: NextPage = () => {
       tooltip: {
         enabled: true,
         callbacks: {
+          title: function () {
+            return "";
+          },
           label: (context: any) => {
             const data = context.dataset.tree[context.dataIndex];
             return `${data.name}: ${data.value}`;
@@ -295,10 +322,6 @@ const BeneficiariosPage: NextPage = () => {
         },
       },
     },
-  };
-
-  const filterBeneficiaries = (state: sectionStateData) => {
-
   };
 
   return (

@@ -310,6 +310,7 @@ class MapController {
         events.forEach(event => {
             // Verificar que event y municipalities_code no sean nulos o indefinidos
             if (event && Array.isArray(event.municipalities_code)) {
+                console.log(event.municipalities_code)
                 event.municipalities_code.forEach(cityCode => {
                     // Aquí asumimos que cityCode es un string y no es necesario convertirlo
                     const cityData = this.getPolygonsByCodeCityAndProvince([cityCode])[0];
