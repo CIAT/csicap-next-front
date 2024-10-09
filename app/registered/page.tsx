@@ -184,7 +184,6 @@ const BeneficiariosPage: NextPage = () => {
           ...item,
           value: item.value
         })));
-    console.log(treemapDataFiltered)
   }, [treemapData]);
 
   const sex = {

@@ -17,6 +17,7 @@ export interface EventsData {
     form_state: string;
     email: string;
     change_selection: string;
+    not_assistant: string;
 }
 
 export interface DataFormat {

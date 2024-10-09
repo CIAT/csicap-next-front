@@ -148,7 +148,6 @@ const BeneficiariosPage: NextPage = () => {
         setFilteredEvents(formattedEvents);
         setDataCalendarResp(200);
         setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
-        console.log(counts)
 
         let filterData: { [key: string]: number };
 
