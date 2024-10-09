@@ -239,8 +239,7 @@ const BeneficiariosPage: NextPage = () => {
   const treeMap = {
     datasets: [
       {
-        // Se requiere la propiedad `data` aunque esté vacía
-        data: [], // Obligatorio para Chart.js
+        data: [],
         tree: treemapData,
         key: "value",
         groups: ["name"],
@@ -249,6 +248,19 @@ const BeneficiariosPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as const,
+          position: "top" as const,
+          color: "white",
+          wrap: true,
+          formatter: (context: any) => {
+            const data = context.dataset.tree[context.dataIndex];
+            return `${data.name}: ${data.value}`;
+          },
+        },
       },
     ],
   };
@@ -270,34 +282,35 @@ const BeneficiariosPage: NextPage = () => {
     },
   };
 
+  const plugins = {
+    legend: {
+      labels: {
+        usePointStyle: true,
+        font: {
+          size: (ctx: any) => {
+            const width = ctx.chart.width;
+            return Math.max(8, width / 50);
+          },
+        },
+      },
+      position: "left" as const,
+    },
+  }
+
   const config2 = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
-        },
-        position: "left" as const,
-      },
-    },
+    plugins: plugins,
     title: {
       display: true,
-      text: educationalLevel.datasets[0].label, // Usar el label del dataset como título
+      text: educationalLevel.datasets[0].label,
     },
   };
 
   const config3 = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
-        },
-        position: "left" as const,
-      },
-    },
+    plugins: plugins,
   };
 
   const options = {
@@ -309,6 +322,9 @@ const BeneficiariosPage: NextPage = () => {
       },
       tooltip: {
         callbacks: {
+          title: function () {
+            return "";
+          },
           label: (context: any) => {
             const data = context.dataset.tree[context.dataIndex];
             return `${data.name}: ${data.value}`;

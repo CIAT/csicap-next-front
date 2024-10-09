@@ -370,7 +370,7 @@ const BeneficiariosPage: NextPage = () => {
             <div className={styles.bottom_div}>
               <div className={styles.flex_container}>
                 <div className={styles.width}>
-                  <CardComponent title="TreeMap" styles={styleBeneficiaries}>
+                  <CardComponent title="Número de registrados" styles={styleBeneficiaries}>
                     <ReactChart type="treemap" data={data} options={options} />
                   </CardComponent>
                 </div>

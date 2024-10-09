@@ -155,22 +155,31 @@ function countEjes(events: Event[]) {
 
 // Count occurrences of each "institution"
 function countInstitutions(events: Event[]) {
-  const institutionCount: { [key: string]: number } = {};
-  let multiInstitutionCount = 0;
+  const predefinedInstitutions = new Set([
+    "CIMMYT",
+    "CIAT (Alianza Bioversity-CIAT)",
+    "AGROSAVIA",
+    "FEDEARROZ",
+    "FEDEPAPA",
+    "AUGURA",
+    "FEDEGAN",
+    "FEDEPANELA",
+  ]);
+
+  const institutionCount: { [key: string]: number } = {
+    Otras: 0,
+  };
 
   events.forEach((event) => {
-    if (event.institution.length >= 2) {
-      multiInstitutionCount += 1;
-    } else {
-      event.institution.forEach((institution) => {
-        institutionCount[institution] =
-          (institutionCount[institution] || 0) + 1;
-      });
-    }
+    event.institution.forEach((institution) => {
+      if (predefinedInstitutions.has(institution)) {
+        institutionCount[institution] = (institutionCount[institution] || 0) + 1;
+      } else {
+        institutionCount["Otras"] += 1;
+      }
+    });
   });
-  if (multiInstitutionCount > 0) {
-    institutionCount["Multi-Institucional"] = multiInstitutionCount;
-  }
+
   return institutionCount;
 }
 
@@ -561,7 +570,7 @@ const options = {
       <div className={styles.event_page}>
         <div className={styles.div}>
           <ChartCardComponent
-              title="Numero de eventos por cultivos"
+              title="Número de eventos"
               header={
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                   <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
