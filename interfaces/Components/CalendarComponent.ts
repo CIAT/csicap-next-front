@@ -20,10 +20,34 @@ export interface EventsData {
     not_assistant: string;
 }
 
+export interface Event {
+    date: string;
+    eje: string[];
+    responsable: string;
+    city: string;
+    guess_type: string[];
+    institution: string[];
+    event_type: string;
+    province: string;
+    form_state: string;
+    name: string;
+    datesEnd: string;
+    crop: string[];
+    email: string | null;
+    event_objective: string;
+    event_id: string;
+    participant_count: string;
+  }
 export interface DataFormat {
     id: string;
     created_at: string;
     data: EventsData[];
+}
+
+export interface EventFormat {
+    id: string;
+    created_at: string;
+    data: Event[];
 }
 
 export interface sectionStateData {

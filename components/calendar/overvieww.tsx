@@ -11,6 +11,8 @@ const OverviewCard = () => {
                     style={{
                         backgroundColor: "#80C41C", // Custom background color
                         color: "#fff", // Text color
+                        fontSize: " 0.8rem", // Font size
+                        padding: "0px", // Padding
                     }}
                 >
                     Eventos Finalizados
@@ -21,6 +23,8 @@ const OverviewCard = () => {
                     style={{
                         backgroundColor: "#FECF00", // Custom background color
                         color: "#000", // Darker text color for contrast
+                        padding: "0px", // Padding
+                        fontSize: " 0.8rem", // Font size
                     }}
                 >
                     Eventos Programados
@@ -31,6 +35,8 @@ const OverviewCard = () => {
                     style={{
                         backgroundColor: "#c84e42", // Custom background color
                         color: "#fff", // Text color
+                        padding: "0px", // Padding
+                        fontSize: " 0.8rem", // Font size
                     }}
                 >
                     Eventos sin Cerrar
@@ -40,6 +46,8 @@ const OverviewCard = () => {
                 <Chip
                     style={{
                         backgroundColor: "#b9b9b9", // Custom background color
+                        fontSize: " 0.8rem", // Font size
+                        padding: "0px", // Padding
                         color: "#fff", // Text color
                     }}
                 >
