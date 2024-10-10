@@ -486,23 +486,6 @@ const ejesChartData = {
   ],
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const guestTypesChartData = {
     labels: guestTypeLabels,
     datasets: [

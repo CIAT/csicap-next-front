@@ -25,6 +25,7 @@ import CardComponent from "@/components/ui/card/Card";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 Chart.register(
   ArcElement,
@@ -264,39 +265,16 @@ const BeneficiariosPage: NextPage = () => {
         },
         position: "left" as const,
       },
-    },
-    title: {
-      display: true,
-      text: sex.datasets[0].label, // Usar el label del dataset como título
-    },
-  };
-
-  const config2 = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
+      tooltip: {
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+          },
         },
-        position: "left" as const,
-      },
-    },
-    title: {
-      display: true,
-      text: typeOfHousing.datasets[0].label, // Usar el label del dataset como título
-    },
-  };
-
-  const config3 = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
-        },
-        position: "left" as const,
       },
     },
   };
@@ -332,54 +310,77 @@ const BeneficiariosPage: NextPage = () => {
             {/* Card superior */}
             <div className={styles.top_div}>
               <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>
-                <div className={styles.top_div_division}>
-                  <label className={styles.top_card_label}>{totalData}</label>
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.top_div_division}>
+                      <label className={styles.top_card_label}>{totalData}</label>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
               {/* Doughnut: Género */}
               <CardComponent
-                title="Género"
-                styles={styleBeneficiaries}
+                  title="Género"
+                  styles={styleBeneficiaries}
               >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={sex} options={config} />
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.doughnut_chart}>
+                      <Doughnut data={sex} options={config}/>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
 
               {/* Doughnut: Tipo de propiedad */}
               <CardComponent
-                title="Tipo de propiedad"
+                  title="Tipo de propiedad"
                 styles={styleBeneficiaries}
               >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={typeOfHousing} options={config2} />
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.doughnut_chart}>
+                      <Doughnut data={typeOfHousing} options={config}/>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
 
               {/* Doughnut: Etnia */}
               <CardComponent
-                title="Etnia"
-                styles={styleBeneficiaries}
+                  title="Etnia"
+                  styles={styleBeneficiaries}
               >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={etnia} options={config3} />
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.doughnut_chart}>
+                      <Doughnut data={etnia} options={config}/>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
             </div>
             <div className={styles.bottom_div}>
               <div className={styles.flex_container}>
                 <div className={styles.width}>
                   <CardComponent title="Número de registrados" styles={styleBeneficiaries}>
-                    <ReactChart type="treemap" data={data} options={options} />
+                    {treemapData.length > 0 ? (
+                        <ReactChart type="treemap" data={data} options={options} />
+                    ) : (
+                        <LoadingAnimation/>
+                    )}
                   </CardComponent>
                 </div>
                 <div className={styles.width}>
                   <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
-                      <MapComponent
-                        polygons={BeneficiariesController.extractProvincesAndCities(filteredEvents)}
-                        data={counts}
-                      />
+                      {treemapData.length > 0 ? (
+                          <MapComponent
+                          polygons={BeneficiariesController.extractProvincesAndCities(filteredEvents)}
+                          data={counts}/>
+                      ) : (
+                          <LoadingAnimation/>
+                        )}
                     </div>
                   </CardComponent>
                 </div>
