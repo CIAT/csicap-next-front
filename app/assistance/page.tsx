@@ -5,14 +5,14 @@ import styles from "./assistance.module.css";
 import CardComponent from "@/components/ui/card/Card";
 import styleTechnical from "./assistance.module.css";
 import {
-  Chart as ChartJS,
-  Tooltip as TooltipPlugin,
-  Legend as LegendPlugin,
+  Chart,
+  Tooltip,
+  Legend,
   ArcElement,
   CategoryScale,
   BarElement,
   LinearScale,
-  Title as TitlePlugin,
+  Title,
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
@@ -21,16 +21,10 @@ import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import { useEffect, useState } from "react";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
-import { As } from "@nextui-org/react";
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
-import {EventsData, sectionStateData} from "@/interfaces";
+import { EventsData, sectionStateData } from "@/interfaces";
+import { parse } from "path";
 
 interface Assistance {
   main_occupation: string;
@@ -41,17 +35,47 @@ interface Assistance {
   fecha: string;
 }
 
-ChartJS.register(
-  TooltipPlugin,
-  LegendPlugin,
+interface Event {
+  date: string;
+  eje: string[];
+  responsable: string;
+  city: string;
+  guess_type: string[];
+  institution: string[];
+  event_type: string;
+  province: string;
+  form_state: string;
+  name: string;
+  datesEnd: string;
+  crop: string[];
+  email: string | null;
+  event_objective: string;
+  event_id: string;
+  participant_count: string;
+}
+
+Chart.register(
+  Tooltip,
+  Legend,
   ArcElement,
   CategoryScale,
   BarElement,
   LinearScale,
-  TitlePlugin,
   TreemapController,
   TreemapElement
 );
+
+const shortenedLabels = [
+  "1-Agricultura digital",
+  "2-Información climática",
+  "3-Mejoramiento génetico",
+  "4-Técnicas de manejo de cultivos",
+  "5-Modelos de negocio",
+  "6-Asistencia técnica",
+  "7-Monitoreo y evaluación",
+  "8-Ambiental, social y género",
+  "Equipo de coordinación",
+];
 
 const colors = [
   "#FECF00",
@@ -86,6 +110,14 @@ async function getAssistanceData(): Promise<Assistance[]> {
   return data;
 }
 
+async function getEventData(): Promise<{ data: Event[] }> {
+  const response = await fetch(
+    "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
+  );
+  const data = await response.json();
+  return data;
+}
+
 const config = {
   responsive: true,
   maintainAspectRatio: false,
@@ -102,41 +134,6 @@ const config = {
   },
 };
 
-// const config2 = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   plugins: {
-//     legend: {
-//       labels: {
-//         font: {
-//           size: 10,
-//         },
-//         usePointStyle: true,
-//       },
-//       position: "right" as const,
-//     },
-//   },
-//   title: {
-//     display: true,
-//   },
-// };
-
-// const config3 = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   plugins: {
-//     legend: {
-//       labels: {
-//         font: {
-//           size: 6,
-//         },
-//         usePointStyle: true,
-//       },
-//       position: "right" as const,
-//     },
-//   },
-// };
-
 const options = {
   responsive: true,
   maintainAspectRatio: false,
@@ -145,18 +142,112 @@ const options = {
       display: false,
     },
     tooltip: {
+      enabled: true,
       callbacks: {
-        label: (context: any) => {
-          const data = context.dataset.tree[context.dataIndex];
-          return `${data.name}: ${data.value}`;
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem: any) {
+          const data = tooltipItem.raw;
+          const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+          return `${label}: ${data.v}`;
         },
       },
     },
   },
 };
 
+const countCrops = (events: Event[]) => {
+  const cropCount: { [key: string]: number } = {};
+  let multicultivoCount = 0;
+  events.forEach((event) => {
+    if (event.crop.length > 1) {
+      if (event.participant_count === "nan") {
+        multicultivoCount += 0;
+      } else {
+        multicultivoCount += Number(event.participant_count);
+      }
+    } else {
+      const crop = event.crop[0];
+      if (event.participant_count === "nan") {
+        cropCount[crop] = (cropCount[crop] || 0) + 0;
+      } else {
+        cropCount[crop] =
+          (cropCount[crop] || 0) + Number(event.participant_count);
+      }
+    }
+  });
+
+  if (multicultivoCount > 0) {
+    cropCount["Multi-Cultivos"] = multicultivoCount;
+  }
+  return cropCount;
+};
+
+const countEjes = (events: Event[]) => {
+  const ejeCount: { [key: string]: number } = {};
+  let multiEjeCount = 0;
+  events.forEach((event) => {
+    if (event.eje.length > 1) {
+      if (event.participant_count === "nan") {
+        multiEjeCount += 0;
+      } else {
+        multiEjeCount += Number(event.participant_count);
+      }
+    } else {
+      const eje = event.eje[0];
+      if (event.participant_count === "nan") {
+        ejeCount[eje] = (ejeCount[eje] || 0) + 0;
+      } else {
+        ejeCount[eje] =
+          (ejeCount[eje] || 0) + Number(event.participant_count);
+      }
+    }
+  });
+
+  if (multiEjeCount > 0) {
+    ejeCount["Multi-Ejes"] = multiEjeCount;
+  }
+  console.log("Eje count:", ejeCount);
+  return ejeCount;
+};
+
+const countCity = (events: Event[]) => {
+  const cityCount: { [key: string]: number } = {};
+  events.forEach((event) => {
+      const city = event.city;
+      console.log("City:", event.city);
+      if (event.participant_count === "nan") {
+        cityCount[city] = (cityCount[city] || 0) + 0;
+      } else {
+        cityCount[city] =
+          (cityCount[city] || 0) + Number(event.participant_count);
+      }
+  });
+  console.log("City count:", cityCount);
+  return cityCount;
+};
+
+const countInstitutions = (assists: Assistance[]) => {
+  const institutionCount: { [key: string]: number } = {};
+  let nullInstitutionCount = 0;
+  assists.forEach((assist) => {
+      const institution = assist.organization_affiliation;
+      if (institution) {
+        institutionCount[institution] = (institutionCount[institution] || 0) + 1;
+      }else if (institution === null || institution === "N/A") {
+        nullInstitutionCount++;
+      }
+  });
+
+  if (nullInstitutionCount > 0) {
+    institutionCount["N/A"] = nullInstitutionCount;
+  }
+  console.log("Orga count:", institutionCount);
+  return institutionCount;
+};
+
 const AssistancePage: NextPage = () => {
-  const [totalAssistants, setTotalAssistants] = useState<number>(); // State to hold total assistants
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(events);
   const [genderStats, setGenderStats] = useState({
@@ -171,24 +262,24 @@ const AssistancePage: NextPage = () => {
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [allAssistanceData, setAllAssistanceData] = useState<Assistance[]>([]);
+  const [allEventsData, setAllEventsData] = useState<Event[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       const dataset = await getAssistanceData();
       setAllAssistanceData(dataset);
-      console.log("Assistance data:", dataset);
-      proccesdata();
-      // initializeTreemapData(dataset.data);
+      const eventsDataSet = await getEventData();
+      setAllEventsData(eventsDataSet.data);
+      initializeTreemapData(eventsDataSet.data);
     }
-
     fetchData();
   }, []);
 
   useEffect(() => {
     if (allAssistanceData.length > 0) {
-      proccesdata(); // Call your processing function once data is available
+      proccesdata();
     }
   }, [allAssistanceData]);
 
@@ -199,16 +290,16 @@ const AssistancePage: NextPage = () => {
       "31-40": 0,
       "41-50": 0,
       "51+": 0,
-      "N/N": 0, // For invalid or missing ages
+      "N/N": 0,
     };
 
     let occupationCount: { [key: string]: number } = {
       "Tecnico/profesional": 0,
       "Productor(a) agropecuario(a)": 0,
       "Investigador(a)": 0,
-      Otro: 0, // Initialize "Otro" to count any null or undefined occupations
+      Otro: 0,
     };
-  
+
     let menCount = 0;
     let womenCount = 0;
     let otherCount = 0;
@@ -220,7 +311,7 @@ const AssistancePage: NextPage = () => {
       const occupation = item?.main_occupation;
       const birthDate = item.birth_date ? new Date(item.birth_date) : null; // Parse the birth date
       const age = birthDate ? currentYear - birthDate.getFullYear() : null; // Calculate age
-  
+
       // Count gender
       if (gender === "hombre") {
         menCount++;
@@ -229,7 +320,7 @@ const AssistancePage: NextPage = () => {
       } else {
         otherCount++;
       }
-  
+
       // Count occupation
       if (occupation === "Técnico/Profesional") {
         occupationCount["Tecnico/profesional"]++;
@@ -238,7 +329,7 @@ const AssistancePage: NextPage = () => {
       } else if (occupation === "Investigador(a)") {
         occupationCount["Investigador(a)"]++;
       } else {
-        occupationCount["Otro"]++; // Increment "Otro" for null/undefined occupations
+        occupationCount["Otro"]++;
       }
 
       // Count age
@@ -255,45 +346,47 @@ const AssistancePage: NextPage = () => {
           ageCount["51+"]++;
         }
       } else {
-        ageCount["N/N"]++; // Count as "N/N" if age is not available
+        ageCount["N/N"]++;
       }
     });
-  
+
     // Update state with the counts
-    setTotalAssistants(allAssistanceData.length);
     setGenderStats({ men: menCount, women: womenCount, other: otherCount });
     setAgeStats(ageCount);
     setOccupationStats(occupationCount);
   }
 
-
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    const newFilter = event.target.value;
-    setSelectedFilter(newFilter);
-    processTreemapData(newFilter, allAssistanceData); // Use the stored event data
+  const initializeTreemapData = (data: Event[]) => {
+    const filterData = countCrops(data);
+    const mappedData = Object.keys(filterData).map(key => ({
+      name: key,
+      value: filterData[key]
+    }));
+    console.log("Mapped data:", mappedData); // Asegúrate de que esto muestra datos válidos
+    setTreemapData(mappedData);
   };
-
-  const processTreemapData = (filter: string, data: Assistance[]) => {
+  
+  const processTreemapData = (filter: string, data: Event[], data2: Assistance[]) => {
     let filterData: { [key: string]: number } = {};
 
     switch (filter) {
       case "crop":
-        // filterData = countCrops(data);
+        filterData = countCrops(data); // Usar countCrop en lugar de countCrops
         break;
       case "ejes":
-        // filterData = countEjes(data);
+        filterData = countEjes(data);
         break;
       case "city":
-        // filterData = countCities(data);
+        filterData = countCity(data);
         break;
       case "institution":
-        // filterData = countInstitutions(data);
+        filterData = countInstitutions(data2);
         break;
       default:
         return;
     }
 
-    // Create treemap data
+    // Crear datos para el treemap
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
       value: filterData[key],
@@ -301,14 +394,11 @@ const AssistancePage: NextPage = () => {
     setTreemapData(mappedData);
   };
 
-  // const initializeTreemapData = (data: Assistance[]) => {
-  //   let filterData = countCrops(data);
-  //   const mappedData = Object.keys(filterData).map((key) => ({
-  //     name: key,
-  //     value: filterData[key],
-  //   }));
-  //   setTreemapData(mappedData);
-  // };
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    const newFilter = event.target.value;
+    setSelectedFilter(newFilter);
+    processTreemapData(newFilter, allEventsData, allAssistanceData); // Use the stored event data
+  };
 
   const occupationBackgroundColors = Object.keys(occupationStats).map(
     (_, index) => colors[index % colors.length]
@@ -321,24 +411,40 @@ const AssistancePage: NextPage = () => {
   const treeData = {
     datasets: [
       {
-        // Se requiere la propiedad `data` aunque esté vacía
-        data: treemapData, // Obligatorio para Chart.js
-        key: "value",
-        groups: ["name"],
+        label: 'Eventos por Cultivo',
+        data: treemapData.map(item => item.value),
+        tree: treemapData,
+        key: 'value',
+        groups: ['name'],
         backgroundColor: (ctx: { dataIndex: number }) => {
           return colors[ctx.dataIndex % colors.length]; // Reuse colors array
         },
-        borderColor: "rgba(0,0,0,0.1)",
-      },
-    ],
+        borderColor: 'rgba(0,0,0,0.1)',
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as const, // Asegúrate de que el valor sea uno de los permitidos
+          position: "top" as const,
+          color: "white",
+          wrap: true,
+          formatter: (ctx: any) => {
+            const data = ctx.raw;
+            const label = data.g ? shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g : "N/A";
+            return `${label}: ${data.v}`;
+          },
+        },
+      }
+    ]
   };
+  
 
   const ageChartData = {
     labels: ["20-25", "26-30", "31-40", "41-50", "51+", "N/N"],
     datasets: [
       {
         label: "Distribución de Edad",
-        data: Object.values(ageStats), // Use age group counts
+        data: Object.values(ageStats),
         backgroundColor: occupationBackgroundColors,
         borderColor: occupationBorderColors,
       },
@@ -346,7 +452,7 @@ const AssistancePage: NextPage = () => {
   };
 
   const occupationChartData = {
-    labels: Object.keys(occupationStats), // Use occupation types as labels
+    labels: Object.keys(occupationStats),
     datasets: [
       {
         label: "Distribución de Ocupaciones",
@@ -369,51 +475,49 @@ const AssistancePage: NextPage = () => {
     ],
   };
 
-  const filterAssistants = (state: sectionStateData) => {
-
-  };
+  const filterAssistants = (state: sectionStateData) => {};
 
   return (
     <div className={styles.div}>
-        <div className={styles.top_div}>
-          {/* Card: Total asistentes */}
-          <CardComponent title="Total asistentes" styles={styleTechnical}>
-            <label className={styles.top_card_label}>
-              {allAssistanceData.length > 0 ? (
-                allAssistanceData.length
-              ) : (
-                <LoadingAnimation />
-              )}
-            </label>
-          </CardComponent>
-
-          {/* Card: Género */}
-          <CardComponent title="Género" styles={styleTechnical}>
+      <div className={styles.top_div}>
+        {/* Card: Total asistentes */}
+        <CardComponent title="Total asistentes" styles={styleTechnical}>
+          <label className={styles.top_card_label}>
             {allAssistanceData.length > 0 ? (
-              <Doughnut data={genderChartData} options={config} />
+              allAssistanceData.length
             ) : (
               <LoadingAnimation />
             )}
-          </CardComponent>
+          </label>
+        </CardComponent>
 
-          {/* Card: Edad */}
-          <CardComponent title="Edad" styles={styleTechnical}>
-            {allAssistanceData.length > 0 ? (
-              <Doughnut data={ageChartData} options={config} />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </CardComponent>
+        {/* Card: Género */}
+        <CardComponent title="Género" styles={styleTechnical}>
+          {allAssistanceData.length > 0 ? (
+            <Doughnut data={genderChartData} options={config} />
+          ) : (
+            <LoadingAnimation />
+          )}
+        </CardComponent>
 
-          {/* Card: Ocupacion */}
-          <CardComponent title="Ocupacion" styles={styleTechnical}>
-            {allAssistanceData.length > 0 ? (
-              <Doughnut data={occupationChartData} options={config} />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </CardComponent>
-        </div>
+        {/* Card: Edad */}
+        <CardComponent title="Edad" styles={styleTechnical}>
+          {allAssistanceData.length > 0 ? (
+            <Doughnut data={ageChartData} options={config} />
+          ) : (
+            <LoadingAnimation />
+          )}
+        </CardComponent>
+
+        {/* Card: Ocupacion */}
+        <CardComponent title="Ocupacion" styles={styleTechnical}>
+          {allAssistanceData.length > 0 ? (
+            <Doughnut data={occupationChartData} options={config} />
+          ) : (
+            <LoadingAnimation />
+          )}
+        </CardComponent>
+      </div>
 
       <div className={styles.bottom_div}>
         <div className={styles.width}>
@@ -437,8 +541,7 @@ const AssistancePage: NextPage = () => {
               </FormControl>
             }
           >
-            {/* <ReactChart type="treemap" data={treeData} options={options} /> */}
-            <LoadingAnimation/>
+            <ReactChart type="treemap" data={treeData} options={options} />
           </ChartCardComponent>
         </div>
 
@@ -448,7 +551,10 @@ const AssistancePage: NextPage = () => {
               <MapComponent
                 polygons={CalendarController.extractProvinces(filteredEvents)}
                 data={{}}
-                filterData={(newState: sectionStateData) => filterAssistants(newState)}/>
+                filterData={(newState: sectionStateData) =>
+                  filterAssistants(newState)
+                }
+              />
             </div>
           </ChartCardComponent>
         </div>
