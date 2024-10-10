@@ -372,7 +372,7 @@ const BeneficiariosPage: NextPage = () => {
                   </CardComponent>
                 </div>
                 <div className={styles.width}>
-                  <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
+                  <CardComponent title="Registrados por municipio" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
                       {treemapData.length > 0 ? (
                           <MapComponent
