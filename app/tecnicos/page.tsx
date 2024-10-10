@@ -31,6 +31,9 @@ import {
 } from "@mui/material";
 import { colors } from "@nextui-org/react";
 import {sectionStateData} from "@/interfaces";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import MapController from "@/helpers/Component/Controller/MapController";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 Chart.register(
   ArcElement,
@@ -122,8 +125,9 @@ const BeneficiariosPage: NextPage = () => {
   const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
     events
   );
+  const [counts, setCounts] = useState<NestedDictionary>({});
+
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
-  const [provinceState, setProvinceState] = useState<string[]>([]);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
   const [educationaLevelNumber, setEducationalLevelNumber] = useState<number[]>([]);
@@ -133,40 +137,26 @@ const BeneficiariosPage: NextPage = () => {
   const [totalData, setTotalData] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>("institution");
   const [treemapTitle, setTreemapTitle] = useState("");
+  const [allEventData, setAllEventData] = useState<DataFormat>([]); // Store all event data once fetched
+
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
+  >([]);
+  const [treemapDataFiltered, setTreemapDataFiltered] = useState<
+      { name: string; value: number }[]
   >([]);
 
   useEffect(() => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
         const formattedEvents = TechnicalController.formatEvents(data);
-        const uniqueProvinces = TechnicalController.extractProvinces(formattedEvents);
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
-        setProvinceState([...uniqueProvinces]);
         setDataCalendarResp(200);
+        setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
 
-        let filterData: { [key: string]: number };
-
-        // Based on selected filter, count occurrences
-        switch (selectedFilter) {
-          case "crop":
-            filterData = countCrops(data);
-            setTreemapTitle("Cultivos")
-            break;
-          case "institution":
-          default:
-            filterData = countOrganizations(data);
-            setTreemapTitle("Instituciones")
-        }
-
-        const treemapData = Object.keys(filterData).map((key) => ({
-          name: key,
-          value: filterData[key],
-        }));
-
-        setTreemapData(treemapData);
+        setAllEventData(data);
+        initializeTreemapData(data);
 
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
@@ -182,17 +172,61 @@ const BeneficiariosPage: NextPage = () => {
         const ethnicityCount = countEthnicity(data)
         setEthnicityLabel(Object.keys(ethnicityCount))
         setEthnicityNumber(Object.values(ethnicityCount))
-
       })
       .catch(error => {
         console.error("Error fetching events:", error);
         setDataCalendarResp(-1); // Set error state
       });
-  }, [selectedFilter]);
+  }, []);
+
+  useEffect(() => {
+    setTreemapDataFiltered(treemapData
+        .sort((a, b) => b.value - a.value)
+        .map(item => ({
+          ...item,
+          value: item.value
+        })));
+  }, [treemapData]);
+
+  const initializeTreemapData = (data: DataFormat) => {
+    let filterData = countOrganizations(data);
+    const mappedData = Object.keys(filterData).map((key) => ({
+      name: key,
+      value: filterData[key],
+    }));
+    setTreemapData(mappedData);
+  };
+
+  useEffect(() => {
+    console.log(treemapData)
+  }, [treemapData]);
 
   const handleFilterChange = (event: SelectChangeEvent) => {
-    setSelectedFilter(event.target.value);
+    const newFilter = event.target.value;
+    setSelectedFilter(newFilter);
+    processTreemapData(newFilter, allEventData);
   };
+
+  const processTreemapData = (filter: string, data: DataFormat) => {
+    let filterData: { [key: string]: number } = {};
+
+    switch (filter) {
+      case "crop":
+        filterData = countCrops(data);
+        break;
+      case "institution":
+        filterData = countOrganizations(data);
+        break;
+      default:
+        return;
+    }
+
+    const mappedData = Object.keys(filterData).map((key) => ({
+      name: key,
+      value: filterData[key],
+    }));
+    setTreemapData(mappedData);
+  }
 
   const gender = {
     labels: genderLabel,
@@ -236,9 +270,8 @@ const BeneficiariosPage: NextPage = () => {
   const treeMap = {
     datasets: [
       {
-        // Se requiere la propiedad `data` aunque esté vacía
-        data: [], // Obligatorio para Chart.js
-        tree: treemapData,
+        data: [],
+        tree: treemapDataFiltered,
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
@@ -246,6 +279,19 @@ const BeneficiariosPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as const,
+          position: "top" as const,
+          color: "white",
+          wrap: true,
+          formatter: (context: any) => {
+            const data = context.dataset.tree[context.dataIndex];
+            return `${data.name}: ${data.value}`;
+          },
+        },
       },
     ],
   };
@@ -260,41 +306,60 @@ const BeneficiariosPage: NextPage = () => {
         },
         position: "left" as const,
       },
-    },
-    title: {
-      display: true,
-      text: gender.datasets[0].label,
+      tooltip: {
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+          },
+        },
+      },
     },
   };
+
+  const plugins = {
+    legend: {
+      labels: {
+        usePointStyle: true,
+        font: {
+          size: (ctx: any) => {
+            const width = ctx.chart.width;
+            return Math.max(8, width / 50);
+          },
+        },
+      },
+      position: "left" as const,
+    },
+    tooltip: {
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem: any) {
+          const index = tooltipItem.dataIndex;
+          return `${tooltipItem.label}: ${tooltipItem.raw}`;
+        },
+      },
+    },
+  }
 
   const config2 = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
-        },
-        position: "left" as const,
-      },
-    },
+    plugins: plugins,
     title: {
       display: true,
-      text: educationalLevel.datasets[0].label, // Usar el label del dataset como título
+      text: educationalLevel.datasets[0].label,
     },
   };
 
   const config3 = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
-        },
-        position: "left" as const,
-      },
-    },
+    plugins: plugins,
   };
 
   const options = {
@@ -306,6 +371,9 @@ const BeneficiariosPage: NextPage = () => {
       },
       tooltip: {
         callbacks: {
+          title: function () {
+            return "";
+          },
           label: (context: any) => {
             const data = context.dataset.tree[context.dataIndex];
             return `${data.name}: ${data.value}`;
@@ -315,10 +383,6 @@ const BeneficiariosPage: NextPage = () => {
     },
   };
 
-  const filterTechnicians = (state: sectionStateData) => {
-
-  };
-
   return (
       <div className="w-full h-full flex flex-wrap">
         {/* Card superior */}
@@ -326,30 +390,46 @@ const BeneficiariosPage: NextPage = () => {
           <div className={styles.top_div}>
             {/* Card: Total técnicos */}
             <CardComponent title="Total técnicos registrados" styles={styleTechnical}>
-              <div className={styles.top_div_division}>
-                <label className={styles.top_card_label}>{totalData}</label>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.top_div_division}>
+                    <label className={styles.top_card_label}>{totalData}</label>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
 
             {/* Card: Género */}
             <CardComponent title="Género" styles={styleTechnical}>
-              <div className={styles.doughnut_chart}>
-                <Doughnut data={gender} options={config}/>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={gender} options={config}/>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
 
             {/* Card: Nivel Educativo */}
             <CardComponent title="Nivel Educativo" styles={styleTechnical}>
-              <div className={styles.doughnut_chart}>
-                <Doughnut data={educationalLevel} options={config2}/>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={educationalLevel} options={config2}/>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
 
             {/* Card: Etnia */}
             <CardComponent title="Etnia" styles={styleTechnical}>
-              <div className={styles.doughnut_chart}>
-                <Doughnut data={etnia} options={config3}/>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={etnia} options={config3}/>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
           </div>
 
@@ -368,24 +448,36 @@ const BeneficiariosPage: NextPage = () => {
                         onChange={handleFilterChange}
                         label="Filtrar"
                     >
-                      <MenuItem value="crop">Cultivo</MenuItem>
                       <MenuItem value="institution">Institución</MenuItem>
+                      <MenuItem value="crop">Cultivo</MenuItem>
                     </Select>
                   </FormControl>
                 }>
-                  <ReactChart type="treemap" data={treeMap} options={options}/>
+                  {treemapData.length > 0 ? (
+                      <ReactChart
+                          type="treemap"
+                          data={treeMap}
+                          options={options}
+                      />
+                  ) : (
+                      <LoadingAnimation/>
+                  )}
                 </ChartCardComponent>
               </div>
 
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
                 <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
-                  <div className="w-full h-full">
-                    <MapComponent
-                     polygons={TechnicalController.extractProvinces(TechnicalController.transformToFormattedBeneficiary(filteredEvents))}
-                     data={{}}
-                     filterData={(newState: sectionStateData) => filterTechnicians(newState)}/>
-                  </div>
+                  {treemapData.length > 0 ? (
+                      <div className="w-full h-full">
+                        <MapComponent
+                            polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
+                            data={counts}
+                        />
+                      </div>
+                  ) : (
+                      <LoadingAnimation/>
+                  )}
                 </CardComponent>
               </div>
             </div>

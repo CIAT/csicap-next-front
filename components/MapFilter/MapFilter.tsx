@@ -35,7 +35,7 @@ const MapFilter: React.FC<MapFilterProps> = ({
         <div className={style["filter-popup"]}>
             <div className={style["popup-title"]}>
                 <div>
-                    Filter
+                    Filtro
                 </div>
                 <button className={style["close-button"]} onClick={() => setShowFilter(prev => !prev)}>
                     <img className={style["close-image"]} src="/cross-svgrepo-com.png" alt="Close"/>
@@ -47,7 +47,7 @@ const MapFilter: React.FC<MapFilterProps> = ({
                         Eje
                     </div>
                     <button className={style["select-clear"]} onClick={() => setSectionState(prev => ({ ...prev, axe: "" }))}>
-                        Clear
+                        Limpiar
                     </button>
                 </div>
                 <MapSelect
@@ -63,7 +63,7 @@ const MapFilter: React.FC<MapFilterProps> = ({
                         Cultivo
                     </div>
                     <button className={style["select-clear"]} onClick={() => setSectionState(prev => ({ ...prev, crop: "" }))}>
-                        Clear
+                        Limpiar
                     </button>
                 </div>
                 <MapSelect
@@ -76,10 +76,10 @@ const MapFilter: React.FC<MapFilterProps> = ({
                 />
                 <div className={style["select-title"]}>
                     <div>
-                        Departamento
+                        Municipio
                     </div>
                     <button className={style["select-clear"]} onClick={() => setSectionState(prev => ({ ...prev, city: "" }))}>
-                        Clear
+                        Limpiar
                     </button>
                 </div>
                 <MapSelect
@@ -93,10 +93,10 @@ const MapFilter: React.FC<MapFilterProps> = ({
             </div>
             <div className={style["popup-footer"]}>
                 <button className={`${style["popup-footer-button"]} ${style["reset-button"]}`} onClick={handleReset}>
-                    Reset
+                    Restaurar
                 </button>
                 <button className={`${style["popup-footer-button"]} ${style["apply-button"]}`} onClick={handleApply}>
-                    Apply
+                    Aplicar
                 </button>
             </div>
         </div>

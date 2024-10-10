@@ -1,9 +1,10 @@
 "use client";
 
-import { NextPage } from "next";
+import {NextPage} from "next";
 import styles from "./assistance.module.css";
-import CardComponent from "@/components/ui/card/Card";
 import styleTechnical from "./assistance.module.css";
+import CardComponent from "@/components/ui/card/Card";
+import { Chart as ReactChart } from "react-chartjs-2";
 import {
   Chart,
   Tooltip,
@@ -14,26 +15,21 @@ import {
   LinearScale,
   Title,
 } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
-import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
-import { Chart as ReactChart } from "react-chartjs-2";
+import {Doughnut} from "react-chartjs-2";
+import {TreemapController, TreemapElement} from "chartjs-chart-treemap";
 import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import { useEffect, useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
-import { EventsData, sectionStateData } from "@/interfaces";
+import { DataFormat, EventsData } from "@/interfaces";
 import { parse } from "path";
-
-interface Assistance {
-  main_occupation: string;
-  organization_affiliation: null;
-  birth_date: string;
-  event_id: string;
-  sex_complete: string;
-  fecha: string;
-}
+import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
+import MapController from "@/helpers/Component/Controller/MapController";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import {Assistance} from "@/interfaces/Components/AssistanceComponent";
+import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 
 interface Event {
   date: string;
@@ -126,11 +122,19 @@ const config = {
       labels: {
         usePointStyle: true,
       },
-      position: "right" as const,
+      position: "left" as const,
     },
-  },
-  title: {
-    display: true,
+    tooltip: {
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem: any) {
+          const index = tooltipItem.dataIndex;
+          return `${tooltipItem.label}: ${tooltipItem.raw}`;
+        },
+      },
+    },
   },
 };
 
@@ -250,6 +254,8 @@ const countInstitutions = (assists: Assistance[]) => {
 const AssistancePage: NextPage = () => {
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(events);
+  const [counts, setCounts] = useState<NestedDictionary>({});
+
   const [genderStats, setGenderStats] = useState({
     men: 0,
     women: 0,
@@ -267,8 +273,27 @@ const AssistancePage: NextPage = () => {
   const [allEventsData, setAllEventsData] = useState<Event[]>([]);
 
   useEffect(() => {
+
+  }, []);
+
+  useEffect(() => {
+    CalendarRepository.fetchEvents()
+        .then((data: DataFormat) => {
+          const formattedEvents = CalendarController.formatEvents(data).map(event => ({
+            ...event,
+            city: event.city.toLowerCase(),
+          }));
+          setCounts(MapController.updateCountAssistantsByGender(formattedEvents));
+          console.log("counts", counts)
+          setEvents(formattedEvents);
+          setFilteredEvents(formattedEvents);
+        })
+        .catch(error => {
+          console.error("Error fetching events:", error);
+        });
+
     async function fetchData() {
-      const dataset = await getAssistanceData();
+      const dataset =  await AssistanceRepository.getAssistanceData();
       setAllAssistanceData(dataset);
       const eventsDataSet = await getEventData();
       setAllEventsData(eventsDataSet.data);
@@ -475,7 +500,7 @@ const AssistancePage: NextPage = () => {
     ],
   };
 
-  const filterAssistants = (state: sectionStateData) => {};
+
 
   return (
     <div className={styles.div}>
@@ -549,11 +574,8 @@ const AssistancePage: NextPage = () => {
           <ChartCardComponent title="Mapa Colombia" header={<></>}>
             <div className="w-full h-full">
               <MapComponent
-                polygons={CalendarController.extractProvinces(filteredEvents)}
-                data={{}}
-                filterData={(newState: sectionStateData) =>
-                  filterAssistants(newState)
-                }
+                polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
+                data={counts}
               />
             </div>
           </ChartCardComponent>

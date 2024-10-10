@@ -37,7 +37,7 @@ const Header = () => {
             <Link href="/assistance" onClick={closeMenu}>Asistentes</Link>
           </li>
           <li className={styles.header_nav_item}>
-            <Link href="/beneficiarios" onClick={closeMenu}>Beneficiarios</Link>
+            <Link href="/registered" onClick={closeMenu}>Registrados</Link>
           </li>
           <li className={styles.header_nav_item}>
             <Link href="/tecnicos" onClick={closeMenu}>Técnicos</Link>

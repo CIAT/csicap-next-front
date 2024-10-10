@@ -66,7 +66,19 @@ const shortenedLabels = [
   "7-Monitoreo y evaluación",
   "8-Ambiental, social y género",
   "Equipo de coordinación",
+  "Inclusión social y de género" 
 ];
+
+const LabelsParticipants = [
+  "Productoras/es agropecuarios",
+  "Trabajadoras/es de entidades públicas",
+  "Estudiantes",
+  "Profesoras/es",
+  "Técnicos/Profesionales",
+  "Investigadores",
+  "Otro"
+];
+
 
 const colors = [
   "#FECF00",
@@ -79,12 +91,16 @@ const colors = [
   "#0E6E8C",
   "#569aaf",
 ];
+let evenData: { data: Event[] } = {
+  data: []  // Puedes empezar con un array vacío para luego agregar los datos
+};
 
 async function getEventData(): Promise<{ data: Event[] }> {
   const response = await fetch(
       "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
   );
   const data = await response.json();
+  evenData = data;
   return data;
 }
 
@@ -95,22 +111,20 @@ function calculateEventStatus(events: Event[]) {
   let programmedEvents = 0;
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
-  
+
   events.forEach((event) => {
-    const eventEndDate = parseISO(event.datesEnd);
+    // Validar si datesEnd es válido antes de parsearlo
+    const eventEndDate = event.datesEnd ? parseISO(event.datesEnd) : null;
 
     if (event.form_state === "0") {
-      // If form_state is 0, count it as finished
+      // Si form_state es 0, cuenta como finalizado
       finishedEvents += 1;
     } else if (event.form_state === "1") {
-      // If form_state is 1, check the date
-      if (eventEndDate >= currentDate){
+      // Si form_state es 1, revisar la fecha si está presente
+      if (eventEndDate && eventEndDate >= currentDate) {
         programmedEvents += 1;
       } else {
-        console.log(event.event_id);
-        console.log(eventEndDate);
-        console.log(currentDate);
-        // eventos sin cerrar
+        // Eventos sin cerrar o sin fecha válida
         inProgressEvents += 1;
       }
     }
@@ -139,8 +153,7 @@ function countEjes(events: Event[]) {
   return ejeCount;
 }
 
-// Count occurrences of each "institution"
-function countInstitutions(events: Event[]) {
+function countInstitutionsTreeMap(events: Event[]) {
   const institutionCount: { [key: string]: number } = {};
   let multiInstitutionCount = 0;
 
@@ -150,13 +163,43 @@ function countInstitutions(events: Event[]) {
     } else {
       event.institution.forEach((institution) => {
         institutionCount[institution] =
-          (institutionCount[institution] || 0) + 1;
+            (institutionCount[institution] || 0) + 1;
       });
     }
   });
   if (multiInstitutionCount > 0) {
     institutionCount["Multi-Institucional"] = multiInstitutionCount;
   }
+  return institutionCount;
+}
+
+// Count occurrences of each "institution"
+function countInstitutions(events: Event[]) {
+  const predefinedInstitutions = new Set([
+    "CIMMYT",
+    "CIAT (Alianza Bioversity-CIAT)",
+    "AGROSAVIA",
+    "FEDEARROZ",
+    "FEDEPAPA",
+    "AUGURA",
+    "FEDEGAN",
+    "FEDEPANELA",
+  ]);
+
+  const institutionCount: { [key: string]: number } = {
+    Otras: 0,
+  };
+
+  events.forEach((event) => {
+    event.institution.forEach((institution) => {
+      if (predefinedInstitutions.has(institution)) {
+        institutionCount[institution] = (institutionCount[institution] || 0) + 1;
+      } else {
+        institutionCount["Otras"] += 1;
+      }
+    });
+  });
+
   return institutionCount;
 }
 
@@ -241,11 +284,27 @@ const EventPage: NextPage = () => {
       const institutionCount = countInstitutions(dataset.data);
       setInstitutionLabels(Object.keys(institutionCount));
       setInstitutionData(Object.values(institutionCount));
-
-      // Calculate guest type counts
       const guestTypeCount = countGuestTypes(dataset.data);
-      setGuestTypeLabels(Object.keys(guestTypeCount));
-      setGuestTypeData(Object.values(guestTypeCount));
+      let guestTypeLabels = Object.keys(guestTypeCount);
+      let guestTypeData = Object.values(guestTypeCount);
+      guestTypeLabels.push("Otro");
+      guestTypeData.push(0);
+      if (guestTypeData[guestTypeData.length - 1] === undefined) {
+        guestTypeData.push(0); 
+      }
+      
+      for (let i = guestTypeLabels.length - 1; i >= 0; i--) {
+        const label = guestTypeLabels[i];
+      
+        if (!LabelsParticipants.includes(label)) {
+          guestTypeData[guestTypeData.length - 1] += guestTypeData[i];
+          guestTypeLabels.splice(i, 1); 
+          guestTypeData.splice(i, 1);   
+        }
+      }
+      
+      setGuestTypeLabels(guestTypeLabels);
+      setGuestTypeData(guestTypeData);
     }
 
     fetchAndProcessData();
@@ -310,7 +369,7 @@ const EventPage: NextPage = () => {
         filterData = countCities(data);
         break;
       case "institution":
-        filterData = countInstitutions(data);
+        filterData = countInstitutionsTreeMap(data);
         break;
       default:
         return;
@@ -381,18 +440,49 @@ const EventPage: NextPage = () => {
       },
     ],
   };
+const ejeCounts: { [key: string]: number } = {};
+evenData.data.forEach((event) => {
+  if (event.eje && Array.isArray(event.eje)) {
+    event.eje.forEach((eje) => {
+      ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
+    });
+  }
+});
 
-  const ejesChartData = {
-    labels: shortenedLabels, // Use shortened labels for both display and tooltips
-    datasets: [
-      {
-        label: "Eje Count",
-        data: ejeData,
-        backgroundColor: colors.slice(0, ejeData.length), // Reuse colors for background
-        hoverBackgroundColor: colors.slice(0, ejeData.length), // Reuse colors for hover
-      },
-    ],
-  };
+let labelsDoughnutEvent = [];
+let dataDoughnutEvent = [];
+let replacedEjeCounts: { [key: string]: number } = {};
+
+for (let key in ejeCounts) {
+  let matchedLabel = shortenedLabels.find(label => key.toLowerCase().startsWith(label.split('-')[0].toLowerCase()));
+
+  if (matchedLabel) {
+    replacedEjeCounts[matchedLabel] = ejeCounts[key];
+  } else {
+    replacedEjeCounts[key] = ejeCounts[key];  
+  }
+}
+
+
+for (let key in replacedEjeCounts) {
+  if (replacedEjeCounts.hasOwnProperty(key)) {
+    labelsDoughnutEvent.push(key);     
+    dataDoughnutEvent.push(replacedEjeCounts[key]);  
+  }
+}
+
+
+const ejesChartData = {
+  labels: labelsDoughnutEvent, // Use shortened labels for both display and tooltips
+  datasets: [
+    {
+      label: "Eje Count",
+      data: dataDoughnutEvent,
+      backgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for background
+      hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for hover
+    },
+  ],
+};
 
   const guestTypesChartData = {
     labels: guestTypeLabels,
@@ -481,7 +571,7 @@ const options = {
       <div className={styles.event_page}>
         <div className={styles.div}>
           <ChartCardComponent
-              title="Numero de eventos por cultivos"
+              title="Número de eventos"
               header={
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                   <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
