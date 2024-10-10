@@ -564,6 +564,17 @@ const options = {
       legend: {
         display: false, // Asegúrate de usar un valor válido
       },
+      tooltip: {
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
+          },
+        },
+      },
     },
   };
 
