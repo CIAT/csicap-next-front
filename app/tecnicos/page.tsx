@@ -107,16 +107,44 @@ function countCrops(data: DataFormat): { [key: string]: number } {
   return cropCount;
 }
 
-function countOrganizations(data: DataFormat): { [key: string]: number } {
-  const organizationCount: { [key: string]: number } = {};
+function countOrganizations(events: DataFormat) {
+  const predefinedInstitutions = new Set([
+    "AGROSAVIA",
+    "AUGURA",
+    "ASBAMA",
+    "ASOHOFRUCOL",
+    "CENICAFE",
+    "CENICAÑA",
+    "CIAT (Alianza Bioversity-CIAT)",
+    "CIPAV",
+    "CIMMYT",
+    "FEDEARROZ",
+    "FEDEGAN",
+    "FEDEPANELA",
+    "FEDEPAPA",
+    "FENALCE",
+    "FEDECAFE",
+    "ASOCAÑA",
+    "MADR",
+    "ADR",
+    "Todas"
+  ]);
 
-  data.forEach(item => {
-    item.data.affiliated_guild_or_organization.forEach(organization => {
-      organizationCount[organization] = (organizationCount[organization] || 0) + 1;
+  const organizations: { [key: string]: number } = {
+    Otras: 0,
+  };
+
+  events.forEach((event) => {
+    event.data.affiliated_guild_or_organization.forEach((organization) => {
+      if (predefinedInstitutions.has(organization)) {
+        organizations[organization] = (organizations[organization] || 0) + 1;
+      } else {
+        organizations["Otras"] += 1;
+      }
     });
   });
 
-  return organizationCount;
+  return organizations;
 }
 
 const BeneficiariosPage: NextPage = () => {
