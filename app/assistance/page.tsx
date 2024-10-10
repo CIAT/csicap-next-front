@@ -510,7 +510,7 @@ const AssistancePage: NextPage = () => {
       <div className={styles.bottom_div}>
         <div className={styles.width}>
           <ChartCardComponent
-            title="TreeMap"
+            title="Número de asistentes"
             header={
               <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                 <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
@@ -536,7 +536,7 @@ const AssistancePage: NextPage = () => {
         </div>
 
         <div className={styles.width}>
-          <ChartCardComponent title="Mapa Colombia" header={<></>}>
+          <ChartCardComponent title="Asistentes por municipio" header={<></>}>
             <div className="w-full h-full">
               <MapComponent
                 polygons={CalendarController.extractProvincesAndCities(filteredEvents)}

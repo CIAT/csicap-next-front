@@ -164,7 +164,7 @@ const BeneficiariosPage: NextPage = () => {
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>("institution");
-  const [treemapTitle, setTreemapTitle] = useState("");
+  const [treemapTitle, setTreemapTitle] = useState("Número de técnicos");
   const [allEventData, setAllEventData] = useState<DataFormat>([]); // Store all event data once fetched
 
   const [treemapData, setTreemapData] = useState<
@@ -495,7 +495,7 @@ const BeneficiariosPage: NextPage = () => {
 
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
-                <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
+                <CardComponent title="Técnicos por municipio" styles={styleTechnical}>
                   {treemapData.length > 0 ? (
                       <div className="w-full h-full">
                         <MapComponent
