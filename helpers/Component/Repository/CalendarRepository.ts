@@ -3,7 +3,6 @@ import { DataFormat, Event, EventFormat } from "@/interfaces";
 class CalendarRepository {
     static async fetchEvents(): Promise<DataFormat> {
         const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
-        console.log(url)
         if(!url){
             return <DataFormat>{};
         }
@@ -17,7 +16,6 @@ class CalendarRepository {
 
     static async fetchCustomEvent(): Promise<EventFormat> {
         const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
-        console.log(url)
         if(!url){
             return <EventFormat>{};
         }

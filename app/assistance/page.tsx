@@ -177,7 +177,6 @@ const countEjes = (events: Event[]) => {
   if (multiEjeCount > 0) {
     ejeCount["Multi-Ejes"] = multiEjeCount;
   }
-  console.log("Eje count:", ejeCount);
   return ejeCount;
 };
 
@@ -185,7 +184,6 @@ const countCity = (events: Event[]) => {
   const cityCount: { [key: string]: number } = {};
   events.forEach((event) => {
       const city = event.city;
-      console.log("City:", event.city);
       if (event.participant_count === "nan") {
         cityCount[city] = (cityCount[city] || 0) + 0;
       } else {
@@ -193,7 +191,6 @@ const countCity = (events: Event[]) => {
           (cityCount[city] || 0) + Number(event.participant_count);
       }
   });
-  console.log("City count:", cityCount);
   return cityCount;
 };
 
@@ -212,7 +209,6 @@ const countInstitutions = (assists: Assistance[]) => {
   if (nullInstitutionCount > 0) {
     institutionCount["N/A"] = nullInstitutionCount;
   }
-  console.log("Orga count:", institutionCount);
   return institutionCount;
 };
 
@@ -245,7 +241,6 @@ const AssistancePage: NextPage = () => {
             city: event.city.toLowerCase(),
           }));
           setCounts(MapController.updateCountAssistantsByGender(formattedEvents));
-          console.log("counts", counts)
           setEvents(formattedEvents);
           setFilteredEvents(formattedEvents);
         })
@@ -257,8 +252,6 @@ const AssistancePage: NextPage = () => {
       const dataset =  await AssistanceRepository.getAssistanceData();
       setAllAssistanceData(dataset);
       const eventsDataSet = await CalendarRepository.fetchCustomEvent();
-      console.log("Events data set:", eventsDataSet);
-      console.log("Events data set:", CalendarController.formatEvent(eventsDataSet));
       setAllEventsData(CalendarController.formatEvent(eventsDataSet));
       initializeTreemapData(CalendarController.formatEvent(eventsDataSet));
     }
@@ -350,7 +343,6 @@ const AssistancePage: NextPage = () => {
       name: key,
       value: filterData[key]
     }));
-    console.log("Mapped data:", mappedData); // Asegúrate de que esto muestra datos válidos
     setTreemapData(mappedData);
   };
   

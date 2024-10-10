@@ -225,10 +225,6 @@ const BeneficiariosPage: NextPage = () => {
     setTreemapData(mappedData);
   };
 
-  useEffect(() => {
-    console.log(treemapData)
-  }, [treemapData]);
-
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
     setSelectedFilter(newFilter);
@@ -496,7 +492,7 @@ const BeneficiariosPage: NextPage = () => {
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
                 <CardComponent title="Técnicos por municipio" styles={styleTechnical}>
-                  {treemapData.length > 0 ? (
+                  {treemapData.length > 0 && filteredEvents && counts ? (
                       <div className="w-full h-full">
                         <MapComponent
                             polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}

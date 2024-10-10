@@ -2,7 +2,6 @@ import colombiaGeoJSONByCities from "@/components/maps/ColombiaDepartments.json"
 import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-import mapboxgl from "mapbox-gl";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -185,7 +184,7 @@ class MapController {
 
         provinceName = this.removeAccents(provinceName);
         cityName = this.removeAccents(cityName);
-        if (counts && counts[provinceName][cityName]) {
+        if (counts && counts[provinceName] && counts[provinceName][cityName]) {
             tooltipHtmlContent += `<br><strong>${counts[provinceName][cityName]}</strong>`;
         }
 
@@ -300,7 +299,6 @@ class MapController {
 
     static updateCountEventsByCityCodes(events: { municipalities_code: string[] }[]): NestedDictionary {
         const cityCodeTechnicianCounts: NestedDictionary = {};
-        console.log(events)
 
         // Verificar si events es un arreglo
         if (!Array.isArray(events)) {
@@ -310,14 +308,13 @@ class MapController {
         events.forEach(event => {
             // Verificar que event y municipalities_code no sean nulos o indefinidos
             if (event && Array.isArray(event.municipalities_code)) {
-                console.log(event.municipalities_code)
                 event.municipalities_code.forEach(cityCode => {
                     // Aquí asumimos que cityCode es un string y no es necesario convertirlo
                     const cityData = this.getPolygonsByCodeCityAndProvince([cityCode])[0];
 
                     if (cityData) {
-                        const provinceName = cityData.provinceName;
-                        const cityName = cityData.cityName;
+                        const provinceName = this.removeAccents(cityData.provinceName);
+                        const cityName = this.removeAccents(cityData.cityName);
 
                         // Inicializar la provincia si no existe
                         if (!cityCodeTechnicianCounts[provinceName]) {
@@ -337,7 +334,6 @@ class MapController {
                 console.warn('El evento es nulo o municipalities_code no es un arreglo:', event);
             }
         });
-
         return cityCodeTechnicianCounts;
     }
 
