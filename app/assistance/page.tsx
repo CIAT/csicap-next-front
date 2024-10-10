@@ -65,10 +65,6 @@ const borderColors = [
   "#569aaf",
 ];
 
-async function getEventsData(): Promise<DataFormat> {
-  return CalendarRepository.fetchEvents();
-}
-
 const config = {
   responsive: true,
   maintainAspectRatio: false,
@@ -77,11 +73,19 @@ const config = {
       labels: {
         usePointStyle: true,
       },
-      position: "right" as const,
+      position: "left" as const,
     },
-  },
-  title: {
-    display: true,
+    tooltip: {
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem: any) {
+          const index = tooltipItem.dataIndex;
+          return `${tooltipItem.label}: ${tooltipItem.raw}`;
+        },
+      },
+    },
   },
 };
 
