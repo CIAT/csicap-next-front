@@ -23,7 +23,7 @@ import CalendarController from "@/helpers/Component/Controller/CalendarControlle
 import { useEffect, useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
-import { DataFormat, EventsData } from "@/interfaces";
+import { DataFormat, EventsData , Event} from "@/interfaces";
 import { parse } from "path";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
@@ -31,24 +31,6 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 
-interface Event {
-  date: string;
-  eje: string[];
-  responsable: string;
-  city: string;
-  guess_type: string[];
-  institution: string[];
-  event_type: string;
-  province: string;
-  form_state: string;
-  name: string;
-  datesEnd: string;
-  crop: string[];
-  email: string | null;
-  event_objective: string;
-  event_id: string;
-  participant_count: string;
-}
 
 Chart.register(
   Tooltip,
@@ -96,23 +78,6 @@ const borderColors = [
   "#D2D200",
   "#569aaf",
 ];
-
-async function getAssistanceData(): Promise<Assistance[]> {
-  const response = await fetch(
-    "https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list"
-  );
-  const data = await response.json();
-  console.log("Assistance data:", data);
-  return data;
-}
-
-async function getEventData(): Promise<{ data: Event[] }> {
-  const response = await fetch(
-    "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
-  );
-  const data = await response.json();
-  return data;
-}
 
 const config = {
   responsive: true,
@@ -273,10 +238,6 @@ const AssistancePage: NextPage = () => {
   const [allEventsData, setAllEventsData] = useState<Event[]>([]);
 
   useEffect(() => {
-
-  }, []);
-
-  useEffect(() => {
     CalendarRepository.fetchEvents()
         .then((data: DataFormat) => {
           const formattedEvents = CalendarController.formatEvents(data).map(event => ({
@@ -295,9 +256,11 @@ const AssistancePage: NextPage = () => {
     async function fetchData() {
       const dataset =  await AssistanceRepository.getAssistanceData();
       setAllAssistanceData(dataset);
-      const eventsDataSet = await getEventData();
-      setAllEventsData(eventsDataSet.data);
-      initializeTreemapData(eventsDataSet.data);
+      const eventsDataSet = await CalendarRepository.fetchCustomEvent();
+      console.log("Events data set:", eventsDataSet);
+      console.log("Events data set:", CalendarController.formatEvent(eventsDataSet));
+      setAllEventsData(CalendarController.formatEvent(eventsDataSet));
+      initializeTreemapData(CalendarController.formatEvent(eventsDataSet));
     }
     fetchData();
   }, []);
@@ -566,7 +529,9 @@ const AssistancePage: NextPage = () => {
               </FormControl>
             }
           >
+            {treemapData.length > 0 ? (
             <ReactChart type="treemap" data={treeData} options={options} />
+            ) : (<div className="flex w-full h-full items-center justify-center"><LoadingAnimation /></div>)}
           </ChartCardComponent>
         </div>
 
