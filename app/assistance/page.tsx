@@ -69,29 +69,6 @@ async function getEventsData(): Promise<DataFormat> {
   return CalendarRepository.fetchEvents();
 }
 
-// async function getAssistanceData(): Promise<Assistance[]> {
-//   try {
-//     const response = await fetch(
-//       "https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list"
-//     );
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-//     const json = await response.json();
-
-//     // Ensure the response contains the expected "data" array
-//     if (json && Array.isArray(json)) {
-//       return json;
-//     } else {
-//       console.log("API returned unexpected structure.");
-//       return [];
-//     }
-//   } catch (error) {
-//     console.error("Failed to fetch data:", error);
-//     return [];
-//   }
-// }
-
 const config = {
   responsive: true,
   maintainAspectRatio: false,
@@ -107,41 +84,6 @@ const config = {
     display: true,
   },
 };
-
-// const config2 = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   plugins: {
-//     legend: {
-//       labels: {
-//         font: {
-//           size: 10,
-//         },
-//         usePointStyle: true,
-//       },
-//       position: "right" as const,
-//     },
-//   },
-//   title: {
-//     display: true,
-//   },
-// };
-
-// const config3 = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   plugins: {
-//     legend: {
-//       labels: {
-//         font: {
-//           size: 6,
-//         },
-//         usePointStyle: true,
-//       },
-//       position: "right" as const,
-//     },
-//   },
-// };
 
 const options = {
   responsive: true,
@@ -327,15 +269,6 @@ const AssistancePage: NextPage = () => {
     }));
     setTreemapData(mappedData);
   };
-
-  // const initializeTreemapData = (data: Assistance[]) => {
-  //   let filterData = countCrops(data);
-  //   const mappedData = Object.keys(filterData).map((key) => ({
-  //     name: key,
-  //     value: filterData[key],
-  //   }));
-  //   setTreemapData(mappedData);
-  // };
 
   const occupationBackgroundColors = Object.keys(occupationStats).map(
     (_, index) => colors[index % colors.length]

@@ -405,8 +405,6 @@ const EventPage: NextPage = () => {
           formatter: (ctx: any) => {
             const data = ctx.raw;
             const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
-
-            
             return `${label}: ${data.v}`;
           },
         },

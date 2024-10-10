@@ -33,6 +33,7 @@ import { colors } from "@nextui-org/react";
 import {sectionStateData} from "@/interfaces";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import MapController from "@/helpers/Component/Controller/MapController";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 Chart.register(
   ArcElement,
@@ -136,8 +137,13 @@ const BeneficiariosPage: NextPage = () => {
   const [totalData, setTotalData] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>("institution");
   const [treemapTitle, setTreemapTitle] = useState("");
+  const [allEventData, setAllEventData] = useState<DataFormat>([]); // Store all event data once fetched
+
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
+  >([]);
+  const [treemapDataFiltered, setTreemapDataFiltered] = useState<
+      { name: string; value: number }[]
   >([]);
 
   useEffect(() => {
@@ -149,26 +155,8 @@ const BeneficiariosPage: NextPage = () => {
         setDataCalendarResp(200);
         setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
 
-        let filterData: { [key: string]: number };
-
-        // Based on selected filter, count occurrences
-        switch (selectedFilter) {
-          case "crop":
-            filterData = countCrops(data);
-            setTreemapTitle("Cultivos")
-            break;
-          case "institution":
-          default:
-            filterData = countOrganizations(data);
-            setTreemapTitle("Instituciones")
-        }
-
-        const treemapData = Object.keys(filterData).map((key) => ({
-          name: key,
-          value: filterData[key],
-        }));
-
-        setTreemapData(treemapData);
+        setAllEventData(data);
+        initializeTreemapData(data);
 
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
@@ -184,7 +172,6 @@ const BeneficiariosPage: NextPage = () => {
         const ethnicityCount = countEthnicity(data)
         setEthnicityLabel(Object.keys(ethnicityCount))
         setEthnicityNumber(Object.values(ethnicityCount))
-
       })
       .catch(error => {
         console.error("Error fetching events:", error);
@@ -192,9 +179,54 @@ const BeneficiariosPage: NextPage = () => {
       });
   }, []);
 
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    setSelectedFilter(event.target.value);
+  useEffect(() => {
+    setTreemapDataFiltered(treemapData
+        .sort((a, b) => b.value - a.value)
+        .map(item => ({
+          ...item,
+          value: item.value
+        })));
+  }, [treemapData]);
+
+  const initializeTreemapData = (data: DataFormat) => {
+    let filterData = countOrganizations(data);
+    const mappedData = Object.keys(filterData).map((key) => ({
+      name: key,
+      value: filterData[key],
+    }));
+    setTreemapData(mappedData);
   };
+
+  useEffect(() => {
+    console.log(treemapData)
+  }, [treemapData]);
+
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    const newFilter = event.target.value;
+    setSelectedFilter(newFilter);
+    processTreemapData(newFilter, allEventData);
+  };
+
+  const processTreemapData = (filter: string, data: DataFormat) => {
+    let filterData: { [key: string]: number } = {};
+
+    switch (filter) {
+      case "crop":
+        filterData = countCrops(data);
+        break;
+      case "institution":
+        filterData = countOrganizations(data);
+        break;
+      default:
+        return;
+    }
+
+    const mappedData = Object.keys(filterData).map((key) => ({
+      name: key,
+      value: filterData[key],
+    }));
+    setTreemapData(mappedData);
+  }
 
   const gender = {
     labels: genderLabel,
@@ -239,7 +271,7 @@ const BeneficiariosPage: NextPage = () => {
     datasets: [
       {
         data: [],
-        tree: treemapData,
+        tree: treemapDataFiltered,
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
@@ -274,10 +306,17 @@ const BeneficiariosPage: NextPage = () => {
         },
         position: "left" as const,
       },
-    },
-    title: {
-      display: true,
-      text: gender.datasets[0].label,
+      tooltip: {
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+          },
+        },
+      },
     },
   };
 
@@ -293,6 +332,17 @@ const BeneficiariosPage: NextPage = () => {
         },
       },
       position: "left" as const,
+    },
+    tooltip: {
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem: any) {
+          const index = tooltipItem.dataIndex;
+          return `${tooltipItem.label}: ${tooltipItem.raw}`;
+        },
+      },
     },
   }
 
@@ -340,30 +390,46 @@ const BeneficiariosPage: NextPage = () => {
           <div className={styles.top_div}>
             {/* Card: Total técnicos */}
             <CardComponent title="Total técnicos registrados" styles={styleTechnical}>
-              <div className={styles.top_div_division}>
-                <label className={styles.top_card_label}>{totalData}</label>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.top_div_division}>
+                    <label className={styles.top_card_label}>{totalData}</label>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
 
             {/* Card: Género */}
             <CardComponent title="Género" styles={styleTechnical}>
-              <div className={styles.doughnut_chart}>
-                <Doughnut data={gender} options={config}/>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={gender} options={config}/>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
 
             {/* Card: Nivel Educativo */}
             <CardComponent title="Nivel Educativo" styles={styleTechnical}>
-              <div className={styles.doughnut_chart}>
-                <Doughnut data={educationalLevel} options={config2}/>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={educationalLevel} options={config2}/>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
 
             {/* Card: Etnia */}
             <CardComponent title="Etnia" styles={styleTechnical}>
-              <div className={styles.doughnut_chart}>
-                <Doughnut data={etnia} options={config3}/>
-              </div>
+              {treemapData.length > 0 ? (
+                  <div className={styles.doughnut_chart}>
+                    <Doughnut data={etnia} options={config3}/>
+                  </div>
+              ) : (
+                  <LoadingAnimation/>
+              )}
             </CardComponent>
           </div>
 
@@ -382,24 +448,36 @@ const BeneficiariosPage: NextPage = () => {
                         onChange={handleFilterChange}
                         label="Filtrar"
                     >
-                      <MenuItem value="crop">Cultivo</MenuItem>
                       <MenuItem value="institution">Institución</MenuItem>
+                      <MenuItem value="crop">Cultivo</MenuItem>
                     </Select>
                   </FormControl>
                 }>
-                  <ReactChart type="treemap" data={treeMap} options={options}/>
+                  {treemapData.length > 0 ? (
+                      <ReactChart
+                          type="treemap"
+                          data={treeMap}
+                          options={options}
+                      />
+                  ) : (
+                      <LoadingAnimation/>
+                  )}
                 </ChartCardComponent>
               </div>
 
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
                 <CardComponent title="Técnicos por Departamento" styles={styleTechnical}>
-                  <div className="w-full h-full">
-                    <MapComponent
-                     polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
-                     data={counts}
-                    />
-                  </div>
+                  {treemapData.length > 0 ? (
+                      <div className="w-full h-full">
+                        <MapComponent
+                            polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
+                            data={counts}
+                        />
+                      </div>
+                  ) : (
+                      <LoadingAnimation/>
+                  )}
                 </CardComponent>
               </div>
             </div>
