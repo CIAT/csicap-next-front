@@ -632,7 +632,7 @@ const options = {
               )}
             </div>
           </CardComponent>
-          <CardComponent title="Tipo de Participantes por evento">
+          <CardComponent title="Tipo de invitados por evento">
             <div className="w-full h-full">
               {allEventData.length > 0 ? (
                   <Doughnut data={guestTypesChartData} options={config2} />
