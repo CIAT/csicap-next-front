@@ -3,37 +3,28 @@
 import { NextPage } from "next";
 import styles from "./reports.module.css";
 import Filter from "@/components/reports/Filter";
-import PreviewCard from "@/components/reports/PreviewCard";
 import ColombiaHeat from "@/components/maps/ColombiaHeat";
-import PDFFile from "@/components/PDF/pdf";
-import { PDFViewer } from "@react-pdf/renderer";
-
-
-
-const data = {
-  main_event_objective: "Aumentar la conciencia sobre la sostenibilidad",
-  event_type: "Taller",
-  event_justification: "Necesidad de educar a la comunidad",
-  guest_type: "Expertos en sostenibilidad",
-  invited_participants_number: 50,
-  main_occupation_without_other: "Estudiantes y profesionales",
-  participant_count: 45,
-  female_participants: 20,
-  male_participants: 25,
-  other_participants: 0,
-  organizing_institutions: "Universidad XYZ",
-  component: "Educación",
-  axis: "Sostenibilidad",
-  gcf_activities: "Actividad de concienciación",
-  event_agenda: "Agenda detallada del evento",
-  event_invitation: "Invitación enviada por correo",
-  attendance_list: "Lista de asistencia firmada",
-  conclusion: "Conclusiones y próximos pasos",
-  photo_register: "Fotos del evento",
-  link: "Enlace a los recursos",
-};
+import { useEffect, useState } from "react";
 
 const ReportsPage: NextPage = () => {
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch the generated PDF from the API route
+    const fetchPdf = async () => {
+      try {
+        const response = await fetch("/api/generate-pdf");
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url); // Set the generated URL for the PDF
+      } catch (error) {
+        console.error("Error fetching PDF:", error);
+      }
+    };
+
+    fetchPdf();
+  }, []);
+
   return (
     <div className="h-screen flex flex-row">
       <div className={styles.first_div}>
@@ -41,6 +32,16 @@ const ReportsPage: NextPage = () => {
           <Filter />
         </div>
         <div className={styles.preview_div}>
+          {pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              width="100%"
+              height="600"
+              style={{ border: "none" }}
+            />
+          ) : (
+            <p>Loading PDF...</p>
+          )}
         </div>
       </div>
 

@@ -11,7 +11,7 @@
 }
 
 .preview_div {
-    padding-top: 10px;
+    padding: 10px 0 0 10px;
     height: 90vh;
 }
 
@@ -20,4 +20,5 @@
     align-items: center;
     height: 10vh;
     width: 100%;
+    padding: 0 0 0 10px;
 }
