@@ -2,12 +2,7 @@
 
 import { NextPage } from "next";
 import styles from "./reports.module.css";
-import Filter from "@/components/reports/Filter";
-import ColombiaHeat from "@/components/maps/ColombiaHeat";
-import PDFFile from "@/components/PDF/pdf";
-import { PDFViewer } from "@react-pdf/renderer";
 import MapComponent from "@/components/data/Map/MapComponent";
-import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
