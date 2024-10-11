@@ -12,7 +12,7 @@
 }
 
 .preview_div {
-    padding-top: 10px;
+    padding: 10px 0 0 10px;
     height: 90vh;
 }
 
@@ -21,4 +21,29 @@
     align-items: center;
     height: 10vh;
     width: 100%;
+    padding: 0 0 0 10px;
+}
+
+.reports {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+@media screen and (max-width: 767px) {
+    .reports{
+        flex-direction: column;
+        height: auto;
+    }
+
+    .first_div{
+        width: 100vw;
+        padding-right: 10px;
+    }
+    .preview_div{
+        width: 100%;
+    }
+    .second_div{
+        width: 100%;
+    }
 }
