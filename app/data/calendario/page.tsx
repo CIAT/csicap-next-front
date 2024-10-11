@@ -174,7 +174,7 @@ export default function DataCalendarResults() {
                         if(event.change_selection === 'EL EVENTO HA SIDO CANCELADO'){
                           backgroundColor = '#b9b9b9';
                           borderColor = '#b9b9b9';
-                        } else if (eventEndDate && event.form_state === '1' && eventEndDate < currentDate) {
+                        } else if ((eventEndDate && event.form_state === '1' && eventEndDate < currentDate) || event.not_assistant === '1') {
                           backgroundColor = '#c84e42';
                           borderColor = '#c84e42';
                         } else if (event.form_state === '0') {

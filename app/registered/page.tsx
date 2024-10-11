@@ -25,6 +25,7 @@ import CardComponent from "@/components/ui/card/Card";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 Chart.register(
   ArcElement,
@@ -132,6 +133,9 @@ const BeneficiariosPage: NextPage = () => {
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
+  const [treemapDataFiltered, setTreemapDataFiltered] = useState<
+      { name: string; value: number }[]
+  >([]);
 
   useEffect(() => {
     BeneficiariesRepository.fetchEvents()
@@ -140,9 +144,7 @@ const BeneficiariosPage: NextPage = () => {
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
 
-        console.log(data)
         setCounts(MapController.updateCountBeneficiariesByCity(formattedEvents));
-        console.log(counts)
 
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
@@ -175,6 +177,15 @@ const BeneficiariosPage: NextPage = () => {
         setDataCalendarResp(-1); // Set error state
       });
   }, []);
+
+  useEffect(() => {
+    setTreemapDataFiltered(treemapData
+        .sort((a, b) => b.value - a.value)
+        .map(item => ({
+          ...item,
+          value: item.value
+        })));
+  }, [treemapData]);
 
   const sex = {
     labels: genderLabel,
@@ -219,7 +230,7 @@ const BeneficiariosPage: NextPage = () => {
     datasets: [
       {
         data: [],
-        tree: treemapData,
+        tree: treemapDataFiltered,
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
@@ -227,6 +238,19 @@ const BeneficiariosPage: NextPage = () => {
           return colors[ctx.dataIndex % colors.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
+        spacing: 1,
+        borderWidth: 0,
+        labels: {
+          display: true,
+          align: "center" as const,
+          position: "top" as const,
+          color: "white",
+          wrap: true,
+          formatter: (context: any) => {
+            const data = context.dataset.tree[context.dataIndex];
+            return `${data.name}: ${data.value}`;
+          },
+        },
       },
     ],
   };
@@ -241,39 +265,16 @@ const BeneficiariosPage: NextPage = () => {
         },
         position: "left" as const,
       },
-    },
-    title: {
-      display: true,
-      text: sex.datasets[0].label, // Usar el label del dataset como título
-    },
-  };
-
-  const config2 = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
+      tooltip: {
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+          },
         },
-        position: "left" as const,
-      },
-    },
-    title: {
-      display: true,
-      text: typeOfHousing.datasets[0].label, // Usar el label del dataset como título
-    },
-  };
-
-  const config3 = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          usePointStyle: true,
-        },
-        position: "left" as const,
       },
     },
   };
@@ -288,6 +289,9 @@ const BeneficiariosPage: NextPage = () => {
       tooltip: {
         enabled: true,
         callbacks: {
+          title: function () {
+            return "";
+          },
           label: (context: any) => {
             const data = context.dataset.tree[context.dataIndex];
             return `${data.name}: ${data.value}`;
@@ -295,10 +299,6 @@ const BeneficiariosPage: NextPage = () => {
         },
       },
     },
-  };
-
-  const filterBeneficiaries = (state: sectionStateData) => {
-
   };
 
   return (
@@ -310,54 +310,77 @@ const BeneficiariosPage: NextPage = () => {
             {/* Card superior */}
             <div className={styles.top_div}>
               <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>
-                <div className={styles.top_div_division}>
-                  <label className={styles.top_card_label}>{totalData}</label>
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.top_div_division}>
+                      <label className={styles.top_card_label}>{totalData}</label>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
               {/* Doughnut: Género */}
               <CardComponent
-                title="Género"
-                styles={styleBeneficiaries}
+                  title="Género"
+                  styles={styleBeneficiaries}
               >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={sex} options={config} />
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.doughnut_chart}>
+                      <Doughnut data={sex} options={config}/>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
 
               {/* Doughnut: Tipo de propiedad */}
               <CardComponent
-                title="Tipo de propiedad"
+                  title="Tipo de propiedad"
                 styles={styleBeneficiaries}
               >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={typeOfHousing} options={config2} />
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.doughnut_chart}>
+                      <Doughnut data={typeOfHousing} options={config}/>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
 
               {/* Doughnut: Etnia */}
               <CardComponent
-                title="Etnia"
-                styles={styleBeneficiaries}
+                  title="Etnia"
+                  styles={styleBeneficiaries}
               >
-                <div className={styles.doughnut_chart}>
-                  <Doughnut data={etnia} options={config3} />
-                </div>
+                {treemapData.length > 0 ? (
+                    <div className={styles.doughnut_chart}>
+                      <Doughnut data={etnia} options={config}/>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
               </CardComponent>
             </div>
             <div className={styles.bottom_div}>
               <div className={styles.flex_container}>
                 <div className={styles.width}>
-                  <CardComponent title="TreeMap" styles={styleBeneficiaries}>
-                    <ReactChart type="treemap" data={data} options={options} />
+                  <CardComponent title="Número de registrados" styles={styleBeneficiaries}>
+                    {treemapData.length > 0 ? (
+                        <ReactChart type="treemap" data={data} options={options} />
+                    ) : (
+                        <LoadingAnimation/>
+                    )}
                   </CardComponent>
                 </div>
                 <div className={styles.width}>
-                  <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>
+                  <CardComponent title="Registrados por municipio" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
-                      <MapComponent
-                        polygons={BeneficiariesController.extractProvincesAndCities(filteredEvents)}
-                        data={counts}
-                      />
+                      {treemapData.length > 0 ? (
+                          <MapComponent
+                          polygons={BeneficiariesController.extractProvincesAndCities(filteredEvents)}
+                          data={counts}/>
+                      ) : (
+                          <LoadingAnimation/>
+                        )}
                     </div>
                   </CardComponent>
                 </div>

@@ -153,8 +153,7 @@ function countEjes(events: Event[]) {
   return ejeCount;
 }
 
-// Count occurrences of each "institution"
-function countInstitutions(events: Event[]) {
+function countInstitutionsTreeMap(events: Event[]) {
   const institutionCount: { [key: string]: number } = {};
   let multiInstitutionCount = 0;
 
@@ -164,13 +163,50 @@ function countInstitutions(events: Event[]) {
     } else {
       event.institution.forEach((institution) => {
         institutionCount[institution] =
-          (institutionCount[institution] || 0) + 1;
+            (institutionCount[institution] || 0) + 1;
       });
     }
   });
   if (multiInstitutionCount > 0) {
     institutionCount["Multi-Institucional"] = multiInstitutionCount;
   }
+  return institutionCount;
+}
+
+// Count occurrences of each "institution"
+function countInstitutions(events: Event[]) {
+  const predefinedInstitutions = new Set([
+    "CIMMYT",
+    "CIAT (Alianza Bioversity-CIAT)",
+    "AGROSAVIA",
+    "FEDEARROZ",
+    "FEDEPAPA",
+    "AUGURA",
+    "FEDEGAN",
+    "FEDEPANELA",
+    "CIPAV",
+    "CENICAFE",
+    "MADR",
+    "FENALCE",
+    "ASBAMA",
+    "CENICAÑA",
+    "FEDECAFE"
+  ]);
+
+  const institutionCount: { [key: string]: number } = {
+    Otras: 0,
+  };
+
+  events.forEach((event) => {
+    event.institution.forEach((institution) => {
+      if (predefinedInstitutions.has(institution)) {
+        institutionCount[institution] = (institutionCount[institution] || 0) + 1;
+      } else {
+        institutionCount["Otras"] += 1;
+      }
+    });
+  });
+
   return institutionCount;
 }
 
@@ -254,6 +290,7 @@ const EventPage: NextPage = () => {
       // Calculate institution counts
       const institutionCount = countInstitutions(dataset.data);
       setInstitutionLabels(Object.keys(institutionCount));
+      console.log(Object.keys(institutionCount));
       setInstitutionData(Object.values(institutionCount));
       const guestTypeCount = countGuestTypes(dataset.data);
       let guestTypeLabels = Object.keys(guestTypeCount);
@@ -340,7 +377,7 @@ const EventPage: NextPage = () => {
         filterData = countCities(data);
         break;
       case "institution":
-        filterData = countInstitutions(data);
+        filterData = countInstitutionsTreeMap(data);
         break;
       default:
         return;
@@ -376,8 +413,6 @@ const EventPage: NextPage = () => {
           formatter: (ctx: any) => {
             const data = ctx.raw;
             const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
-
-            
             return `${label}: ${data.v}`;
           },
         },
@@ -457,23 +492,6 @@ const ejesChartData = {
   ],
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const guestTypesChartData = {
     labels: guestTypeLabels,
     datasets: [
@@ -549,10 +567,32 @@ const options = {
           stepSize: 1,
         },
       },
+      x: {
+        ticks: {
+          // Cambia el tamaño de la fuente
+          font: {
+            size: 10, // Ajusta el tamaño según sea necesario
+          },
+          // Aplica rotación a las etiquetas
+          maxRotation: 90, // Máxima rotación
+          minRotation: 90, // Mínima rotación, asegura que esté completamente vertical
+        },
+      },
     },
     plugins: {
       legend: {
-        display: false, // Asegúrate de usar un valor válido
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const index = tooltipItem.dataIndex;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+          },
+        },
       },
     },
   };
@@ -561,7 +601,7 @@ const options = {
       <div className={styles.event_page}>
         <div className={styles.div}>
           <ChartCardComponent
-              title="Numero de eventos por cultivos"
+              title="Número de eventos"
               header={
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                   <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
@@ -611,7 +651,7 @@ const options = {
               )}
             </div>
           </CardComponent>
-          <CardComponent title="Tipo de Participantes por evento">
+          <CardComponent title="Tipo de invitados por evento">
             <div className="w-full h-full">
               {allEventData.length > 0 ? (
                   <Doughnut data={guestTypesChartData} options={config2} />

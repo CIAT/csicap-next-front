@@ -15,20 +15,100 @@ class MapController {
         return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     }
 
-    static extractProvinces(events: { province: string }[]): string[] {
-        const provinces = events.map(event => event.province);
-        return Array.from(new Set(provinces));
+    static changeFillColor(map: mapboxgl.Map, steps: Number[]) {
+        if (!map.isStyleLoaded()) {
+            map.on('styledata', () => {
+                this.applyFillColor(map, steps);
+            });
+            return;
+        }
+
+        this.applyFillColor(map, steps);
+    }
+
+    static applyFillColor(map: mapboxgl.Map, steps: Number[]) {
+        const fillColor = [
+            'case',
+            ['==', ['get', 'value'], null],
+            'white',
+            ['step', ['get', 'value'],
+                '#E4A0A1', steps[1],
+                '#DB8081', steps[2],
+                '#D26062', steps[3],
+                '#C94042', steps[4],
+                '#A82F31'
+            ]
+        ];
+        map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
+    }
+
+
+    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary){
+        polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
+            const provinceName = this.removeAccents(String(this.getProvinceByName(feature.properties.dpto_cnmbr)));
+            const cityName = this.removeAccents(String(this.getCityByName(feature.properties.mpio_cnmbr)));
+
+            if(counts && counts[provinceName] && counts[provinceName][cityName]) {
+                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes')
+            }
+        })
+    }
+
+    static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
+        const values: number[] = [];
+
+        // Extraer los valores numéricos del NestedDictionary
+        for (const key in data) {
+            const valueString = data[key][valueKey];
+            if (valueString) {
+                const value = this.extractCount(valueString, valueKey);
+                if (value > 0) {
+                    values.push(value);
+                }
+            }
+        }
+
+        // Si no hay valores, retornar quintiles como cero
+        if (values.length === 0) {
+            return [0, 0, 0, 0, 0];
+        }
+
+        // Calcular quintiles
+        values.sort((a, b) => a - b);
+        const quintiles: number[] = [];
+
+        for (let i = 1; i <= 5; i++) {
+            const index = Math.floor((i * values.length) / 5) - 1;
+            quintiles.push(values[Math.min(index, values.length - 1)]);
+        }
+
+        return quintiles;
+    }
+
+    static getProvinceByName(province: string) {
+        return colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.dpto_cnmbr === province) || "";
+    }
+
+    static getCityByName(city: string) {
+        return colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.mpio_cnmbr === city) || "";
     }
 
     static highlightPolygons(
         map: mapboxgl.Map,
         polygons: string[][] | string[],
         counts: NestedDictionary,
+        useQuintile?: boolean,
         filterEvents?: (newState: sectionStateData) => void
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
+
+        if(useQuintile){
+            this.updateMapValues(polygonsFeatures, counts);
+        }
 
         if (polygonsFeatures.length > 0) {
             this.addPolygonsToMap(map, polygonsFeatures);
@@ -147,17 +227,14 @@ class MapController {
                 );
             }
 
-            this.updateTooltipPosition(e, tooltip, map);
+            this.updateTooltipPosition(e, tooltip);
             this.updateTooltipContent(e, tooltip, counts);
         }
     }
 
     // Método para actualizar la posición del tooltip
-    static updateTooltipPosition(e: any, tooltip: HTMLDivElement, map: mapboxgl.Map) {
+    static updateTooltipPosition(e: any, tooltip: HTMLDivElement) {
         tooltip.style.display = 'block';
-
-        const mapWidth = map.getCanvas().clientWidth;
-        const mapHeight = map.getCanvas().clientHeight;
         const tooltipWidth = tooltip.offsetWidth;
         const tooltipHeight = tooltip.offsetHeight;
 
@@ -185,7 +262,7 @@ class MapController {
 
         provinceName = this.removeAccents(provinceName);
         cityName = this.removeAccents(cityName);
-        if (counts && counts[provinceName][cityName]) {
+        if (counts && counts[provinceName] && counts[provinceName][cityName]) {
             tooltipHtmlContent += `<br><strong>${counts[provinceName][cityName]}</strong>`;
         }
 
@@ -234,7 +311,7 @@ class MapController {
         filterEvents(filterObject);
         MapController.selectedCity = clickedCity;
         MapController.selectedProvince = clickedProvince;
-        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, filterEvents);
+        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, undefined, filterEvents);
     }
 
     // Método para limpiar el mapa si no hay polígonos encontrados
@@ -300,7 +377,6 @@ class MapController {
 
     static updateCountEventsByCityCodes(events: { municipalities_code: string[] }[]): NestedDictionary {
         const cityCodeTechnicianCounts: NestedDictionary = {};
-        console.log(events)
 
         // Verificar si events es un arreglo
         if (!Array.isArray(events)) {
@@ -315,8 +391,8 @@ class MapController {
                     const cityData = this.getPolygonsByCodeCityAndProvince([cityCode])[0];
 
                     if (cityData) {
-                        const provinceName = cityData.provinceName;
-                        const cityName = cityData.cityName;
+                        const provinceName = this.removeAccents(cityData.provinceName);
+                        const cityName = this.removeAccents(cityData.cityName);
 
                         // Inicializar la provincia si no existe
                         if (!cityCodeTechnicianCounts[provinceName]) {
@@ -336,7 +412,6 @@ class MapController {
                 console.warn('El evento es nulo o municipalities_code no es un arreglo:', event);
             }
         });
-
         return cityCodeTechnicianCounts;
     }
 
@@ -409,11 +484,11 @@ class MapController {
 
             if (cityBeneficiariesCounts[province][city]) {
                 const currentCount = parseInt(cityBeneficiariesCounts[province][city].replace(/\D/g, ''), 10);
-                cityBeneficiariesCounts[province][city] = `Beneficiarios: ${currentCount + 1}`;
+                cityBeneficiariesCounts[province][city] = `Registrados: ${currentCount + 1}`;
                 return;
             }
 
-            cityBeneficiariesCounts[province][city] = 'Beneficiarios: 1';
+            cityBeneficiariesCounts[province][city] = 'Registrados: 1';
         });
         return cityBeneficiariesCounts;
     }
@@ -466,6 +541,33 @@ class MapController {
         return match ? Number(match[1]) : 0;
     }
 
+    static updateCountAssistants(events: {
+        participant_count: string;
+        city: string;
+        province: string;
+    }[]): NestedDictionary {
+        const assistanceCounts: NestedDictionary = {};
+
+        events.forEach(event => {
+            const province = this.removeAccents(event.province);
+            const city = this.removeAccents(event.city);
+
+            if (!assistanceCounts[province]) {
+                assistanceCounts[province] = {};
+            }
+
+            // Convertir participant_count a número
+            const participantCount = parseInt(event.participant_count, 10) || 0;
+
+            if (assistanceCounts[province][city]) {
+                const currentCount = parseInt(assistanceCounts[province][city].replace(/\D/g, ''), 10) || 0;
+                assistanceCounts[province][city] = `Asistentes: ${currentCount + participantCount}`;
+            } else {
+                assistanceCounts[province][city] = `Asistentes: ${participantCount}`;
+            }
+        });
+        return assistanceCounts;
+    }
 }
 
 export default MapController;

@@ -51,8 +51,8 @@ const PDFFile = ({ data }) => (
     <Document>
       <Page size="A4" style={styles.page}>
           <View style={styles.section}>
-            <Text style={styles.header}>Holi</Text>
-            <Text style={styles.text}>Sin datos</Text>
+            <Text style={styles.header}>{data.main_event_objective}</Text>
+            <Text style={styles.text}>{data.event_type}</Text>
           </View>
       </Page>
     </Document>

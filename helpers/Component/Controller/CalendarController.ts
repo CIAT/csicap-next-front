@@ -1,4 +1,4 @@
-import { DataFormat, EventsData } from "@/interfaces";
+import { DataFormat, Event, EventFormat, EventsData } from "@/interfaces";
 import dayjs from "dayjs";
 
 class CalendarController {
@@ -21,6 +21,26 @@ class CalendarController {
             ...event,
             initialDate: dayjs(event.date).toDate(), // Convert to Date object
             end: dayjs(event.datesEnd).endOf("day").toDate(),
+            title: event.name,
+            province: event.province,
+            responsable: event.responsable,
+            city: event.city || "",
+            crop: event.crop || [],
+            eje: event.eje || [],
+            guess_type: event.guess_type || [],
+            event_objective: event.event_objective,
+            institution: event.institution || [],
+            event_type: event.event_type,
+            form_state: event.form_state,
+            email: event.email
+        }));
+    }
+
+    static formatEvent(data: EventFormat): Event[] {
+        return data.data.map((event: Event) => ({
+            ...event,
+            initialDate: event.date, // Convert to Date object
+            end: event.datesEnd,
             title: event.name,
             province: event.province,
             responsable: event.responsable,
