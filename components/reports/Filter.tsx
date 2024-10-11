@@ -5,8 +5,8 @@ import { NextPage } from "next";
 // import styles from "./reports.module.css";
 
 const options = [
-  { key: "Evento 12312431", label: "Cat" },
-  { key: "Evento 232342", label: "Dog" },
+  { key: "1", label: "Evento 12312431" },
+  { key: "2", label: "Evento 232342" },
 ];
 
 const Filter: NextPage = () => {
