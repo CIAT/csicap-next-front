@@ -43,15 +43,19 @@ class MapController {
     }
 
 
-    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary){
+    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary) {
         polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
-            const provinceName = this.removeAccents(String(this.getProvinceByName(feature.properties.dpto_cnmbr)));
-            const cityName = this.removeAccents(String(this.getCityByName(feature.properties.mpio_cnmbr)));
+            const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
+            const cityName = this.removeAccents(feature.properties.mpio_cnmbr);
 
-            if(counts && counts[provinceName] && counts[provinceName][cityName]) {
-                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes')
+            if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
+                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes');
+                console.log(this.extractCount(counts[provinceName][cityName], 'Asistentes'))
+                return;
             }
-        })
+
+            feature.properties.value = 0;
+        });
     }
 
     static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
