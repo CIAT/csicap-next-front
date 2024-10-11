@@ -5,6 +5,7 @@ import styles from "./reports.module.css";
 import Filter from "@/components/reports/Filter";
 import ColombiaHeat from "@/components/maps/ColombiaHeat";
 import { useEffect, useState } from "react";
+import { Button } from "@mui/material";
 
 const ReportsPage: NextPage = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -25,11 +26,26 @@ const ReportsPage: NextPage = () => {
     fetchPdf();
   }, []);
 
+  const downloadPdf = () => {
+    if (pdfUrl) {
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = "generated_report.pdf"; // Filename for the downloaded file
+      link.click();
+    }
+  };
+
   return (
-    <div className="h-screen flex flex-row">
+    <div className={styles.reports}>
       <div className={styles.first_div}>
         <div className={styles.filter_div}>
           <Filter />
+          <div className="gap-2 flex flex-row">
+            <Button variant="contained" onClick={downloadPdf} disabled={!pdfUrl}>
+              PDF
+            </Button>
+            <Button variant="contained">Word</Button>
+          </div>
         </div>
         <div className={styles.preview_div}>
           {pdfUrl ? (
