@@ -184,6 +184,13 @@ function countInstitutions(events: Event[]) {
     "AUGURA",
     "FEDEGAN",
     "FEDEPANELA",
+    "CIPAV",
+    "CENICAFE",
+    "MADR",
+    "FENALCE",
+    "ASBAMA",
+    "CENICAÑA",
+    "FEDECAFE"
   ]);
 
   const institutionCount: { [key: string]: number } = {
@@ -283,6 +290,7 @@ const EventPage: NextPage = () => {
       // Calculate institution counts
       const institutionCount = countInstitutions(dataset.data);
       setInstitutionLabels(Object.keys(institutionCount));
+      console.log(Object.keys(institutionCount));
       setInstitutionData(Object.values(institutionCount));
       const guestTypeCount = countGuestTypes(dataset.data);
       let guestTypeLabels = Object.keys(guestTypeCount);
@@ -559,10 +567,21 @@ const options = {
           stepSize: 1,
         },
       },
+      x: {
+        ticks: {
+          // Cambia el tamaño de la fuente
+          font: {
+            size: 10, // Ajusta el tamaño según sea necesario
+          },
+          // Aplica rotación a las etiquetas
+          maxRotation: 90, // Máxima rotación
+          minRotation: 90, // Mínima rotación, asegura que esté completamente vertical
+        },
+      },
     },
     plugins: {
       legend: {
-        display: false, // Asegúrate de usar un valor válido
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -571,7 +590,7 @@ const options = {
           },
           label: function (tooltipItem: any) {
             const index = tooltipItem.dataIndex;
-            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
           },
         },
       },

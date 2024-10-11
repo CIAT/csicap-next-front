@@ -7,6 +7,7 @@ export interface EventsData {
     female_participants: string;
     male_participants: string;
     other_participants: string;
+    participant_count: string;
     city: string;
     crop: string[];
     eje: string[];
