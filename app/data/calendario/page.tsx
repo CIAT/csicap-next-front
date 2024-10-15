@@ -52,7 +52,7 @@ export default function DataCalendarResults() {
   };
 
   useEffect(() => {
-    CalendarRepository.fetchEvents()
+    CalendarRepository.fetchCalendarEvents()
       .then((data: DataFormat) => {
         const formattedEvents = CalendarController.formatEvents(data).map(event => ({
           ...event,
