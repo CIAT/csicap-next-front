@@ -59,6 +59,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
       const quintiles = MapController.calculateQuintiles(data, "Asistentes");
       setQuintileSteps(quintiles);
       MapController.changeFillColor(mapRef.current, quintiles);
+      console.log(quintiles, data)
     }
   }, [polygons, data]);
 
