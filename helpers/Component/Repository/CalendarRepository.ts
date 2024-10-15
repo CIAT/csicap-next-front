@@ -16,7 +16,7 @@ class CalendarRepository {
     }
 
     static async fetchCalendarEvents(): Promise<DataFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS_CALENDAR;
+        const url = 'https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/get-events-calendar';
         if(!url){
             return <DataFormat>{};
         }
