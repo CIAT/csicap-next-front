@@ -89,16 +89,6 @@ class MapController {
         return quintiles;
     }
 
-    static getProvinceByName(province: string) {
-        return colombiaGeoJSONByCities.features.find((feature: any) =>
-            feature.properties.dpto_cnmbr === province) || "";
-    }
-
-    static getCityByName(city: string) {
-        return colombiaGeoJSONByCities.features.find((feature: any) =>
-            feature.properties.mpio_cnmbr === city) || "";
-    }
-
     static highlightPolygons(
         map: mapboxgl.Map,
         polygons: string[][] | string[],
