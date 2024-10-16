@@ -22,7 +22,6 @@ class MapController {
             });
             return;
         }
-
         this.applyFillColor(map, steps);
     }
 
@@ -32,13 +31,14 @@ class MapController {
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                '#E4A0A1', steps[1],
-                '#DB8081', steps[2],
-                '#D26062', steps[3],
-                '#C94042', steps[4],
-                '#A82F31'
+                '#B6D7E0', steps[1],
+                '#6DABBE', steps[2],
+                '#6DABBE', steps[3],
+                '#569AAF', steps[4],
+                '#407A8D'
             ]
         ];
+
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
         map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
@@ -96,14 +96,16 @@ class MapController {
         map: mapboxgl.Map,
         polygons: string[][] | string[],
         counts: NestedDictionary,
-        useQuintile: boolean = false,
-        filterEvents: (newState: sectionStateData) => void = () => {}
+        useQuintile?: boolean,
+        filterEvents?: (newState: sectionStateData) => void,
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
 
-        this.updateMapValues(polygonsFeatures, counts);
+        if(useQuintile) {
+            this.updateMapValues(polygonsFeatures, counts);
+        }
 
         if (polygonsFeatures.length > 0) {
             this.addPolygonsToMap(map, polygonsFeatures);
@@ -169,7 +171,7 @@ class MapController {
                 layout: {},
                 paint: {
                     "line-color": "#0E6E8C",
-                    "line-width": 2
+                    "line-width": 1
                 }
             });
         }

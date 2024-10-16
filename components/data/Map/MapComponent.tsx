@@ -4,24 +4,24 @@ import style from "./map.module.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
-import {colors} from "@/interfaces/Map/colors";
+import { colors } from "@/interfaces/Map/colors";
 
 mapboxgl.accessToken = "pk.eyJ1IjoiZXNwZXJhbnphb3JvemNvIiwiYSI6ImNsYm5ya3ZzNzA3aG4zb3FzY3Z0NTVuMm0ifQ.zzzCxKwH2AuC9jI-EsAdng";
 
-const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data, useQuintile = false}) => {
+const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data, useQuintile = false }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [mapInitialized, setMapInitialized] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);  // Track if the map and style are fully loaded
   const [quintileSteps, setQuintileSteps] = useState<number[]>([]);
 
   useEffect(() => {
-    if (mapInitialized) return;
+    if (mapLoaded) return;
 
     const interval = setInterval(() => {
       if (mapContainerRef.current) {
         const map = new mapboxgl.Map({
           container: mapContainerRef.current,
-          style: "mapbox://styles/mapbox/streets-v11",
+          style: "mapbox://styles/mapbox/navigation-day-v1",
           center: [-74.297333, 4.570868],
           zoom: 5
         });
@@ -32,35 +32,31 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
         map.touchZoomRotate.disableRotation();
 
         map.on("load", () => {
+          setMapLoaded(true); // Set map as loaded once the style and map are fully ready
           MapController.highlightPolygons(map, polygons, data, useQuintile, filterData);
         });
 
         mapRef.current = map;
-        setMapInitialized(true);
         clearInterval(interval);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [mapInitialized, polygons, data]);
+  }, [mapLoaded, polygons, data]);
 
   useEffect(() => {
-    if(!mapInitialized) {
-      return;
-    }
+    // Only run the logic if the map is fully loaded
+    if (mapLoaded && mapRef.current) {
+      MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, filterData);
 
-    if(!mapRef.current) {
-      return;
+      if (useQuintile) {
+        const quintiles = MapController.calculateQuintiles(data, "Asistentes");
+        setQuintileSteps(quintiles);
+        MapController.changeFillColor(mapRef.current, quintiles);
+        console.log(quintiles, data);
+      }
     }
-
-    MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, filterData);
-
-    if (useQuintile) {
-      const quintiles = MapController.calculateQuintiles(data, "Asistentes");
-      setQuintileSteps(quintiles);
-      MapController.changeFillColor(mapRef.current, quintiles);
-    }
-  }, [polygons, data]);
+  }, [mapLoaded, polygons, data]);
 
   return (
       <>

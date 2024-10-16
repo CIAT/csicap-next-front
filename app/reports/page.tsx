@@ -167,68 +167,67 @@ const ReportsPage: NextPage = () => {
   };
 
   return (
-    <div className={styles.reports}>
-      <div className={styles.first_div}>
-        <div className={styles.filter_div}>
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={reportId}
-              onChange={handleReportSelection}
-              label="Filtrar"
-            >
-              <MenuItem value="1">Evento 12312431</MenuItem>
-              <MenuItem value="2">Evento 232342</MenuItem>
-              <MenuItem value="3">Evento 12312431</MenuItem>
-              <MenuItem value="4">Evento 232342</MenuItem>
-            </Select>
-          </FormControl>
-          <div className="gap-2 flex flex-row">
-            <Button
-              variant="contained"
-              onClick={downloadPdf}
-              disabled={!pdfUrl}
-            >
-              PDF
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleDownloadDocx}
-              disabled={!reportId}
-            >
-              Word
-            </Button>
+      <div className={styles.reports}>
+        <div className={styles.first_div}>
+          <div className={styles.filter_div}>
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+              <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={reportId}
+                  onChange={handleReportSelection}
+                  label="Filtrar"
+              >
+                <MenuItem value="1">Evento 12312431</MenuItem>
+                <MenuItem value="2">Evento 232342</MenuItem>
+                <MenuItem value="3">Evento 12312431</MenuItem>
+                <MenuItem value="4">Evento 232342</MenuItem>
+              </Select>
+            </FormControl>
+            <div className="gap-2 flex flex-row">
+              <Button
+                  variant="contained"
+                  onClick={downloadPdf}
+                  disabled={!pdfUrl}
+              >
+                PDF
+              </Button>
+              <Button
+                  variant="contained"
+                  onClick={handleDownloadDocx}
+                  disabled={!reportId}
+              >
+                Word
+              </Button>
+            </div>
+          </div>
+          <div className={styles.preview_div}>
+            {pdfUrl ? (
+                <iframe
+                    src={pdfUrl}
+                    width="100%"
+                    height="600"
+                    style={{ border: "none" }}
+                />
+            ) : (
+                <p>Loading PDF...</p>
+            )}
           </div>
         </div>
-        <div className={styles.preview_div}>
-          {pdfUrl ? (
-            <iframe
-              src={pdfUrl}
-              width="100%"
-              height="600"
-              style={{ border: "none" }}
-            />
+
+        <div className={styles.second_div}>
+          {events.length > 0 ? (
+              <MapComponent
+                  data={counts}
+                  polygons={CalendarController.extractProvincesAndCities(events)}
+                  useQuintile={true}
+              />
           ) : (
-            <p>Loading PDF...</p>
+              <LoadingAnimation/>
           )}
         </div>
       </div>
-
-      <div className={styles.second_div}>
-        {events.length > 0 ? (
-            <MapComponent
-                data={counts}
-                polygons={CalendarController.extractProvincesAndCities(events)}
-                useQuintile={true}
-            >
-            </MapComponent>
-        ) : (
-            <LoadingAnimation />
-        )}
-      </div>
-    </div>
   );
 };
 
