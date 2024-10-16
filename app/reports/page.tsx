@@ -8,9 +8,10 @@ import CalendarRepository from "@/helpers/Component/Repository/CalendarRepositor
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import {DataFormat, EventsData} from "@/interfaces";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 const data = [
   {
@@ -216,12 +217,16 @@ const ReportsPage: NextPage = () => {
       </div>
 
       <div className={styles.second_div}>
-        <MapComponent
-          data={counts}
-          polygons={CalendarController.extractProvincesAndCities(events)}
-          useQuintile={true}
-        >
-        </MapComponent>
+        {events.length > 0 ? (
+            <MapComponent
+                data={counts}
+                polygons={CalendarController.extractProvincesAndCities(events)}
+                useQuintile={true}
+            >
+            </MapComponent>
+        ) : (
+            <LoadingAnimation />
+        )}
       </div>
     </div>
   );

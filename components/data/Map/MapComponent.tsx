@@ -59,7 +59,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
       const quintiles = MapController.calculateQuintiles(data, "Asistentes");
       setQuintileSteps(quintiles);
       MapController.changeFillColor(mapRef.current, quintiles);
-      console.log(quintiles, data)
     }
   }, [polygons, data]);
 
@@ -68,7 +67,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
         <div ref={mapContainerRef} id="map" className={style["mapContainer"]}></div>
         {useQuintile && (
             <div className={style["legend"]}>
-              <h4>Quintiles de Asistentes</h4>
+              <h4>Asistentes por municipio</h4>
               {quintileSteps.map((step, index) => (
                   <div key={index} className={style["legendItem"]}>
                     <span className={style["legendColor"]} style={{ backgroundColor: colors[index] }}></span>

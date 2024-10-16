@@ -40,6 +40,7 @@ class MapController {
             ]
         ];
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
+        map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
 
 
@@ -50,7 +51,6 @@ class MapController {
 
             if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
                 feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes');
-                console.log(this.extractCount(counts[provinceName][cityName], 'Asistentes'))
                 return;
             }
 
@@ -61,23 +61,26 @@ class MapController {
     static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
         const values: number[] = [];
 
-        // Extraer los valores numéricos del NestedDictionary
         for (const key in data) {
-            const valueString = data[key][valueKey];
-            if (valueString) {
-                const value = this.extractCount(valueString, valueKey);
-                if (value > 0) {
-                    values.push(value);
+            if (data[key] && typeof data[key] === 'object') {
+                for (const subKey in data[key]) {
+                    const valueString = data[key][subKey];
+                    if (valueString.includes("Asistentes")) {
+                        const value = this.extractCount(valueString, valueKey);
+                        if (value > 0) {
+                            values.push(value);
+                        }
+                    }
                 }
             }
         }
 
-        // Si no hay valores, retornar quintiles como cero
+        // Si no hay valores, retornar quintiles como ceros
         if (values.length === 0) {
             return [0, 0, 0, 0, 0];
         }
 
-        // Calcular quintiles
+        // Calcular los quintiles
         values.sort((a, b) => a - b);
         const quintiles: number[] = [];
 
@@ -93,16 +96,14 @@ class MapController {
         map: mapboxgl.Map,
         polygons: string[][] | string[],
         counts: NestedDictionary,
-        useQuintile?: boolean,
-        filterEvents?: (newState: sectionStateData) => void
+        useQuintile: boolean = false,
+        filterEvents: (newState: sectionStateData) => void = () => {}
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
 
-        if(useQuintile){
-            this.updateMapValues(polygonsFeatures, counts);
-        }
+        this.updateMapValues(polygonsFeatures, counts);
 
         if (polygonsFeatures.length > 0) {
             this.addPolygonsToMap(map, polygonsFeatures);
@@ -112,6 +113,7 @@ class MapController {
 
         this.clearMapIfNoPolygons(map, polygonsFeatures);
     }
+
 
     // Método para crear o obtener el tooltip
     static createOrGetTooltip(map: mapboxgl.Map): HTMLDivElement {
