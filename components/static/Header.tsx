@@ -33,7 +33,7 @@ const Header = () => {
           <li className={styles.header_nav_item}>
             <Link href="/events" onClick={closeMenu}>Eventos</Link>
           </li>
-          {/*<li className={styles.header_nav_item}>
+          <li className={styles.header_nav_item}>
             <Link href="/assistance" onClick={closeMenu}>Asistentes</Link>
           </li>
           <li className={styles.header_nav_item}>
@@ -42,7 +42,7 @@ const Header = () => {
           <li className={styles.header_nav_item}>
             <Link href="/tecnicos" onClick={closeMenu}>Técnicos</Link>
 
-          </li>*/}
+          </li>
           <li className={styles.header_nav_item}>
             <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>
           </li>
