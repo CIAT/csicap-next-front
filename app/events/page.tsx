@@ -659,7 +659,7 @@ const options = {
               )}
             </div>
           </CardComponent>
-          <CardComponent title="Instituciones participantes">
+          <CardComponent title="Instituciones organizadoras">
             <div className="w-full h-full">
               {allEventData.length > 0 ? (
                   <Bar data={institutionsChartData} options={barChartOptions} />

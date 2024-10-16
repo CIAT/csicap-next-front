@@ -490,7 +490,7 @@ const AssistancePage: NextPage = () => {
         </CardComponent>
 
         {/* Card: Ocupacion */}
-        <CardComponent title="Ocupacion" styles={styleTechnical}>
+        <CardComponent title="Ocupación" styles={styleTechnical}>
           {allAssistanceData.length > 0 ? (
             <Doughnut data={occupationChartData} options={config} />
           ) : (

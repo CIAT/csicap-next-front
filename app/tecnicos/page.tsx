@@ -435,7 +435,7 @@ const BeneficiariosPage: NextPage = () => {
             </CardComponent>
 
             {/* Card: Nivel Educativo */}
-            <CardComponent title="Nivel Educativo" styles={styleTechnical}>
+            <CardComponent title="Nivel educativo" styles={styleTechnical}>
               {treemapData.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut data={educationalLevel} options={config2}/>
