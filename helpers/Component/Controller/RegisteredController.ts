@@ -32,7 +32,7 @@ class RegisteredController {
             cropCount[crop] = (cropCount[crop] || 0) + 1;
         });
 
-        this.crops = cropCount;
+        this.crops = this.sortObjectByValue(cropCount);
     }
 
     static countOrganizations(data: DataFormat[]) {
@@ -72,7 +72,16 @@ class RegisteredController {
 
         });
 
-        this.organizations = organizationCount;
+        this.organizations = this.sortObjectByValue(organizationCount);
+    }
+
+    static sortObjectByValue(obj: { [key: string]: number }) {
+        return Object.entries(obj)
+            .sort(([, a], [, b]) => b - a)
+            .reduce((sortedObj, [key, value]) => {
+                sortedObj[key] = value;
+                return sortedObj;
+            }, {} as { [key: string]: number });
     }
 }
 

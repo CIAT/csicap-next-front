@@ -159,31 +159,13 @@ const BeneficiariosPage: NextPage = () => {
         setEthnicityLabel(Object.keys(ethnicityCount));
         setEthnicityNumber(Object.values(ethnicityCount));
 
-        let primaryCropData: { [key: string]: number };
-
-        primaryCropData = countPrimaryCrop(data)
-
-        const treemapData = Object.keys(primaryCropData).map((key) => ({
-          name: key,
-          value: primaryCropData[key],
-        }));
-
-        setTreemapData(treemapData);
+        setTreemapData(RegisteredController.processTreemapData(selectedFilter));
       })
       .catch(error => {
         console.error("Error fetching events:", error);
         setDataCalendarResp(-1); // Set error state
       });
   }, []);
-
-  useEffect(() => {
-    setTreemapDataFiltered(treemapData
-        .sort((a, b) => b.value - a.value)
-        .map(item => ({
-          ...item,
-          value: item.value
-        })));
-  }, [treemapData]);
 
   const sex = {
     labels: genderLabel,
@@ -228,12 +210,11 @@ const BeneficiariosPage: NextPage = () => {
     datasets: [
       {
         data: [],
-        tree: treemapDataFiltered,
-        key: "value",
-        groups: ["name"],
+        tree: treemapData,
+        key: 'value',
+        groups: ['name'],
         backgroundColor: (ctx: { dataIndex: number }) => {
-          const colors = colores;
-          return colors[ctx.dataIndex % colors.length];
+          return colores[ctx.dataIndex % colores.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
         spacing: 1,
@@ -300,9 +281,11 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   const handleFilterChange = (event: SelectChangeEvent) => {
-    const newFilter = event.target.value;
-    setSelectedFilter(newFilter);
-    setTreemapData(RegisteredController.processTreemapData(newFilter));
+    requestIdleCallback(() => {
+      const newFilter = event.target.value;
+      setSelectedFilter(newFilter);
+      setTreemapData(RegisteredController.processTreemapData(newFilter));
+    });
   };
 
   return (
