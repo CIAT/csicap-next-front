@@ -2,7 +2,7 @@ import {DataFormat, DataItem} from "@/interfaces/Components/TechnicalComponent";
 
 class TechnicalRepository {
     static async fetchEvents(): Promise<DataFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_TECHNICIAN;
+        const url = 'https://lcp5w7xuf1.execute-api.us-east-1.amazonaws.com/dev/technical-beneficiaries';
         if(!url){
             return <DataItem[]>{};
         }

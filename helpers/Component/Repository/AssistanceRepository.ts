@@ -2,7 +2,7 @@ import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 
 class AssistanceRepository {
     static async getAssistanceData(): Promise<Assistance[]> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_ASSISTANCE;
+        const url = 'https://1my60gpxj7.execute-api.us-east-1.amazonaws.com/assistence-list';
         if(!url){
             return <Assistance[]>{};
         }
