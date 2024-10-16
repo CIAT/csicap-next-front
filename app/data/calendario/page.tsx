@@ -132,7 +132,7 @@ export default function DataCalendarResults() {
           <>
             <div className={styles.card_container}>
               <div className={styles.overview}>
-                <CardComponent title="Vision General" header={<></>} style={cardStyle}>
+                <CardComponent title="Visión General" header={<></>} style={cardStyle}>
                   <OverviewCard></OverviewCard>
                 </CardComponent>
               </div>

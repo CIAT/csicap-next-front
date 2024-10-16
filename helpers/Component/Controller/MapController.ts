@@ -22,7 +22,6 @@ class MapController {
             });
             return;
         }
-
         this.applyFillColor(map, steps);
     }
 
@@ -32,14 +31,16 @@ class MapController {
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                '#E4A0A1', steps[1],
-                '#DB8081', steps[2],
-                '#D26062', steps[3],
-                '#C94042', steps[4],
-                '#A82F31'
+                '#B6D7E0', steps[1],
+                '#6DABBE', steps[2],
+                '#6DABBE', steps[3],
+                '#569AAF', steps[4],
+                '#407A8D'
             ]
         ];
+
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
+        map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
 
 
@@ -50,7 +51,6 @@ class MapController {
 
             if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
                 feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes');
-                console.log(this.extractCount(counts[provinceName][cityName], 'Asistentes'))
                 return;
             }
 
@@ -61,23 +61,26 @@ class MapController {
     static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
         const values: number[] = [];
 
-        // Extraer los valores numéricos del NestedDictionary
         for (const key in data) {
-            const valueString = data[key][valueKey];
-            if (valueString) {
-                const value = this.extractCount(valueString, valueKey);
-                if (value > 0) {
-                    values.push(value);
+            if (data[key] && typeof data[key] === 'object') {
+                for (const subKey in data[key]) {
+                    const valueString = data[key][subKey];
+                    if (valueString.includes("Asistentes")) {
+                        const value = this.extractCount(valueString, valueKey);
+                        if (value > 0) {
+                            values.push(value);
+                        }
+                    }
                 }
             }
         }
 
-        // Si no hay valores, retornar quintiles como cero
+        // Si no hay valores, retornar quintiles como ceros
         if (values.length === 0) {
             return [0, 0, 0, 0, 0];
         }
 
-        // Calcular quintiles
+        // Calcular los quintiles
         values.sort((a, b) => a - b);
         const quintiles: number[] = [];
 
@@ -94,13 +97,13 @@ class MapController {
         polygons: string[][] | string[],
         counts: NestedDictionary,
         useQuintile?: boolean,
-        filterEvents?: (newState: sectionStateData) => void
+        filterEvents?: (newState: sectionStateData) => void,
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
 
-        if(useQuintile){
+        if(useQuintile) {
             this.updateMapValues(polygonsFeatures, counts);
         }
 
@@ -112,6 +115,7 @@ class MapController {
 
         this.clearMapIfNoPolygons(map, polygonsFeatures);
     }
+
 
     // Método para crear o obtener el tooltip
     static createOrGetTooltip(map: mapboxgl.Map): HTMLDivElement {
@@ -167,7 +171,7 @@ class MapController {
                 layout: {},
                 paint: {
                     "line-color": "#0E6E8C",
-                    "line-width": 2
+                    "line-width": 1
                 }
             });
         }

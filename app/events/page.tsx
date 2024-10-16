@@ -290,7 +290,6 @@ const EventPage: NextPage = () => {
       // Calculate institution counts
       const institutionCount = countInstitutions(dataset.data);
       setInstitutionLabels(Object.keys(institutionCount));
-      console.log(Object.keys(institutionCount));
       setInstitutionData(Object.values(institutionCount));
       const guestTypeCount = countGuestTypes(dataset.data);
       let guestTypeLabels = Object.keys(guestTypeCount);
@@ -660,7 +659,7 @@ const options = {
               )}
             </div>
           </CardComponent>
-          <CardComponent title="Instituciones participantes">
+          <CardComponent title="Instituciones organizadoras">
             <div className="w-full h-full">
               {allEventData.length > 0 ? (
                   <Bar data={institutionsChartData} options={barChartOptions} />
