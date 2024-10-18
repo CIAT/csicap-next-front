@@ -25,7 +25,13 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
-import { parseISO } from 'date-fns';
+import { parseISO } from "date-fns";
+import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
+import {
+  DataFormat,
+  EventsData,
+} from "@/interfaces/Components/CalendarComponent";
+import CalendarController from "@/helpers/Component/Controller/CalendarController";
 
 interface Event {
   date: string;
@@ -46,14 +52,14 @@ interface Event {
 }
 
 Chart.register(
-    Tooltip,
-    Legend,
-    ArcElement,
-    CategoryScale,
-    BarElement,
-    LinearScale,
-    TreemapController,
-    TreemapElement
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  BarElement,
+  LinearScale,
+  TreemapController,
+  TreemapElement
 );
 
 const shortenedLabels = [
@@ -66,7 +72,7 @@ const shortenedLabels = [
   "7-Monitoreo y evaluación",
   "8-Ambiental, social y género",
   "Equipo de coordinación",
-  "Inclusión social y de género" 
+  "Inclusión social y de género",
 ];
 
 const LabelsParticipants = [
@@ -76,9 +82,8 @@ const LabelsParticipants = [
   "Profesoras/es",
   "Técnicos/Profesionales",
   "Investigadores",
-  "Otro"
+  "Otro",
 ];
-
 
 const colors = [
   "#FECF00",
@@ -91,18 +96,6 @@ const colors = [
   "#0E6E8C",
   "#569aaf",
 ];
-let evenData: { data: Event[] } = {
-  data: []  // Puedes empezar con un array vacío para luego agregar los datos
-};
-
-async function getEventData(): Promise<{ data: Event[] }> {
-  const response = await fetch(
-      "https://qhl00jvv1b.execute-api.us-east-1.amazonaws.com/dev/get-events"
-  );
-  const data = await response.json();
-  evenData = data;
-  return data;
-}
 
 // Calculate finished, in-progress, and programmed events based on form_state and datesEnd
 function calculateEventStatus(events: Event[]) {
@@ -163,7 +156,7 @@ function countInstitutionsTreeMap(events: Event[]) {
     } else {
       event.institution.forEach((institution) => {
         institutionCount[institution] =
-            (institutionCount[institution] || 0) + 1;
+          (institutionCount[institution] || 0) + 1;
       });
     }
   });
@@ -190,7 +183,7 @@ function countInstitutions(events: Event[]) {
     "FENALCE",
     "ASBAMA",
     "CENICAÑA",
-    "FEDECAFE"
+    "FEDECAFE",
   ]);
 
   const institutionCount: { [key: string]: number } = {
@@ -200,7 +193,8 @@ function countInstitutions(events: Event[]) {
   events.forEach((event) => {
     event.institution.forEach((institution) => {
       if (predefinedInstitutions.has(institution)) {
-        institutionCount[institution] = (institutionCount[institution] || 0) + 1;
+        institutionCount[institution] =
+          (institutionCount[institution] || 0) + 1;
       } else {
         institutionCount["Otras"] += 1;
       }
@@ -263,7 +257,7 @@ const EventPage: NextPage = () => {
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [treemapData, setTreemapData] = useState<
-      { name: string; value: number }[]
+    { name: string; value: number }[]
   >([]);
   const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
   const [fontSize, setFontSize] = useState(10); // Default font size
@@ -276,11 +270,13 @@ const EventPage: NextPage = () => {
 
   useEffect(() => {
     async function fetchAndProcessData() {
-      const dataset = await getEventData();
+      const dataset = await CalendarRepository.fetchCustomEvent();
+      setAllEventData(CalendarController.formatEvent(dataset));
+
+      initializeTreemapData(dataset.data);
 
       // Calculate finished/in-progress events
-      const { finishedEvents, inProgressEvents, programmedEvents } =
-          calculateEventStatus(dataset.data);
+      const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(dataset.data);
       setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
 
       // Calculate eje counts
@@ -297,34 +293,24 @@ const EventPage: NextPage = () => {
       guestTypeLabels.push("Otro");
       guestTypeData.push(0);
       if (guestTypeData[guestTypeData.length - 1] === undefined) {
-        guestTypeData.push(0); 
+        guestTypeData.push(0);
       }
-      
+
       for (let i = guestTypeLabels.length - 1; i >= 0; i--) {
         const label = guestTypeLabels[i];
-      
+
         if (!LabelsParticipants.includes(label)) {
           guestTypeData[guestTypeData.length - 1] += guestTypeData[i];
-          guestTypeLabels.splice(i, 1); 
-          guestTypeData.splice(i, 1);   
+          guestTypeLabels.splice(i, 1);
+          guestTypeData.splice(i, 1);
         }
       }
-      
+
       setGuestTypeLabels(guestTypeLabels);
       setGuestTypeData(guestTypeData);
     }
 
     fetchAndProcessData();
-  }, []);
-
-  useEffect(() => {
-    async function fetchData() {
-      const dataset = await getEventData();
-      setAllEventData(dataset.data); // Store all data for reuse
-      initializeTreemapData(dataset.data); // Initialize treemap with default "crop" data
-    }
-
-    fetchData();
   }, []);
 
   useEffect(() => {
@@ -344,14 +330,13 @@ const EventPage: NextPage = () => {
     setFontSize(getFontSize());
 
     // Add event listener for window resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
-
 
   const initializeTreemapData = (data: Event[]) => {
     let filterData = countCrop(data); // Usar countCrop en lugar de countCrops
@@ -411,7 +396,10 @@ const EventPage: NextPage = () => {
           wrap: true,
           formatter: (ctx: any) => {
             const data = ctx.raw;
-            const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
+            const label =
+              shortenedLabels.find((label) =>
+                label.startsWith(data.g.slice(0, 1))
+              ) || data.g;
             return `${label}: ${data.v}`;
           },
         },
@@ -447,49 +435,49 @@ const EventPage: NextPage = () => {
       },
     ],
   };
-const ejeCounts: { [key: string]: number } = {};
-evenData.data.forEach((event) => {
-  if (event.eje && Array.isArray(event.eje)) {
-    event.eje.forEach((eje) => {
-      ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
-    });
+  const ejeCounts: { [key: string]: number } = {};
+  allEventData.forEach((event) => {
+    if (event.eje && Array.isArray(event.eje)) {
+      event.eje.forEach((eje) => {
+        ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
+      });
+    }
+  });
+
+  let labelsDoughnutEvent = [];
+  let dataDoughnutEvent = [];
+  let replacedEjeCounts: { [key: string]: number } = {};
+
+  for (let key in ejeCounts) {
+    let matchedLabel = shortenedLabels.find((label) =>
+      key.toLowerCase().startsWith(label.split("-")[0].toLowerCase())
+    );
+
+    if (matchedLabel) {
+      replacedEjeCounts[matchedLabel] = ejeCounts[key];
+    } else {
+      replacedEjeCounts[key] = ejeCounts[key];
+    }
   }
-});
 
-let labelsDoughnutEvent = [];
-let dataDoughnutEvent = [];
-let replacedEjeCounts: { [key: string]: number } = {};
-
-for (let key in ejeCounts) {
-  let matchedLabel = shortenedLabels.find(label => key.toLowerCase().startsWith(label.split('-')[0].toLowerCase()));
-
-  if (matchedLabel) {
-    replacedEjeCounts[matchedLabel] = ejeCounts[key];
-  } else {
-    replacedEjeCounts[key] = ejeCounts[key];  
+  for (let key in replacedEjeCounts) {
+    if (replacedEjeCounts.hasOwnProperty(key)) {
+      labelsDoughnutEvent.push(key);
+      dataDoughnutEvent.push(replacedEjeCounts[key]);
+    }
   }
-}
 
-
-for (let key in replacedEjeCounts) {
-  if (replacedEjeCounts.hasOwnProperty(key)) {
-    labelsDoughnutEvent.push(key);     
-    dataDoughnutEvent.push(replacedEjeCounts[key]);  
-  }
-}
-
-
-const ejesChartData = {
-  labels: labelsDoughnutEvent, // Use shortened labels for both display and tooltips
-  datasets: [
-    {
-      label: "Eje Count",
-      data: dataDoughnutEvent,
-      backgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for background
-      hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for hover
-    },
-  ],
-};
+  const ejesChartData = {
+    labels: labelsDoughnutEvent, // Use shortened labels for both display and tooltips
+    datasets: [
+      {
+        label: "Eje Count",
+        data: dataDoughnutEvent,
+        backgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for background
+        hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for hover
+      },
+    ],
+  };
 
   const guestTypesChartData = {
     labels: guestTypeLabels,
@@ -532,29 +520,31 @@ const ejesChartData = {
     },
   };
 
-
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      enabled: true,
-      callbacks: {
-        title: function () {
-          return "";
-        },
-        label: function (tooltipItem: any) {
-          const data = tooltipItem.raw;
-          const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
-          return `${label}: ${data.v}`;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          title: function () {
+            return "";
+          },
+          label: function (tooltipItem: any) {
+            const data = tooltipItem.raw;
+            const label =
+              shortenedLabels.find((label) =>
+                label.startsWith(data.g.slice(0, 1))
+              ) || data.g;
+            return `${label}: ${data.v}`;
+          },
         },
       },
     },
-  },
-};
+  };
 
   const barChartOptions = {
     responsive: true,
@@ -597,79 +587,79 @@ const options = {
   };
 
   return (
-      <div className={styles.event_page}>
-        <div className={styles.div}>
-          <ChartCardComponent
-              title="Número de eventos"
-              header={
-                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                  <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-                  <Select
-                      labelId="demo-select-small-label"
-                      id="demo-select-small"
-                      value={selectedFilter}
-                      onChange={handleFilterChange}
-                      label="Filtrar"
-                  >
-                    <MenuItem value="crop">Cultivo</MenuItem>
-                    <MenuItem value="ejes">Eje</MenuItem>
-                    <MenuItem value="city">Lugar</MenuItem>
-                    <MenuItem value="institution">Institución</MenuItem>
-                  </Select>
-                </FormControl>
-              }
-          >
-            {treemapData.length > 0 ? (
-                <ReactChart
-                    type="treemap"
-                    data={treemapChartData}
-                    options={options}
-                />
-            ) : (
-                <LoadingAnimation />
-            )}
-          </ChartCardComponent>
-        </div>
-
-        <div className={styles.card_container}>
-          <CardComponent title="Total Eventos">
-            <div className="w-full h-full">
-              {allEventData.length > 0 ? (
-                  <Doughnut data={eventsTotal} options={config2} />
-              ) : (
-                  <LoadingAnimation />
-              )}
-            </div>
-          </CardComponent>
-          <CardComponent title="Ejes por evento">
-            <div className="w-full h-full">
-              {allEventData.length > 0 ? (
-                  <Doughnut data={ejesChartData} options={config2} />
-              ) : (
-                  <LoadingAnimation />
-              )}
-            </div>
-          </CardComponent>
-          <CardComponent title="Tipo de invitados por evento">
-            <div className="w-full h-full">
-              {allEventData.length > 0 ? (
-                  <Doughnut data={guestTypesChartData} options={config2} />
-              ) : (
-                  <LoadingAnimation />
-              )}
-            </div>
-          </CardComponent>
-          <CardComponent title="Instituciones organizadoras">
-            <div className="w-full h-full">
-              {allEventData.length > 0 ? (
-                  <Bar data={institutionsChartData} options={barChartOptions} />
-              ) : (
-                  <LoadingAnimation />
-              )}
-            </div>
-          </CardComponent>
-        </div>
+    <div className={styles.event_page}>
+      <div className={styles.div}>
+        <ChartCardComponent
+          title="Número de eventos"
+          header={
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={selectedFilter}
+                onChange={handleFilterChange}
+                label="Filtrar"
+              >
+                <MenuItem value="crop">Cultivo</MenuItem>
+                <MenuItem value="ejes">Eje</MenuItem>
+                <MenuItem value="city">Lugar</MenuItem>
+                <MenuItem value="institution">Institución</MenuItem>
+              </Select>
+            </FormControl>
+          }
+        >
+          {treemapData.length > 0 ? (
+            <ReactChart
+              type="treemap"
+              data={treemapChartData}
+              options={options}
+            />
+          ) : (
+            <LoadingAnimation />
+          )}
+        </ChartCardComponent>
       </div>
+
+      <div className={styles.card_container}>
+        <CardComponent title="Total Eventos">
+          <div className="w-full h-full">
+            {allEventData.length > 0 ? (
+              <Doughnut data={eventsTotal} options={config2} />
+            ) : (
+              <LoadingAnimation />
+            )}
+          </div>
+        </CardComponent>
+        <CardComponent title="Ejes por evento">
+          <div className="w-full h-full">
+            {allEventData.length > 0 ? (
+              <Doughnut data={ejesChartData} options={config2} />
+            ) : (
+              <LoadingAnimation />
+            )}
+          </div>
+        </CardComponent>
+        <CardComponent title="Tipo de invitados por evento">
+          <div className="w-full h-full">
+            {allEventData.length > 0 ? (
+              <Doughnut data={guestTypesChartData} options={config2} />
+            ) : (
+              <LoadingAnimation />
+            )}
+          </div>
+        </CardComponent>
+        <CardComponent title="Instituciones organizadoras">
+          <div className="w-full h-full">
+            {allEventData.length > 0 ? (
+              <Bar data={institutionsChartData} options={barChartOptions} />
+            ) : (
+              <LoadingAnimation />
+            )}
+          </div>
+        </CardComponent>
+      </div>
+    </div>
   );
 };
 
