@@ -9,6 +9,10 @@ const options = [
   { key: "2", label: "Evento 232342" },
 ];
 
+interface Report {
+  
+}
+
 const Filter: NextPage = () => {
   return (
     <div className="w-full">

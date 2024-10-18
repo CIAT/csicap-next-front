@@ -5,7 +5,14 @@ import styles from "./reports.module.css";
 import Filter from "@/components/reports/Filter";
 import ColombiaHeat from "@/components/maps/ColombiaHeat";
 import { useEffect, useState } from "react";
-import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 const data = [
   {
@@ -56,6 +63,12 @@ const data = [
     value: "Agenda detallada del evento",
   },
   {
+    key: "photo_register",
+    label: "Registro fotográfico",
+    value: "Fotos del evento",
+  },
+  { key: "link", label: "Evidencias", value: "Enlace a los recursos" },
+  {
     key: "event_invitation",
     label: "Convocatoria: Evidencia",
     value: "Invitación enviada por correo",
@@ -70,12 +83,6 @@ const data = [
     label: "Resultados: Recomendaciones - Pasos a seguir",
     value: "Conclusiones y próximos pasos",
   },
-  {
-    key: "photo_register",
-    label: "Registro fotográfico",
-    value: "Fotos del evento",
-  },
-  { key: "link", label: "Evidencias", value: "Enlace a los recursos" },
 ];
 
 const ReportsPage: NextPage = () => {
@@ -84,7 +91,9 @@ const ReportsPage: NextPage = () => {
 
   const fetchPdf = async (selectedReportId: string) => {
     try {
-      const response = await fetch(`/api/generate-pdf?reportId=${selectedReportId}`);
+      const response = await fetch(
+        `/api/generate-pdf?reportId=${selectedReportId}`
+      );
       if (!response.ok) {
         throw new Error("Failed to generate PDF");
       }

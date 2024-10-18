@@ -14,7 +14,6 @@ import {
   LinearScale,
 } from "chart.js";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
-
 import styles from "./events.module.css";
 import ChartCardComponent from "@/components/events/chartCard";
 import CardComponent from "@/components/events/Card";
@@ -27,6 +26,7 @@ import {
 } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
 import { parseISO } from 'date-fns';
+
 interface Event {
   date: string;
   eje: string[];
