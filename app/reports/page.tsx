@@ -2,17 +2,16 @@
 
 import { NextPage } from "next";
 import styles from "./reports.module.css";
-import Filter from "@/components/reports/Filter";
-import ColombiaHeat from "@/components/maps/ColombiaHeat";
-import { useEffect, useState } from "react";
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import MapComponent from "@/components/data/Map/MapComponent";
+import CalendarController from "@/helpers/Component/Controller/CalendarController";
+import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
+import MapController from "@/helpers/Component/Controller/MapController";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+
+import React, { useEffect, useState } from "react";
+import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {DataFormat, EventsData} from "@/interfaces";
+import LoadingAnimation from "@/components/loadingAnimation";
 
 const data = [
   {
@@ -86,8 +85,26 @@ const data = [
 ];
 
 const ReportsPage: NextPage = () => {
+  const [events, setEvents] = useState<EventsData[]>([]);
+  const [counts, setCounts] = useState<NestedDictionary>({});
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
+
+  useEffect(() => {
+    CalendarRepository.fetchEvents()
+        .then((data: DataFormat) => {
+          const formattedEvents = CalendarController.formatEvents(data).map(event => ({
+            ...event,
+            city: event.city.toLowerCase()
+          }))
+
+          setCounts(MapController.updateCountAssistants(formattedEvents));
+          setEvents(formattedEvents);
+        })
+        .catch(error => {
+          console.error("Error fetching events:", error);
+        })
+  }, []);
 
   const fetchPdf = async (selectedReportId: string) => {
     try {
@@ -147,64 +164,72 @@ const ReportsPage: NextPage = () => {
   // Handle report selection and trigger PDF fetch
   const handleReportSelection = (event: SelectChangeEvent<string | null>) => {
     const selectedId = event.target.value as string;
-    setReportId(selectedId); // Updates the selected reportId based on the user's selection
-    fetchPdf(selectedId); // Fetch the new PDF corresponding to the selected report
+    setReportId(selectedId);
+    fetchPdf(selectedId);
   };
 
   return (
-    <div className={styles.reports}>
-      <div className={styles.first_div}>
-        <div className={styles.filter_div}>
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={reportId}
-              onChange={handleReportSelection}
-              label="Filtrar"
-            >
-              <MenuItem value="1">Evento 12312431</MenuItem>
-              <MenuItem value="2">Evento 232342</MenuItem>
-              <MenuItem value="3">Evento 12312431</MenuItem>
-              <MenuItem value="4">Evento 232342</MenuItem>
-            </Select>
-          </FormControl>
-          <div className="gap-2 flex flex-row">
-            <Button
-              variant="contained"
-              onClick={downloadPdf}
-              disabled={!pdfUrl}
-            >
-              PDF
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleDownloadDocx}
-              disabled={!reportId}
-            >
-              Word
-            </Button>
+      <div className={styles.reports}>
+        <div className={styles.first_div}>
+          <div className={styles.filter_div}>
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+              <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={reportId}
+                  onChange={handleReportSelection}
+                  label="Filtrar"
+              >
+                <MenuItem value="1">Evento 12312431</MenuItem>
+                <MenuItem value="2">Evento 232342</MenuItem>
+                <MenuItem value="3">Evento 12312431</MenuItem>
+                <MenuItem value="4">Evento 232342</MenuItem>
+              </Select>
+            </FormControl>
+            <div className="gap-2 flex flex-row">
+              <Button
+                  variant="contained"
+                  onClick={downloadPdf}
+                  disabled={!pdfUrl}
+              >
+                PDF
+              </Button>
+              <Button
+                  variant="contained"
+                  onClick={handleDownloadDocx}
+                  disabled={!reportId}
+              >
+                Word
+              </Button>
+            </div>
+          </div>
+          <div className={styles.preview_div}>
+            {pdfUrl ? (
+                <iframe
+                    src={pdfUrl}
+                    width="100%"
+                    height="600"
+                    style={{ border: "none" }}
+                />
+            ) : (
+                <p>Loading PDF...</p>
+            )}
           </div>
         </div>
-        <div className={styles.preview_div}>
-          {pdfUrl ? (
-            <iframe
-              src={pdfUrl}
-              width="100%"
-              height="600"
-              style={{ border: "none" }}
-            />
+
+        <div className={styles.second_div}>
+          {events.length > 0 ? (
+              <MapComponent
+                  data={counts}
+                  polygons={CalendarController.extractProvincesAndCities(events)}
+                  useQuintile={true}
+              />
           ) : (
-            <p>Loading PDF...</p>
+              <LoadingAnimation/>
           )}
         </div>
       </div>
-
-      <div className={styles.second_div}>
-        <ColombiaHeat />
-      </div>
-    </div>
   );
 };
 

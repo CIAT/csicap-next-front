@@ -184,6 +184,13 @@ function countInstitutions(events: Event[]) {
     "AUGURA",
     "FEDEGAN",
     "FEDEPANELA",
+    "CIPAV",
+    "CENICAFE",
+    "MADR",
+    "FENALCE",
+    "ASBAMA",
+    "CENICAÑA",
+    "FEDECAFE"
   ]);
 
   const institutionCount: { [key: string]: number } = {
@@ -559,10 +566,21 @@ const options = {
           stepSize: 1,
         },
       },
+      x: {
+        ticks: {
+          // Cambia el tamaño de la fuente
+          font: {
+            size: 10, // Ajusta el tamaño según sea necesario
+          },
+          // Aplica rotación a las etiquetas
+          maxRotation: 90, // Máxima rotación
+          minRotation: 90, // Mínima rotación, asegura que esté completamente vertical
+        },
+      },
     },
     plugins: {
       legend: {
-        display: false, // Asegúrate de usar un valor válido
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -571,7 +589,7 @@ const options = {
           },
           label: function (tooltipItem: any) {
             const index = tooltipItem.dataIndex;
-            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
           },
         },
       },
@@ -632,7 +650,7 @@ const options = {
               )}
             </div>
           </CardComponent>
-          <CardComponent title="Tipo de Participantes por evento">
+          <CardComponent title="Tipo de invitados por evento">
             <div className="w-full h-full">
               {allEventData.length > 0 ? (
                   <Doughnut data={guestTypesChartData} options={config2} />
@@ -641,7 +659,7 @@ const options = {
               )}
             </div>
           </CardComponent>
-          <CardComponent title="Instituciones participantes">
+          <CardComponent title="Instituciones organizadoras">
             <div className="w-full h-full">
               {allEventData.length > 0 ? (
                   <Bar data={institutionsChartData} options={barChartOptions} />

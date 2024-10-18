@@ -52,7 +52,7 @@ export default function DataCalendarResults() {
   };
 
   useEffect(() => {
-    CalendarRepository.fetchEvents()
+    CalendarRepository.fetchCalendarEvents()
       .then((data: DataFormat) => {
         const formattedEvents = CalendarController.formatEvents(data).map(event => ({
           ...event,
@@ -132,7 +132,7 @@ export default function DataCalendarResults() {
           <>
             <div className={styles.card_container}>
               <div className={styles.overview}>
-                <CardComponent title="Vision General" header={<></>} style={cardStyle}>
+                <CardComponent title="Visión General" header={<></>} style={cardStyle}>
                   <OverviewCard></OverviewCard>
                 </CardComponent>
               </div>

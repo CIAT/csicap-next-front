@@ -20,3 +20,39 @@
     border-radius: 3px;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
+
+.mapContainerWrapper {
+    position: relative;
+}
+
+.mapContainer {
+    width: 100%;
+    height: 100%;
+}
+
+.legend {
+    position: absolute;
+    bottom: 20px;
+    right: 35px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+}
+
+.legend h4 {
+    margin: 0 0 5px 0;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.legendColor {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}

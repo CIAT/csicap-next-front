@@ -16,7 +16,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { useEffect, useState } from "react";
-import { EventsData, sectionStateData } from "@/interfaces";
+import {Event, EventsData, sectionStateData} from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import BeneficiariesRepository from "@/helpers/Component/Repository/BeneficiariesRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
@@ -26,6 +26,10 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import LoadingAnimation from "@/components/loadingAnimation";
+import ChartCardComponent from "@/components/events/chartCard";
+import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {Assistance} from "@/interfaces/Components/AssistanceComponent";
+import RegisteredController from "@/helpers/Component/Controller/RegisteredController";
 
 Chart.register(
   ArcElement,
@@ -90,17 +94,6 @@ function countEthnicity(data: { pr_ethnic_group: string }[]) {
   return ethnicityCount;
 }
 
-function countOrganizations(data: DataFormat[]): { [key: string]: number } {
-  const organizationCount: { [key: string]: number } = {};
-
-  data.forEach(item => {
-    const gremio = item.gremio;
-    organizationCount[gremio] = (organizationCount[gremio] || 0) + 1;
-  });
-
-  return organizationCount;
-}
-
 function countPrimaryCrop(data: DataFormat[]): { [key: string]: number } {
   const primaryCropCount: { [key: string]: number } = {};
 
@@ -120,6 +113,8 @@ const BeneficiariosPage: NextPage = () => {
   );
   const [counts, setCounts] = useState<NestedDictionary>({});
 
+  const [selectedFilter, setSelectedFilter] = useState<string>("crop");
+  const [allEventsData, setAllEventsData] = useState<DataFormat[]>([]);
 
   const [selectedEvent, setSelectedEvent] = useState<DataFormat | null>(null);
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
@@ -144,6 +139,9 @@ const BeneficiariosPage: NextPage = () => {
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
 
+        setAllEventsData(data);
+        RegisteredController.countCrops(data);
+        RegisteredController.countOrganizations(data);
         setCounts(MapController.updateCountBeneficiariesByCity(formattedEvents));
 
         const totalDataRecord = countTotalRecords(data);
@@ -161,31 +159,13 @@ const BeneficiariosPage: NextPage = () => {
         setEthnicityLabel(Object.keys(ethnicityCount));
         setEthnicityNumber(Object.values(ethnicityCount));
 
-        let primaryCropData: { [key: string]: number };
-
-        primaryCropData = countPrimaryCrop(data)
-
-        const treemapData = Object.keys(primaryCropData).map((key) => ({
-          name: key,
-          value: primaryCropData[key],
-        }));
-
-        setTreemapData(treemapData);
+        setTreemapData(RegisteredController.processTreemapData(selectedFilter));
       })
       .catch(error => {
         console.error("Error fetching events:", error);
         setDataCalendarResp(-1); // Set error state
       });
   }, []);
-
-  useEffect(() => {
-    setTreemapDataFiltered(treemapData
-        .sort((a, b) => b.value - a.value)
-        .map(item => ({
-          ...item,
-          value: item.value
-        })));
-  }, [treemapData]);
 
   const sex = {
     labels: genderLabel,
@@ -230,12 +210,11 @@ const BeneficiariosPage: NextPage = () => {
     datasets: [
       {
         data: [],
-        tree: treemapDataFiltered,
-        key: "value",
-        groups: ["name"],
+        tree: treemapData,
+        key: 'value',
+        groups: ['name'],
         backgroundColor: (ctx: { dataIndex: number }) => {
-          const colors = colores;
-          return colors[ctx.dataIndex % colors.length];
+          return colores[ctx.dataIndex % colores.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
         spacing: 1,
@@ -301,6 +280,14 @@ const BeneficiariosPage: NextPage = () => {
     },
   };
 
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    requestIdleCallback(() => {
+      const newFilter = event.target.value;
+      setSelectedFilter(newFilter);
+      setTreemapData(RegisteredController.processTreemapData(newFilter));
+    });
+  };
+
   return (
     <div className="w-full h-full flex flex-wrap">
       <Tabs aria-label="Options">
@@ -363,13 +350,31 @@ const BeneficiariosPage: NextPage = () => {
             <div className={styles.bottom_div}>
               <div className={styles.flex_container}>
                 <div className={styles.width}>
-                  <CardComponent title="Número de registrados" styles={styleBeneficiaries}>
+                  <ChartCardComponent title="Número de registrados" header={
+                    <FormControl sx={{m: 1, minWidth: 120}} size="small">
+                      <InputLabel id="filter-select-label">Filtrar</InputLabel>
+                      <Select
+                          labelId="filter-select-label"
+                          id="filter-select"
+                          value={selectedFilter}
+                          onChange={handleFilterChange}
+                          label="Filtrar"
+                      >
+                        <MenuItem value="institution">Institución</MenuItem>
+                        <MenuItem value="crop">Cultivo</MenuItem>
+                      </Select>
+                    </FormControl>
+                  }>
                     {treemapData.length > 0 ? (
-                        <ReactChart type="treemap" data={data} options={options} />
+                        <ReactChart
+                            type="treemap"
+                            data={data}
+                            options={options}
+                        />
                     ) : (
                         <LoadingAnimation/>
                     )}
-                  </CardComponent>
+                  </ChartCardComponent>
                 </div>
                 <div className={styles.width}>
                   <CardComponent title="Registrados por municipio" styles={styleBeneficiaries}>

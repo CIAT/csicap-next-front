@@ -2,6 +2,7 @@ import colombiaGeoJSONByCities from "@/components/maps/ColombiaDepartments.json"
 import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import mapboxgl from "mapbox-gl";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -14,20 +15,97 @@ class MapController {
         return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     }
 
-    static extractProvinces(events: { province: string }[]): string[] {
-        const provinces = events.map(event => event.province);
-        return Array.from(new Set(provinces));
+    static changeFillColor(map: mapboxgl.Map, steps: Number[]) {
+        if (!map.isStyleLoaded()) {
+            map.on('styledata', () => {
+                this.applyFillColor(map, steps);
+            });
+            return;
+        }
+        this.applyFillColor(map, steps);
+    }
+
+    static applyFillColor(map: mapboxgl.Map, steps: Number[]) {
+        const fillColor = [
+            'case',
+            ['==', ['get', 'value'], null],
+            'white',
+            ['step', ['get', 'value'],
+                '#B6D7E0', steps[1],
+                '#6DABBE', steps[2],
+                '#6DABBE', steps[3],
+                '#569AAF', steps[4],
+                '#407A8D'
+            ]
+        ];
+
+        map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
+        map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
+    }
+
+
+    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary) {
+        polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
+            const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
+            const cityName = this.removeAccents(feature.properties.mpio_cnmbr);
+
+            if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
+                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes');
+                return;
+            }
+
+            feature.properties.value = 0;
+        });
+    }
+
+    static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
+        const values: number[] = [];
+
+        for (const key in data) {
+            if (data[key] && typeof data[key] === 'object') {
+                for (const subKey in data[key]) {
+                    const valueString = data[key][subKey];
+                    if (valueString.includes("Asistentes")) {
+                        const value = this.extractCount(valueString, valueKey);
+                        if (value > 0) {
+                            values.push(value);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Si no hay valores, retornar quintiles como ceros
+        if (values.length === 0) {
+            return [0, 0, 0, 0, 0];
+        }
+
+        // Calcular los quintiles
+        values.sort((a, b) => a - b);
+        const quintiles: number[] = [];
+
+        for (let i = 1; i <= 5; i++) {
+            const index = Math.floor((i * values.length) / 5) - 1;
+            quintiles.push(values[Math.min(index, values.length - 1)]);
+        }
+
+        return quintiles;
     }
 
     static highlightPolygons(
         map: mapboxgl.Map,
         polygons: string[][] | string[],
         counts: NestedDictionary,
-        filterEvents?: (newState: sectionStateData) => void
+        useQuintile?: boolean,
+        filterEvents?: (newState: sectionStateData) => void,
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
+
+        if(useQuintile) {
+            this.updateMapValues(polygonsFeatures, counts);
+        }
 
         if (polygonsFeatures.length > 0) {
             this.addPolygonsToMap(map, polygonsFeatures);
@@ -37,6 +115,7 @@ class MapController {
 
         this.clearMapIfNoPolygons(map, polygonsFeatures);
     }
+
 
     // Método para crear o obtener el tooltip
     static createOrGetTooltip(map: mapboxgl.Map): HTMLDivElement {
@@ -92,7 +171,7 @@ class MapController {
                 layout: {},
                 paint: {
                     "line-color": "#0E6E8C",
-                    "line-width": 2
+                    "line-width": 1
                 }
             });
         }
@@ -146,17 +225,14 @@ class MapController {
                 );
             }
 
-            this.updateTooltipPosition(e, tooltip, map);
+            this.updateTooltipPosition(e, tooltip);
             this.updateTooltipContent(e, tooltip, counts);
         }
     }
 
     // Método para actualizar la posición del tooltip
-    static updateTooltipPosition(e: any, tooltip: HTMLDivElement, map: mapboxgl.Map) {
+    static updateTooltipPosition(e: any, tooltip: HTMLDivElement) {
         tooltip.style.display = 'block';
-
-        const mapWidth = map.getCanvas().clientWidth;
-        const mapHeight = map.getCanvas().clientHeight;
         const tooltipWidth = tooltip.offsetWidth;
         const tooltipHeight = tooltip.offsetHeight;
 
@@ -233,7 +309,7 @@ class MapController {
         filterEvents(filterObject);
         MapController.selectedCity = clickedCity;
         MapController.selectedProvince = clickedProvince;
-        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, filterEvents);
+        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, undefined, filterEvents);
     }
 
     // Método para limpiar el mapa si no hay polígonos encontrados
@@ -463,6 +539,33 @@ class MapController {
         return match ? Number(match[1]) : 0;
     }
 
+    static updateCountAssistants(events: {
+        participant_count: string;
+        city: string;
+        province: string;
+    }[]): NestedDictionary {
+        const assistanceCounts: NestedDictionary = {};
+
+        events.forEach(event => {
+            const province = this.removeAccents(event.province);
+            const city = this.removeAccents(event.city);
+
+            if (!assistanceCounts[province]) {
+                assistanceCounts[province] = {};
+            }
+
+            // Convertir participant_count a número
+            const participantCount = parseInt(event.participant_count, 10) || 0;
+
+            if (assistanceCounts[province][city]) {
+                const currentCount = parseInt(assistanceCounts[province][city].replace(/\D/g, ''), 10) || 0;
+                assistanceCounts[province][city] = `Asistentes: ${currentCount + participantCount}`;
+            } else {
+                assistanceCounts[province][city] = `Asistentes: ${participantCount}`;
+            }
+        });
+        return assistanceCounts;
+    }
 }
 
 export default MapController;
