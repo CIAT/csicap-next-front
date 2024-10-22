@@ -17,7 +17,6 @@ import { Doughnut } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart as ReactChart } from "react-chartjs-2";
 import ChartCardComponent from "@/components/events/chartCard";
-import MapComponent from "@/components/data/Map/MapComponent";
 import { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
 import { DataFormat, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
@@ -29,10 +28,6 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { colors } from "@nextui-org/react";
-import {sectionStateData} from "@/interfaces";
-import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-import MapController from "@/helpers/Component/Controller/MapController";
 import LoadingAnimation from "@/components/loadingAnimation";
 
 Chart.register(
@@ -150,10 +145,6 @@ function countOrganizations(events: DataFormat) {
 const BeneficiariosPage: NextPage = () => {
 
   const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
-    events
-  );
-  const [counts, setCounts] = useState<NestedDictionary>({});
 
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
@@ -179,9 +170,7 @@ const BeneficiariosPage: NextPage = () => {
       .then((data: DataFormat) => {
         const formattedEvents = TechnicalController.formatEvents(data);
         setEvents(formattedEvents);
-        setFilteredEvents(formattedEvents);
         setDataCalendarResp(200);
-        setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
 
         setAllEventData(data);
         initializeTreemapData(data);
