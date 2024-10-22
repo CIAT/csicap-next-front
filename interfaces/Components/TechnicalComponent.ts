@@ -1,7 +1,7 @@
 export interface FormattedBeneficiary extends TechnicalBeneficiaries {
     province: string;
     city: string[];
-    crop: string[];
+    crop: string;
     academicLevel: string;
     institution: string[];
 }
