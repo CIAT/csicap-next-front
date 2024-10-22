@@ -94,7 +94,9 @@ function countCrops(data: DataFormat): { [key: string]: number } {
   const cropCount: { [key: string]: number } = {};
 
   data.forEach(item => {
-    item.data.crops_worked_last_12_months.forEach(crop => {
+    const crops = item.data.crops_worked_last_12_months.split(', ').map(crop => crop.trim());
+
+    crops.forEach(crop => {
       cropCount[crop] = (cropCount[crop] || 0) + 1;
     });
   });

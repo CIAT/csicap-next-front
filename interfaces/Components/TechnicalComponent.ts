@@ -14,7 +14,7 @@ export interface TechnicalBeneficiaries {
     current_position_in_guild: string;
     municipalities_where_you_work: string[]; // Cambiado a string
     gender_at_birth: string;
-    crops_worked_last_12_months: string[]; // Cambiado a string
+    crops_worked_last_12_months: string; // Cambiado a string
     professional_field_last_12_months: string[]; // Mantener si es array
     age_tc: string;
     municipalities_code: string[];
