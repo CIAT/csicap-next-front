@@ -1,16 +1,15 @@
 .footerStyle {
   background-color: rgb(200, 160, 65);
   color: white;
-  padding: 20px;
+  padding: 10px 60px;
   text-align: center;
-  margin-top: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .footer_img {
-  width: 15%;
+  width: 25%;
 }
 
 .footerNavStyle {
@@ -156,7 +155,7 @@
 /* Footer and other styles for small screens */
 @media (max-width: 500px) {
   .footer_img {
-    width: 30%;
+    width: 25%;
   }
 
   .footer_text {
@@ -166,7 +165,7 @@
 
 @media (min-width: 500px) {
   .footer_img {
-    width: 15%;
+    width: 25%;
   }
 
   .footer_text {

@@ -488,22 +488,6 @@ const BeneficiariosPage: NextPage = () => {
                   )}
                 </ChartCardComponent>
               </div>
-
-              <div className={styles.width}>
-                {/* Mapa de Colombia */}
-                <CardComponent title="Técnicos por municipio" styles={styleTechnical}>
-                  {treemapData.length > 0 && filteredEvents && counts ? (
-                      <div className="w-full h-full">
-                        <MapComponent
-                            polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
-                            data={counts}
-                        />
-                      </div>
-                  ) : (
-                      <LoadingAnimation/>
-                  )}
-                </CardComponent>
-              </div>
             </div>
           </div>
         </div>

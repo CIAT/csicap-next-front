@@ -7,8 +7,8 @@ const Footer = () => {
     <footer className={styles.footerStyle}>
       <div className={styles.footer_img}>
         <img
-          src="/logo_alianza.webp"
-          alt="alliance-logo"
+          src="/Logo_Colombia_+_Ministerio_Blanco.png"
+          alt="CAS-logo"
         />
       </div>
       <div className={styles.footer_text}>
@@ -26,8 +26,8 @@ const Footer = () => {
       </div>
       <div className={styles.footer_img}>
         <img
-          src="/colombia-agro-logo.webp"
-          alt="CAS-logo"
+          src="/Alliance_Logo_Refresh-SP_white.png"
+          alt="alliance-logo"
         />
       </div>
     </footer>
