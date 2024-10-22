@@ -260,12 +260,23 @@ class MapController {
 
         provinceName = this.removeAccents(provinceName);
         cityName = this.removeAccents(cityName);
+
         if (counts && counts[provinceName] && counts[provinceName][cityName]) {
-            tooltipHtmlContent += `<br><strong>${counts[provinceName][cityName]}</strong>`;
+            const content = counts[provinceName][cityName];
+
+            const currentTotal = this.extractCount(content, 'Asistentes');
+
+            const hasAssistants = content.includes('Asistentes');
+
+            if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
+                tooltipHtmlContent += `<br><strong>${content}</strong>`;
+            }
         }
 
         tooltip.innerHTML = tooltipHtmlContent;
     }
+
+
 
     // Método para manejar la salida del ratón del mapa
     static handleMouseLeave(map: mapboxgl.Map, hoveredStateId: number | string | null, tooltip: HTMLDivElement) {
