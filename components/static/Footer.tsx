@@ -24,7 +24,7 @@ const Footer = () => {
           </ul>
         </nav>
       </div>
-      <div className={styles.footer_img}>
+      <div className={styles.footer_img_variant}>
         <img
           src="/Alliance_Logo_Refresh-SP_white.png"
           alt="alliance-logo"

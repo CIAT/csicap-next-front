@@ -1,7 +1,7 @@
 .footerStyle {
   background-color: rgb(200, 160, 65);
   color: white;
-  padding: 10px 60px;
+  padding: 50px 60px;
   text-align: center;
   display: flex;
   align-items: center;
@@ -9,7 +9,11 @@
 }
 
 .footer_img {
-  width: 25%;
+  width: 20%;
+}
+
+.footer_img_variant {
+  width: 10%;
 }
 
 .footerNavStyle {
@@ -155,7 +159,7 @@
 /* Footer and other styles for small screens */
 @media (max-width: 500px) {
   .footer_img {
-    width: 25%;
+    width: 20%;
   }
 
   .footer_text {
@@ -165,7 +169,7 @@
 
 @media (min-width: 500px) {
   .footer_img {
-    width: 25%;
+    width: 20%;
   }
 
   .footer_text {
