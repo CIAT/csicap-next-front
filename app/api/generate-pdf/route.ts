@@ -1,94 +1,178 @@
-// /app/api/generate-pdf/route.ts
-import { NextResponse } from 'next/server';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { NextResponse } from "next/server";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 
-// Simulated "database" of reports (just like in the DOCX route)
-const reports = [
-  {
-    id: "1",
-    data: [
-      { key: "main_event_objective", label: "Objetivo", value: "Aumentar la conciencia sobre la sostenibilidad" },
-      { key: "event_type", label: "Tipo de taller o capacitación", value: "Taller" },
-      { key: "event_justification", label: "Justificación", value: "Necesidad de educar a la comunidad" },
-      { key: "guest_type", label: "Tipo de invitados", value: "Expertos en sostenibilidad" },
-      { key: "invited_participants_number", label: "No. Invitados", value: 50 },
-      // ... other fields
-    ],
-  },
-  {
-    id: "2",
-    data: [
-      { key: "main_event_objective", label: "Objetivo", value: "Mejorar la calidad del agua" },
-      { key: "event_type", label: "Tipo de taller o capacitación", value: "Capacitación" },
-      { key: "event_justification", label: "Justificación", value: "Fomentar la protección de los recursos hídricos" },
-      { key: "guest_type", label: "Tipo de invitados", value: "Expertos en agua" },
-      { key: "invited_participants_number", label: "No. Invitados", value: 100 },
-      // ... other fields
-    ],
-  },
-];
-
-// Function to get report data by ID (similar to DOCX route)
+// Función para obtener los datos del reporte a partir de un ID
 async function getReportData(reportId: string) {
-  const report = reports.find((r) => r.id === reportId);
-  if (!report) {
-    throw new Error("Report not found");
+  const decodedReportId = decodeURIComponent(reportId);
+  const dataset = await ReportsRepository.fetchEventById(decodedReportId);
+
+  if (!dataset || !dataset.data || dataset.data.length === 0) {
+    throw new Error("Report data not found");
   }
-  return report.data;
+
+  return dataset.data[0]; // Solo tomamos el primer objeto del array 'data'
+}
+
+// Función para envolver texto si es más largo que el ancho permitido
+function splitTextIntoLines(
+  text: string,
+  font: any,
+  fontSize: number,
+  maxWidth: number
+) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = words[0];
+
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const width = font.widthOfTextAtSize(currentLine + " " + word, fontSize);
+    if (width < maxWidth) {
+      currentLine += " " + word;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  lines.push(currentLine);
+  return lines;
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const reportId = searchParams.get("reportId");
+  let reportId = searchParams.get("reportId");
 
   if (!reportId) {
     return new NextResponse("Report ID not provided", { status: 400 });
   }
 
-  const reportData = await getReportData(reportId);
+  try {
+    // Obtener los datos del reporte por el ID
+    const reportData = await getReportData(reportId);
 
-  // Create a new PDF document
-  const pdfDoc = await PDFDocument.create();
+    // Crear un nuevo documento PDF
+    const pdfDoc = await PDFDocument.create();
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
-  // Embed a font
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    // Agregar una página al documento
+    const page = pdfDoc.addPage([600, 800]);
+    const { width, height } = page.getSize();
+    const fontSize = 12;
+    const maxWidth = width - 100; // Margen para el ancho del texto
 
-  // Add a page to the document
-  const page = pdfDoc.addPage([600, 800]);
-  const { width, height } = page.getSize();
-  const fontSize = 12;
-
-  // Title for the PDF
-  page.drawText('Event Report', {
-    x: 50,
-    y: height - 50,
-    size: 24,
-    font: timesRomanFont,
-    color: rgb(0, 0, 0),
-  });
-
-  // Add the report data (dynamically)
-  let yPosition = height - 100;
-  reportData.forEach((item) => {
-    page.drawText(`${item.label}: ${item.value}`, {
+    // Título del PDF
+    page.drawText("Event Report", {
       x: 50,
-      y: yPosition,
-      size: fontSize,
+      y: height - 50,
+      size: 24,
       font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
-    yPosition -= 20; // Adjust vertical spacing for each entry
-  });
 
-  // Finalize the PDF and get it as a byte array
-  const pdfBytes = await pdfDoc.save();
+    // Campos que queremos imprimir en el PDF
+    const fieldsToPrint = [
+      { label: "Nombre", value: reportData.name },
+      { label: "Fecha de inicio", value: reportData.date },
+      { label: "Fecha de finalización", value: reportData.datesEnd },
+      { label: "Provincia", value: reportData.province },
+      { label: "Ciudad", value: reportData.city },
+      {
+        label: "Justificación del evento",
+        value: reportData.event_justification,
+      },
+      { label: "Correo electrónico", value: reportData.email },
+      { label: "Número de participantes", value: reportData.participant_count },
+      {
+        label: "Participantes femeninos",
+        value: reportData.female_participants,
+      },
+      {
+        label: "Participantes masculinos",
+        value: reportData.male_participants,
+      },
+      {
+        label: "Participantes de otro género",
+        value: reportData.other_participants,
+      },
+      { label: "Actividades del GCF", value: reportData.gcf_activities },
+      { label: "Componentes", value: reportData.component },
+      { label: "Eje", value: reportData.eje },
+      { label: "Tipo de suposición", value: reportData.guess_type },
+      {
+        label: "Ocupación principal",
+        value: reportData.main_occupation_without_other,
+      },
+      { label: "Objetivo del evento", value: reportData.event_objective },
+      { label: "Tipo de evento", value: reportData.event_type },
+      {
+        label: "Participantes invitados",
+        value: reportData.invited_participants_number,
+      },
+      { label: "Conclusión", value: reportData.conclusion },
+      { label: "Responsable", value: reportData.responsable },
+      { label: "Institución", value: reportData.institution },
+      { label: "Cosecha", value: reportData.crop },
+    ];
 
-  // Set the headers for downloading the PDF
-  const headers = new Headers({
-    'Content-Type': 'application/pdf',
-    'Content-Disposition': `attachment; filename=report_${reportId}.pdf`,
-  });
+    // Imprimir los campos en el PDF con ajuste de líneas
+    let yPosition = height - 100;
+    fieldsToPrint.forEach((item) => {
+      const labelText = `${item.label}: `;
+      const valueText = Array.isArray(item.value)
+        ? item.value.join(", ")
+        : item.value ?? ""; // Manejo de arrays y valores undefined
 
-  // Return the PDF as a response
-  return new NextResponse(pdfBytes, { headers });
+      // Solo pasamos valores que sean cadenas de texto, o un string vacío
+      const labelLines = splitTextIntoLines(
+        labelText,
+        timesRomanFont,
+        fontSize,
+        maxWidth
+      );
+      labelLines.forEach((line) => {
+        page.drawText(line, {
+          x: 50,
+          y: yPosition,
+          size: fontSize,
+          font: timesRomanFont,
+          color: rgb(0, 0, 0),
+        });
+        yPosition -= 20;
+      });
+
+      // Imprimir el valor con ajuste de líneas
+      const valueLines = splitTextIntoLines(
+        valueText,
+        timesRomanFont,
+        fontSize,
+        maxWidth
+      );
+      valueLines.forEach((line) => {
+        page.drawText(line, {
+          x: 50,
+          y: yPosition,
+          size: fontSize,
+          font: timesRomanFont,
+          color: rgb(0, 0, 0),
+        });
+        yPosition -= 20;
+      });
+
+      yPosition -= 10; // Espaciado extra entre los campos
+    });
+
+    // Finalizar el PDF y devolverlo
+    const pdfBytes = await pdfDoc.save();
+    const headers = new Headers({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=report_${reportId}.pdf`,
+    });
+
+    return new NextResponse(pdfBytes, { headers });
+  } catch (error) {
+    return new NextResponse(`Error: ${(error as Error).message}`, {
+      status: 500,
+    });
+  }
 }

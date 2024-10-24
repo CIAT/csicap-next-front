@@ -560,11 +560,11 @@ const EventPage: NextPage = () => {
         ticks: {
           // Cambia el tamaño de la fuente
           font: {
-            size: 10, // Ajusta el tamaño según sea necesario
+            size: 10, 
           },
           // Aplica rotación a las etiquetas
-          maxRotation: 90, // Máxima rotación
-          minRotation: 90, // Mínima rotación, asegura que esté completamente vertical
+          maxRotation: 90, 
+          minRotation: 90,
         },
       },
     },

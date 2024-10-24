@@ -12,6 +12,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "target": "es2017",
+    "allowSyntheticDefaultImports": true,
     "plugins": [
       {
         "name": "next"
