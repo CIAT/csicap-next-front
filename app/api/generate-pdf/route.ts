@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 
-// Función para obtener los datos del reporte a partir de un ID
+// Function to get report data by ID
 async function getReportData(reportId: string) {
   const decodedReportId = decodeURIComponent(reportId);
   const dataset = await ReportsRepository.fetchEventById(decodedReportId);
@@ -11,10 +11,10 @@ async function getReportData(reportId: string) {
     throw new Error("Report data not found");
   }
 
-  return dataset.data[0]; // Solo tomamos el primer objeto del array 'data'
+  return dataset.data[0]; // Only take the first object in the 'data' array
 }
 
-// Función para envolver texto si es más largo que el ancho permitido
+// Function to wrap text if it's longer than the allowed width
 function splitTextIntoLines(
   text: string,
   font: any,
@@ -39,6 +39,11 @@ function splitTextIntoLines(
   return lines;
 }
 
+// Function to replace unsupported characters
+function replaceUnsupportedCharacters(text: string) {
+  return text.replace(/–/g, "-"); // Replace en dash with a hyphen
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   let reportId = searchParams.get("reportId");
@@ -48,121 +53,100 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Obtener los datos del reporte por el ID
+    // Get report data by ID
     const reportData = await getReportData(reportId);
 
-    // Crear un nuevo documento PDF
+    // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
     const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const timesBoldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
 
-    // Agregar una página al documento
-    const page = pdfDoc.addPage([600, 800]);
-    const { width, height } = page.getSize();
+    // Page and font settings
     const fontSize = 12;
-    const maxWidth = width - 100; // Margen para el ancho del texto
+    const pageHeight = 800;
+    const maxWidth = 500;
+    let yPosition = pageHeight - 100;
 
-    // Título del PDF
+    // Function to add a new page and reset yPosition
+    function addNewPage() {
+      const page = pdfDoc.addPage([600, pageHeight]);
+      yPosition = pageHeight - 100;
+      return page;
+    }
+
+    let page = addNewPage();
+
+    // Helper function to process each field value
+    function formatValue(value: string | string[] | undefined): string {
+      if (!value) return "N/A";
+      const processedValue = Array.isArray(value) ? value.join(", ") : value;
+      return replaceUnsupportedCharacters(processedValue);
+    }
+
+    // Title of the PDF
     page.drawText("Event Report", {
       x: 50,
-      y: height - 50,
+      y: yPosition,
       size: 24,
-      font: timesRomanFont,
+      font: timesBoldFont,
       color: rgb(0, 0, 0),
     });
+    yPosition -= 40;
 
-    // Campos que queremos imprimir en el PDF
     const fieldsToPrint = [
       { label: "Nombre", value: reportData.name },
       { label: "Fecha de inicio", value: reportData.date },
       { label: "Fecha de finalización", value: reportData.datesEnd },
       { label: "Provincia", value: reportData.province },
       { label: "Ciudad", value: reportData.city },
-      {
-        label: "Justificación del evento",
-        value: reportData.event_justification,
-      },
+      { label: "Justificación del evento", value: reportData.event_justification },
       { label: "Correo electrónico", value: reportData.email },
       { label: "Número de participantes", value: reportData.participant_count },
-      {
-        label: "Participantes femeninos",
-        value: reportData.female_participants,
-      },
-      {
-        label: "Participantes masculinos",
-        value: reportData.male_participants,
-      },
-      {
-        label: "Participantes de otro género",
-        value: reportData.other_participants,
-      },
+      { label: "Participantes femeninos", value: reportData.female_participants },
+      { label: "Participantes masculinos", value: reportData.male_participants },
+      { label: "Participantes de otro género", value: reportData.other_participants },
       { label: "Actividades del GCF", value: reportData.gcf_activities },
       { label: "Componentes", value: reportData.component },
       { label: "Eje", value: reportData.eje },
       { label: "Tipo de suposición", value: reportData.guess_type },
-      {
-        label: "Ocupación principal",
-        value: reportData.main_occupation_without_other,
-      },
+      { label: "Ocupación principal", value: reportData.main_occupation_without_other },
       { label: "Objetivo del evento", value: reportData.event_objective },
       { label: "Tipo de evento", value: reportData.event_type },
-      {
-        label: "Participantes invitados",
-        value: reportData.invited_participants_number,
-      },
+      { label: "Participantes invitados", value: reportData.invited_participants_number },
       { label: "Conclusión", value: reportData.conclusion },
       { label: "Responsable", value: reportData.responsable },
       { label: "Institución", value: reportData.institution },
       { label: "Cosecha", value: reportData.crop },
     ];
 
-    // Imprimir los campos en el PDF con ajuste de líneas
-    let yPosition = height - 100;
+    // Print the fields on the PDF with line wrapping
     fieldsToPrint.forEach((item) => {
       const labelText = `${item.label}: `;
-      const valueText = Array.isArray(item.value)
-        ? item.value.join(", ")
-        : item.value ?? ""; // Manejo de arrays y valores undefined
+      const valueText = formatValue(item.value);
 
-      // Solo pasamos valores que sean cadenas de texto, o un string vacío
-      const labelLines = splitTextIntoLines(
-        labelText,
-        timesRomanFont,
-        fontSize,
-        maxWidth
-      );
+      const labelLines = splitTextIntoLines(labelText, timesBoldFont, fontSize, maxWidth);
+      const valueLines = splitTextIntoLines(valueText, timesRomanFont, fontSize, maxWidth);
+
+      if (yPosition - (labelLines.length + valueLines.length) * 20 < 0) {
+        page = addNewPage();
+      }
+
+      // Draw label lines (bold)
       labelLines.forEach((line) => {
-        page.drawText(line, {
-          x: 50,
-          y: yPosition,
-          size: fontSize,
-          font: timesRomanFont,
-          color: rgb(0, 0, 0),
-        });
+        page.drawText(line, { x: 50, y: yPosition, size: fontSize, font: timesBoldFont, color: rgb(0, 0, 0) });
         yPosition -= 20;
       });
 
-      // Imprimir el valor con ajuste de líneas
-      const valueLines = splitTextIntoLines(
-        valueText,
-        timesRomanFont,
-        fontSize,
-        maxWidth
-      );
+      // Draw value lines
       valueLines.forEach((line) => {
-        page.drawText(line, {
-          x: 50,
-          y: yPosition,
-          size: fontSize,
-          font: timesRomanFont,
-          color: rgb(0, 0, 0),
-        });
+        page.drawText(line, { x: 50, y: yPosition, size: fontSize, font: timesRomanFont, color: rgb(0, 0, 0) });
         yPosition -= 20;
       });
 
-      yPosition -= 10; // Espaciado extra entre los campos
+      yPosition -= 10; // Extra space between fields
     });
 
-    // Finalizar el PDF y devolverlo
+    // Finalize the PDF and return it
     const pdfBytes = await pdfDoc.save();
     const headers = new Headers({
       "Content-Type": "application/pdf",
@@ -171,8 +155,6 @@ export async function GET(request: Request) {
 
     return new NextResponse(pdfBytes, { headers });
   } catch (error) {
-    return new NextResponse(`Error: ${(error as Error).message}`, {
-      status: 500,
-    });
+    return new NextResponse(`Error: ${(error as Error).message}`, { status: 500 });
   }
 }

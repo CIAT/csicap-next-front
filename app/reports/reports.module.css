@@ -1,19 +1,21 @@
 .first_div {
     width: 50%;
     padding-top: 20px;
-    height: 100vh;
+    padding-bottom: 20px;
+    height: auto;
 }
 
 .second_div{
     padding: 20px 20px 0 20px ;
     width: 50%;
-    height: 100%;
+    height: inherit;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .preview_div {
     padding: 10px 0 0 10px;
-    height: 90vh;
+    height: auto;
 }
 
 .filter_div {
@@ -27,7 +29,8 @@
 .reports {
     display: flex;
     flex-direction: row;
-    height: 100vh;
+    min-height: 100vh;
+    max-height: fit-content;
 }
 
 @media screen and (max-width: 767px) {

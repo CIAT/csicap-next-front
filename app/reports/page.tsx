@@ -29,6 +29,7 @@ const ReportsPage: NextPage = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
   const [allEventData, setAllEventData] = useState<ReportNames[]>([]); // Store all event data once fetched
+  const [selectedReport, setSelectedReport] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchReports() {
@@ -78,7 +79,7 @@ const ReportsPage: NextPage = () => {
     }
   };
 
-  const handleDownloadDocx = async () => {
+  const handleDownloadDocx = async (selectedReportId: string) => {
     if (!reportId) {
       alert("Please select a report to download.");
       return;
@@ -86,7 +87,7 @@ const ReportsPage: NextPage = () => {
 
     try {
       // Make the request to the API to generate and download the docx file
-      const response = await fetch(`/api/generate-docx?reportId=${reportId}`);
+      const response = await fetch(`/api/generate-docx?reportId=${selectedReportId}`);
       if (!response.ok) {
         throw new Error("Failed to generate the document");
       }
@@ -114,6 +115,7 @@ const ReportsPage: NextPage = () => {
     setReportId(selectedId);
     console.log("Selected report:", selectedId);
     fetchPdf(selectedId);
+    setSelectedReport(selectedId);
   };
 
   function capitalizeFirstLetter(str: string) {
@@ -159,8 +161,8 @@ const ReportsPage: NextPage = () => {
             </Button>
             <Button
               variant="contained"
-              onClick={handleDownloadDocx}
-              disabled={!reportId}
+              onClick={() => selectedReport && handleDownloadDocx(selectedReport)}
+              disabled={!selectedReport}
             >
               Word
             </Button>

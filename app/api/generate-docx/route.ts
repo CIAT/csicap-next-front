@@ -1,38 +1,22 @@
 import { NextResponse } from "next/server";
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 
-// Simulating a database or data source
-const reports = [
-    {
-      id: "1",
-      data: [
-        { key: "main_event_objective", label: "Objetivo", value: "Aumentar la conciencia sobre la sostenibilidad" },
-        { key: "event_type", label: "Tipo de taller o capacitación", value: "Taller" },
-        { key: "event_justification", label: "Justificación", value: "Necesidad de educar a la comunidad" },
-        { key: "guest_type", label: "Tipo de invitados", value: "Expertos en sostenibilidad" },
-        { key: "invited_participants_number", label: "No. Invitados", value: 50 },
-        // ... other fields
-      ],
-    },
-    {
-      id: "2",
-      data: [
-        { key: "main_event_objective", label: "Objetivo", value: "Mejorar la calidad del agua" },
-        { key: "event_type", label: "Tipo de taller o capacitación", value: "Capacitación" },
-        { key: "event_justification", label: "Justificación", value: "Fomentar la protección de los recursos hídricos" },
-        { key: "guest_type", label: "Tipo de invitados", value: "Expertos en agua" },
-        { key: "invited_participants_number", label: "No. Invitados", value: 100 },
-        // ... other fields
-      ],
-    },
-  ];
-
+// Function to fetch report data by ID
 async function getReportData(reportId: string) {
-  const report = reports.find((r) => r.id === reportId);
-  if (!report) {
-    throw new Error("Report not found");
+  const decodedReportId = decodeURIComponent(reportId);
+  const dataset = await ReportsRepository.fetchEventById(decodedReportId);
+
+  if (!dataset || !dataset.data || dataset.data.length === 0) {
+    throw new Error("Report data not found");
   }
-  return report.data;
+
+  return dataset.data[0];
+}
+
+// Capitalize the first letter of each header key
+function capitalizeFirstLetter(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 export async function GET(request: Request) {
@@ -43,26 +27,42 @@ export async function GET(request: Request) {
     return new NextResponse("Report ID not provided", { status: 400 });
   }
 
-  const reportData = await getReportData(reportId);
+  try {
+    const reportData = await getReportData(reportId);
 
-  const doc = new Document({
-    sections: [
-      {
-        children: reportData.map((item) =>
-          new Paragraph({
-            children: [new TextRun({ text: `${item.label}: ${item.value}` })],
-          })
-        ),
-      },
-    ],
-  });
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: "Event Report", bold: true, size: 28 })],
+              spacing: { after: 300 },
+            }),
+            ...Object.entries(reportData).map(([key, value]) => {
+              const capitalizedKey = capitalizeFirstLetter(key);
+              const valueText = Array.isArray(value) ? value.join(", ") : value || "N/A";
+              return new Paragraph({
+                children: [
+                  new TextRun({ text: `${capitalizedKey}: `, bold: true }),
+                  new TextRun({ text: valueText.toString() }),
+                ],
+                spacing: { after: 200 },
+              });
+            }),
+          ],
+        },
+      ],
+    });
 
-  const buffer = await Packer.toBuffer(doc);
+    const buffer = await Packer.toBuffer(doc);
 
-  const headers = new Headers({
-    "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "Content-Disposition": `attachment; filename=report_${reportId}.docx`,
-  });
+    const headers = new Headers({
+      "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Disposition": `attachment; filename=report_${reportId}.docx`,
+    });
 
-  return new NextResponse(buffer, { headers });
+    return new NextResponse(buffer, { headers });
+  } catch (error) {
+    return new NextResponse(`Error: ${(error as Error).message}`, { status: 500 });
+  }
 }
