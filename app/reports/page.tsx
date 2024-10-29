@@ -59,8 +59,15 @@ const ReportsPage: NextPage = () => {
 
   const fetchPdf = async (selectedReportId: string) => {
     try {
-      const response = await fetch(`/api/generate-pdf?reportId=${selectedReportId}`);
+      // Encode the reportId to handle any special characters like "&"
+      const encodedReportId = encodeURIComponent(selectedReportId);
+      const response = await fetch(`/api/generate-pdf?reportId=${encodedReportId}`);
       console.log("Response", response);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to generate PDF: ${errorText}`);
+      }
+  
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
@@ -68,6 +75,7 @@ const ReportsPage: NextPage = () => {
       console.error("Error fetching PDF:", error);
     }
   };
+  
   
 
   const downloadPdf = () => {
@@ -177,7 +185,7 @@ const ReportsPage: NextPage = () => {
               style={{ border: "none" }}
             />
           ) : (
-            <p>Loading PDF...</p>
+            <p>Seleciona un Reporte</p>
           )}
         </div>
       </div>
