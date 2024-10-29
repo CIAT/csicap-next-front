@@ -88,6 +88,8 @@ const ReportsPage: NextPage = () => {
   };
 
   const handleDownloadDocx = async (selectedReportId: string) => {
+
+    const encodedReportId = encodeURIComponent(selectedReportId);
     if (!reportId) {
       alert("Please select a report to download.");
       return;
@@ -95,7 +97,7 @@ const ReportsPage: NextPage = () => {
 
     try {
       // Make the request to the API to generate and download the docx file
-      const response = await fetch(`/api/generate-docx?reportId=${selectedReportId}`);
+      const response = await fetch(`/api/generate-docx?reportId=${encodedReportId}`);
       if (!response.ok) {
         throw new Error("Failed to generate the document");
       }

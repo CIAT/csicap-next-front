@@ -11,7 +11,7 @@ async function getReportData(reportId: string) {
     throw new Error("Report data not found");
   }
 
-  return dataset.data[0]; // Only take the first object in the 'data' array
+  return dataset.data[0]; 
 }
 
 // Function to wrap text if it's longer than the allowed width
@@ -43,6 +43,7 @@ function splitTextIntoLines(
 function replaceUnsupportedCharacters(text: string) {
   return text.replace(/–/g, "-"); // Replace en dash only
 }
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   let reportId = searchParams.get("reportId");
@@ -108,7 +109,6 @@ export async function GET(request: Request) {
     yPosition -= 10;
 
     const fieldsToPrint = [
-      { label: "Nombre", value: reportData.name },
       { label: "Fecha de inicio", value: reportData.date },
       { label: "Fecha de finalización", value: reportData.datesEnd },
       { label: "Provincia", value: reportData.province },
