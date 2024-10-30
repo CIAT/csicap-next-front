@@ -29,6 +29,9 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
+import MapComponent from "@/components/data/Map/MapComponent";
+import MapController from "@/helpers/Component/Controller/MapController";
+import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
 Chart.register(
   ArcElement,
@@ -147,6 +150,9 @@ function countOrganizations(events: DataFormat) {
 const BeneficiariosPage: NextPage = () => {
 
   const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
+      events
+  );
 
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
@@ -159,6 +165,7 @@ const BeneficiariosPage: NextPage = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>("institution");
   const [treemapTitle, setTreemapTitle] = useState("Número de técnicos");
   const [allEventData, setAllEventData] = useState<DataFormat>([]); // Store all event data once fetched
+  const [counts, setCounts] = useState<NestedDictionary>({});
 
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
@@ -172,7 +179,9 @@ const BeneficiariosPage: NextPage = () => {
       .then((data: DataFormat) => {
         const formattedEvents = TechnicalController.formatEvents(data);
         setEvents(formattedEvents);
+        setFilteredEvents(formattedEvents);
         setDataCalendarResp(200);
+        setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
 
         setAllEventData(data);
         initializeTreemapData(data);
@@ -478,6 +487,21 @@ const BeneficiariosPage: NextPage = () => {
                       <LoadingAnimation/>
                   )}
                 </ChartCardComponent>
+              </div>
+              <div className={styles.width}>
+                {/* Mapa de Colombia */}
+                <CardComponent title="Técnicos por municipio" styles={styleTechnical}>
+                  {treemapData.length > 0 && filteredEvents && counts ? (
+                      <div className="w-full h-full">
+                        <MapComponent
+                            polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
+                            data={counts}
+                        />
+                      </div>
+                  ) : (
+                      <LoadingAnimation/>
+                  )}
+                </CardComponent>
               </div>
             </div>
           </div>
