@@ -1,38 +1,21 @@
 import { NextResponse } from "next/server";
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 
-// Simulating a database or data source
-const reports = [
-    {
-      id: "1",
-      data: [
-        { key: "main_event_objective", label: "Objetivo", value: "Aumentar la conciencia sobre la sostenibilidad" },
-        { key: "event_type", label: "Tipo de taller o capacitación", value: "Taller" },
-        { key: "event_justification", label: "Justificación", value: "Necesidad de educar a la comunidad" },
-        { key: "guest_type", label: "Tipo de invitados", value: "Expertos en sostenibilidad" },
-        { key: "invited_participants_number", label: "No. Invitados", value: 50 },
-        // ... other fields
-      ],
-    },
-    {
-      id: "2",
-      data: [
-        { key: "main_event_objective", label: "Objetivo", value: "Mejorar la calidad del agua" },
-        { key: "event_type", label: "Tipo de taller o capacitación", value: "Capacitación" },
-        { key: "event_justification", label: "Justificación", value: "Fomentar la protección de los recursos hídricos" },
-        { key: "guest_type", label: "Tipo de invitados", value: "Expertos en agua" },
-        { key: "invited_participants_number", label: "No. Invitados", value: 100 },
-        // ... other fields
-      ],
-    },
-  ];
-
+// Function to fetch report data by ID
 async function getReportData(reportId: string) {
-  const report = reports.find((r) => r.id === reportId);
-  if (!report) {
-    throw new Error("Report not found");
+  const dataset = await ReportsRepository.fetchEventById(reportId);
+
+  if (!dataset || !dataset.data || dataset.data.length === 0) {
+    throw new Error("Report data not found");
   }
-  return report.data;
+
+  return dataset.data[0];
+}
+
+// Function to replace unsupported characters in filenames only
+function sanitizeFilename(text: string) {
+  return text.replace(/[–]/g, "-"); // Replace en dash with a standard hyphen
 }
 
 export async function GET(request: Request) {
@@ -43,26 +26,67 @@ export async function GET(request: Request) {
     return new NextResponse("Report ID not provided", { status: 400 });
   }
 
-  const reportData = await getReportData(reportId);
+  try {
+    const reportData = await getReportData(reportId);
 
-  const doc = new Document({
-    sections: [
-      {
-        children: reportData.map((item) =>
-          new Paragraph({
-            children: [new TextRun({ text: `${item.label}: ${item.value}` })],
-          })
-        ),
-      },
-    ],
-  });
+    const fieldsToPrint = [
+      { label: "Fecha de inicio", value: reportData.date },
+      { label: "Fecha de finalización", value: reportData.datesEnd },
+      { label: "Provincia", value: reportData.province },
+      { label: "Ciudad", value: reportData.city },
+      { label: "Justificación del evento", value: reportData.event_justification },
+      { label: "Correo electrónico", value: reportData.email },
+      { label: "Número de participantes", value: reportData.participant_count },
+      { label: "Participantes femeninos", value: reportData.female_participants },
+      { label: "Participantes masculinos", value: reportData.male_participants },
+      { label: "Participantes de otro género", value: reportData.other_participants },
+      { label: "Actividades del GCF", value: reportData.gcf_activities },
+      { label: "Componentes", value: reportData.component },
+      { label: "Eje", value: reportData.eje },
+      { label: "Tipo de suposición", value: reportData.guess_type },
+      { label: "Ocupación principal", value: reportData.main_occupation_without_other },
+      { label: "Objetivo del evento", value: reportData.event_objective },
+      { label: "Tipo de evento", value: reportData.event_type },
+      { label: "Participantes invitados", value: reportData.invited_participants_number },
+      { label: "Conclusión", value: reportData.conclusion },
+      { label: "Responsable", value: reportData.responsable },
+      { label: "Institución", value: reportData.institution },
+      { label: "Cosecha", value: reportData.crop },
+    ];
 
-  const buffer = await Packer.toBuffer(doc);
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: sanitizeFilename(reportData.name), bold: true, size: 28 })],
+              spacing: { after: 300 },
+            }),
+            ...fieldsToPrint.map((field) => {
+              const valueText = Array.isArray(field.value) ? field.value.join(", ") : field.value || "N/A";
+              return new Paragraph({
+                children: [
+                  new TextRun({ text: `${field.label}: `, bold: true }),
+                  new TextRun({ text: valueText.toString() }),
+                ],
+                spacing: { after: 200 },
+              });
+            }),
+          ],
+        },
+      ],
+    });
 
-  const headers = new Headers({
-    "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "Content-Disposition": `attachment; filename=report_${reportId}.docx`,
-  });
+    const buffer = await Packer.toBuffer(doc);
 
-  return new NextResponse(buffer, { headers });
+    const headers = new Headers({
+      "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Disposition": `attachment; filename="${sanitizeFilename(`report_${reportId}`)}.docx"`,
+    });
+
+    return new NextResponse(buffer, { headers });
+  } catch (error) {
+    console.error("Error generating the document:", error);
+    return new NextResponse(`Error: ${(error as Error).message}`, { status: 500 });
+  }
 }
