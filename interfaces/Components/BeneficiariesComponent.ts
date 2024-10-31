@@ -3,6 +3,7 @@ export interface DataFormat {
     gen_name: string;
     declaracion: string;
     finca: string;
+    cal_qty: string;
     pr_ethnic_group: string;
     type_property: string;
     hash: string;

@@ -56,11 +56,20 @@ const colores = [
   "#4BC0C0",
   "#9966FF"
 ];
+function countTotalRegistered(data: DataFormat[]): number {
+  let quantity = 0;
+  data.forEach((item) => {
+    const calQty = parseFloat(item.cal_qty);
+    if (!isNaN(calQty)) {
+      quantity += calQty;
+    }
+  });
+  return Math.round(quantity);
+}
 
 function countTotalRecords(data: DataFormat[]): number {
   return data.length;
 }
-
 function countGenders(data: { gen_name: string }[]) {
   const genderCount: { [key: string]: number } = {};
 
@@ -119,6 +128,7 @@ const BeneficiariosPage: NextPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<DataFormat | null>(null);
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [totalData, setTotalData] = useState<number>(0);
+  const [totalRegisteredData, setTotalRegisteredData] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
   const [typeHouseNumber, setTypeHouseNumber] = useState<number[]>([]);
@@ -143,10 +153,10 @@ const BeneficiariosPage: NextPage = () => {
         RegisteredController.countCrops(data);
         RegisteredController.countOrganizations(data);
         setCounts(MapController.updateCountBeneficiariesByCity(formattedEvents));
-
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
-
+        const totalRegistered = countTotalRegistered(data)+countTotalRecords(data);
+        setTotalRegisteredData(totalRegistered);
         const genderCount = countGenders(data);
         setGenderLabel(Object.keys(genderCount));
         setGenderNumber(Object.values(genderCount));
@@ -299,8 +309,11 @@ const BeneficiariosPage: NextPage = () => {
               <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>
                 {treemapData.length > 0 ? (
                     <div className={styles.top_div_division}>
-                      <label className={styles.top_card_label}>{totalData}</label>
-                    </div>
+                    <label className={styles.top_card_label}>{totalData}</label>
+                    <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
+                    <label className={styles.other_card_label}>{totalRegisteredData}</label>
+                  </div>
+                  
                 ) : (
                     <LoadingAnimation/>
                 )}
