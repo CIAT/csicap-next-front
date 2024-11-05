@@ -81,7 +81,7 @@ export async function GET(request: Request) {
 
     const headers = new Headers({
       "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "Content-Disposition": `attachment; filename="${sanitizeFilename(`report_${reportId}`)}.docx"`,
+      "Content-Disposition": `attachment; filename="report_.docx"`,
     });
 
     return new NextResponse(buffer, { headers });

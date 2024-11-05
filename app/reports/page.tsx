@@ -107,7 +107,7 @@ const ReportsPage: NextPage = () => {
       // Create a temporary link and trigger the download
       const link = document.createElement("a");
       link.href = url;
-      link.download = `report_${reportId}.docx`; // Use the report ID in the filename
+      link.download = `report.docx`; // Use the report ID in the filename
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
