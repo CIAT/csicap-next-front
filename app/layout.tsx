@@ -18,25 +18,26 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const showLayout = !pathname.includes("/embed");
+  const layoutClassName = showLayout ? "layout" : "layout_embedded";
 
   return (
-      <html lang="en">
+    <html lang="en">
       <head>
-        <link rel="icon" href="/next.png" />
+         <link rel="icon" href="/next.png" />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${layoutClassName}`}>
       <NextUIProvider>
-          <header>
-              <Header  showHeader={showLayout}/>
-          </header>
-        <div className="layout">{children}</div>
-        {showLayout && (
-            <footer>
-              <Footer />
-            </footer>
-        )}
+        <header>
+          <Header showHeader={showLayout} />
+        </header>
+          <div className={layoutClassName}>{children}</div>
+            {showLayout && (
+              <footer>
+                <Footer />
+              </footer>
+            )}
       </NextUIProvider>
       </body>
-      </html>
+    </html>
   );
 }
