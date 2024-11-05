@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from "react";
+import { FC, useState } from "react";
 import Link from 'next/link';
 import styles from "./static.module.css";
 
-const Header = () => {
+interface HeaderProps {
+  showHeader: boolean;
+}
+
+const Header: FC<HeaderProps> = ({ showHeader }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -17,41 +21,45 @@ const Header = () => {
     }
   };
 
-  return (
-    <header className={styles.headerStyle}>
-      <div className={styles.logoStyle}>
-        <Link href="/" className="h-full w-full">
-          <img src="/logo.png" alt="alliance-logo" />
-        </Link>
-      </div>
-      <div className={styles.hamburger} onClick={toggleMenu}>
-        <img src="/menu.png" alt="menu" />
-        <span className={styles.hamburgerIcon}></span>
-      </div>
-      <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
-        <ul>
-          <li className={styles.header_nav_item}>
-            <Link href="/events" onClick={closeMenu}>Eventos</Link>
-          </li>
-          <li className={styles.header_nav_item}>
-            <Link href="/assistance" onClick={closeMenu}>Asistentes</Link>
-          </li>
-          <li className={styles.header_nav_item}>
-            <Link href="/registered" onClick={closeMenu}>Registrados</Link>
-          </li>
-          <li className={styles.header_nav_item}>
-            <Link href="/tecnicos" onClick={closeMenu}>Técnicos</Link>
+  // Función para cambiar la ruta según el estado de showHeader
+  const getLink = (path: string) => (showHeader ? path : `/embed${path}`);
 
-          </li>
-          <li className={styles.header_nav_item}>
-            <Link href="/data/calendario" onClick={closeMenu}>Calendario</Link>
-          </li>
-           <li className={styles.header_nav_item}>
-            <Link href="/reports" onClick={closeMenu}>Reportes</Link>
-          </li>
-        </ul>
-      </nav>
-    </header>
+  return (
+      <header className={styles.headerStyle}>
+        {showHeader && (
+            <div className={styles.logoStyle}>
+              <Link href="/" className="h-full w-full">
+                <img src="/logo.png" alt="alliance-logo"/>
+              </Link>
+            </div>
+        )}
+        <div className={styles.hamburger} onClick={toggleMenu}>
+          <img src="/menu.png" alt="menu"/>
+          <span className={styles.hamburgerIcon}></span>
+        </div>
+        <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
+          <ul>
+            <li className={styles.header_nav_item}>
+              <Link href={getLink("/events")} onClick={closeMenu}>Eventos</Link>
+            </li>
+            <li className={styles.header_nav_item}>
+              <Link href={getLink("/assistance")} onClick={closeMenu}>Asistentes</Link>
+            </li>
+            <li className={styles.header_nav_item}>
+              <Link href={getLink("/registered")} onClick={closeMenu}>Registrados</Link>
+            </li>
+            <li className={styles.header_nav_item}>
+              <Link href={getLink("/tecnicos")} onClick={closeMenu}>Técnicos</Link>
+            </li>
+            <li className={styles.header_nav_item}>
+              <Link href={getLink("/data/calendario")} onClick={closeMenu}>Calendario</Link>
+            </li>
+            <li className={styles.header_nav_item}>
+              <Link href={getLink("/reports")} onClick={closeMenu}>Reportes</Link>
+            </li>
+          </ul>
+        </nav>
+      </header>
   );
 };
 

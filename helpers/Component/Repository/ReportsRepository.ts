@@ -26,7 +26,6 @@ class ReportsRepository {
       const encodedReportId = encodeURIComponent(reportId);
       const url = `${baseUrl}?id_event=${encodedReportId}`; // Construct the URL with encoded reportId
       
-      console.log(`URL que se manda al AWS: ${url}`);
       const response = await fetch(url);
       
       if (!response.ok) {

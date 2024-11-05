@@ -1,0 +1,52 @@
+.first_div {
+    width: 50%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: auto;
+}
+
+.second_div{
+    padding: 20px 20px 0 20px ;
+    width: 50%;
+    height: inherit;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.preview_div {
+    padding: 10px 0 0 10px;
+    height: auto;
+}
+
+.filter_div {
+    display: flex;
+    align-items: center;
+    height: 10vh;
+    width: 100%;
+    padding: 0 0 0 10px;
+}
+
+.reports {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    max-height: fit-content;
+}
+
+@media screen and (max-width: 767px) {
+    .reports{
+        flex-direction: column;
+        height: auto;
+    }
+
+    .first_div{
+        width: 100vw;
+        padding-right: 10px;
+    }
+    .preview_div{
+        width: 100%;
+    }
+    .second_div{
+        width: 100%;
+    }
+}
