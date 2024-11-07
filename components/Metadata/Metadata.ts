@@ -4,12 +4,10 @@ export const metadata = {
     openGraph: {
         title: "CSICAP",
         description: "Colombia Agroalimentaria Sostenible: adaptación al cambio climático",
-        images: [
-            {
-                url: "https://metatags.io/images/meta-tags.png",
-                alt: "CSICAP",
-            },
-        ],
+        image: {
+            url: "/metadata_logo.png",
+            alt: "CSICAP",
+        },
         type: "website",
     },
 };
