@@ -30,7 +30,13 @@ export default function RootLayout({
                 <>
                     <meta property="og:title" content={metadata.openGraph.title}/>
                     <meta property="og:description" content={metadata.openGraph.description}/>
-                    <meta property="og:image" content="/logo.png"/>
+                    {metadata.openGraph.images?.map((image, index) => (
+                        <meta
+                            key={index}
+                            property="og:image"
+                            content={image.url}
+                        />
+                    ))}
                     <meta property="og:type" content={metadata.openGraph.type}/>
                 </>
             )}
