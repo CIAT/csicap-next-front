@@ -7,7 +7,7 @@ import "./globals.css";
 import "../components/static/static.module.css";
 import Header from "@/components/static/Header";
 import Footer from "@/components/static/Footer";
-import { metadata } from "@/components/Metadata/Metadata"; // Importa los metadatos
+import { metadata } from "@/components/Metadata/Metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 

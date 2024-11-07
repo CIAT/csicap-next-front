@@ -6,7 +6,7 @@ export const metadata = {
         description: "Colombia Agroalimentaria Sostenible: adaptación al cambio climático",
         images: [
             {
-                url: "/path/to/your/image.jpg",
+                url: "/logo.png",
                 alt: "CSICAP",
             },
         ],
