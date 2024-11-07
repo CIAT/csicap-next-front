@@ -1,6 +1,6 @@
 export const metadata = {
-    title: "CSICAP",
-    description: "Colombia Agroalimentaria Sostenible: adaptación al cambio climático",
+    title: "Colombia Agroalimentaria Sostenible",
+    description: "Adaptación al cambio climático",
     openGraph: {
         title: "Colombia Agroalimentaria Sostenible",
         description: "Adaptación al cambio climático",
