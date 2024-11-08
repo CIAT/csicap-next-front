@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
-import fs from "fs";
-import path from "path";
 
 // Function to get report data by ID
 async function getReportData(reportId: string) {
-  const dataset = await ReportsRepository.fetchEventById(reportId);
+  const dataset = await ReportsRepository.fetchEventById((reportId)
+  );
 
   if (!dataset || !dataset.data || dataset.data.length === 0) {
     throw new Error("Report data not found");
   }
 
-  return dataset.data[0];
+  return dataset.data[0]; 
 }
 
 // Function to wrap text if it's longer than the allowed width
@@ -45,85 +44,33 @@ function replaceUnsupportedCharacters(text: string) {
   return text.replace(/–/g, "-"); // Replace en dash only
 }
 
-// Function to add header image to the top of each page
-async function addImageToHeader(pdfDoc: PDFDocument, page: any) {
-  const imagePath = path.join(process.cwd(), "public", "pdf.png");
-  const imageBytes = fs.readFileSync(imagePath);
-  const embeddedImage = await pdfDoc.embedPng(imageBytes);
-
-  const imageWidth = 250;
-  const imageHeight = 100;
-  const pageWidth = page.getWidth();
-
-  page.drawImage(embeddedImage, {
-    x: (pageWidth - imageWidth) / 2,
-    y: page.getHeight() - imageHeight - 20,
-    width: imageWidth,
-    height: imageHeight,
-  });
-}
-
-// Function to add an image footer to each page
-async function addImageFooter(pdfDoc: PDFDocument, page: any) {
-  const footerImagePath = path.join(process.cwd(), "public", "footer.png");
-  const footerImageBytes = fs.readFileSync(footerImagePath);
-  const embeddedFooterImage = await pdfDoc.embedPng(footerImageBytes);
-
-  const imageWidth = 150; // Adjust width as needed
-  const imageHeight = 100; // Adjust height as needed
-  const pageWidth = page.getWidth();
-
-  // Draw the footer image centered at the bottom
-  page.drawImage(embeddedFooterImage, {
-    x: (pageWidth - imageWidth) / 2,
-    y: 0, // Position near the bottom of the page
-    width: imageWidth,
-    height: imageHeight,
-  });
-}
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const reportId = searchParams.get("reportId");
+  let reportId = searchParams.get("reportId");
 
   if (!reportId) {
     return new NextResponse("Report ID not provided", { status: 400 });
   }
 
   try {
+    // Get report data by ID
     const reportData = await getReportData(reportId);
+
+    // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
     const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
     const timesBoldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
 
+    // Page and font settings
     const fontSize = 12;
     const pageHeight = 800;
     const maxWidth = 500;
-    let yPosition = pageHeight - 150;
-    const bottomMargin = 70; // Adjust based on footer image height and desired spacing
+    let yPosition = pageHeight - 100;
 
-    function drawBulletPointText(
-      page: any,
-      text: string,
-      font: any,
-      fontSize: number
-    ) {
-      page.drawText(`• ${text}`, {
-        x: 60, // Indented for the bullet point
-        y: yPosition,
-        size: fontSize,
-        font: font,
-        color: rgb(0, 0, 0),
-      });
-      yPosition -= 20; // Adjust line spacing as needed
-    }
-
-    // Modified addNewPage function
+    // Function to add a new page and reset yPosition
     function addNewPage() {
       const page = pdfDoc.addPage([600, pageHeight]);
-      addImageToHeader(pdfDoc, page); // Add header image to each new page
-      addImageFooter(pdfDoc, page); // Add footer image to each new page
-      yPosition = pageHeight - 150;
+      yPosition = pageHeight - 100;
       return page;
     }
 
@@ -187,7 +134,7 @@ export async function GET(request: Request) {
       { label: "Actividades del GCF", value: reportData.gcf_activities },
       { label: "Componentes", value: reportData.component },
       { label: "Eje", value: reportData.eje },
-      { label: "Tipo de invitado", value: reportData.guess_type },
+      { label: "Tipo de suposición", value: reportData.guess_type },
       {
         label: "Ocupación principal",
         value: reportData.main_occupation_without_other,
@@ -204,31 +151,28 @@ export async function GET(request: Request) {
       { label: "Cosecha", value: reportData.crop },
     ];
 
-    // Modified content rendering to handle only actual arrays as bullet points
+    // Print the fields on the PDF with line wrapping
     fieldsToPrint.forEach((item) => {
       const labelText = `${item.label}: `;
+      const valueText = formatValue(item.value);
 
-      // Determine if the value is an array or undefined, and set valueItems accordingly
-      const isArray = Array.isArray(item.value);
-      const valueItems = isArray ? item.value : [formatValue(item.value || "")];
-
-      // Wrap the label text
       const labelLines = splitTextIntoLines(
         labelText,
         timesBoldFont,
         fontSize,
         maxWidth
       );
+      const valueLines = splitTextIntoLines(
+        valueText,
+        timesRomanFont,
+        fontSize,
+        maxWidth
+      );
 
-      // Check if there's enough space above the footer
-      if (
-        yPosition - (labelLines.length + (valueItems?.length || 0)) * 20 <
-        bottomMargin
-      ) {
+      if (yPosition - (labelLines.length + valueLines.length) * 20 < 0) {
         page = addNewPage();
       }
 
-      // Draw label lines with wrapping
       labelLines.forEach((line) => {
         page.drawText(line, {
           x: 50,
@@ -240,45 +184,16 @@ export async function GET(request: Request) {
         yPosition -= 20;
       });
 
-      // Draw each item with wrapping, as bullet points if it's an array
-      if (isArray) {
-        (valueItems as string[]).forEach((bulletItem: string) => {
-          const bulletLines = splitTextIntoLines(
-            `• ${bulletItem}`,
-            timesRomanFont,
-            fontSize,
-            maxWidth - 20
-          );
-          bulletLines.forEach((line) => {
-            page.drawText(line, {
-              x: 60, // Indented slightly for bullet points
-              y: yPosition,
-              size: fontSize,
-              font: timesRomanFont,
-              color: rgb(0, 0, 0),
-            });
-            yPosition -= 20;
-          });
+      valueLines.forEach((line) => {
+        page.drawText(line, {
+          x: 50,
+          y: yPosition,
+          size: fontSize,
+          font: timesRomanFont,
+          color: rgb(0, 0, 0),
         });
-      } else {
-        // Wrap non-array text values
-        const valueLines = splitTextIntoLines(
-          valueItems?.[0] || "",
-          timesRomanFont,
-          fontSize,
-          maxWidth
-        );
-        valueLines.forEach((line) => {
-          page.drawText(line, {
-            x: 50,
-            y: yPosition,
-            size: fontSize,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
-          });
-          yPosition -= 20;
-        });
-      }
+        yPosition -= 20;
+      });
 
       yPosition -= 10; // Extra space between fields
     });
