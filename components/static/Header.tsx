@@ -52,7 +52,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
               <Link href={getLink("/tecnicos")} onClick={closeMenu}>Técnicos</Link>
             </li>
             <li className={styles.header_nav_item}>
-              <Link href={getLink("/data/calendario")} onClick={closeMenu}>Calendario</Link>
+              <Link href={getLink("/calendario")} onClick={closeMenu}>Calendario</Link>
             </li>
             <li className={styles.header_nav_item}>
               <Link href={getLink("/reports")} onClick={closeMenu}>Reportes</Link>

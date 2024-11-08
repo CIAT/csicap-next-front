@@ -299,7 +299,7 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
+    <div className={styles.container}>
       <Tabs aria-label="Options">
         {/* Tab Beneficiarios */}
         <Tab key="registrados" title="Registrados" className="w-full h-full flex flex-wrap">

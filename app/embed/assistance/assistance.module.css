@@ -95,7 +95,7 @@
 .div{
   display: flex;
   flex-wrap: wrap;
-  min-height: 100vh;
+  height: 90vh;
 }
 
 .top_div {
@@ -114,7 +114,7 @@
   gap: 20px;
   padding: 0 20px;
   width: 100%;
-  height: 70vh;
+  height: 55vh;
   box-sizing: border-box;
 }
 
