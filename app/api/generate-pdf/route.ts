@@ -100,7 +100,7 @@ export async function GET(request: Request) {
     const pageHeight = 800;
     const maxWidth = 500;
     let yPosition = pageHeight - 150;
-    const bottomMargin = 70; // Adjust based on footer image height and desired spacing
+    const bottomMargin = 100; // Adjust based on footer image height and desired spacing
 
     function drawBulletPointText(
       page: any,
@@ -220,65 +220,62 @@ export async function GET(request: Request) {
         maxWidth
       );
 
-      // Check if there's enough space above the footer
-      if (
-        yPosition - (labelLines.length + (valueItems?.length || 0)) * 20 <
-        bottomMargin
-      ) {
-        page = addNewPage();
-      }
-
-      // Draw label lines with wrapping
-      labelLines.forEach((line) => {
-        page.drawText(line, {
-          x: 50,
-          y: yPosition,
-          size: fontSize,
-          font: timesBoldFont,
-          color: rgb(0, 0, 0),
-        });
-        yPosition -= 20;
-      });
-
-      // Draw each item with wrapping, as bullet points if it's an array
-      if (isArray) {
-        (valueItems as string[]).forEach((bulletItem: string) => {
-          const bulletLines = splitTextIntoLines(
-            `• ${bulletItem}`,
-            timesRomanFont,
-            fontSize,
-            maxWidth - 20
+      // Wrap the value text for all lines (handling bullets if it's an array)
+      let valueLines: string[] = [];
+      if (isArray && valueItems && valueItems.length > 1) {
+        (valueItems as string[]).forEach((bulletItem) => {
+          valueLines.push(
+            ...splitTextIntoLines(
+              `• ${bulletItem}`,
+              timesRomanFont,
+              fontSize,
+              maxWidth - 20
+            )
           );
-          bulletLines.forEach((line) => {
-            page.drawText(line, {
-              x: 60, // Indented slightly for bullet points
-              y: yPosition,
-              size: fontSize,
-              font: timesRomanFont,
-              color: rgb(0, 0, 0),
-            });
-            yPosition -= 20;
-          });
         });
-      } else {
-        // Wrap non-array text values
-        const valueLines = splitTextIntoLines(
-          valueItems?.[0] || "",
+      } else if (!(valueItems?.[0] === "nan" || valueItems?.[0] === "0")) {
+        valueLines = splitTextIntoLines(
+          (valueItems?.[0] || ""),
           timesRomanFont,
           fontSize,
           maxWidth
         );
-        valueLines.forEach((line) => {
+      }
+
+      // Calculate required space for all lines (label + all wrapped value lines)
+      const requiredSpace =
+        (labelLines.length + valueLines.length) * 20 + bottomMargin;
+
+      // Check if there's enough space above the footer
+      if (yPosition - requiredSpace < 0) {
+        page = addNewPage();
+      }
+
+      // Draw label lines with wrapping
+      if (!(valueItems?.[0] === "nan" || valueItems?.[0] === "0")) {
+        labelLines.forEach((line) => {
           page.drawText(line, {
             x: 50,
             y: yPosition,
             size: fontSize,
-            font: timesRomanFont,
+            font: timesBoldFont,
             color: rgb(0, 0, 0),
           });
           yPosition -= 20;
         });
       }
+
+      // Draw each wrapped value line (with bullet if it's an array)
+      valueLines.forEach((line) => {
+        page.drawText(line, {
+          x: isArray ? 60 : 50, // Indent slightly if bullet point
+          y: yPosition,
+          size: fontSize,
+          font: timesRomanFont,
+          color: rgb(0, 0, 0),
+        });
+        yPosition -= 20;
+      });
 
       yPosition -= 10; // Extra space between fields
     });
