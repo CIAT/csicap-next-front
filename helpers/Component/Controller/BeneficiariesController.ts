@@ -1,7 +1,6 @@
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
 
 class BeneficiariesController {
-
     static getUniqueCrops(data: DataFormat[]): string[] {
         const crops: string[] = data.flatMap(data => data.produccion);
         return Array.from(new Set(crops));
@@ -25,6 +24,11 @@ class BeneficiariesController {
     static extractProvinces(events: DataFormat[]): string[] {
         const provinces = events.map(event => event.pr_dpto);
         return Array.from(new Set(provinces));
+    }
+
+    static extractProvincesAndCities(events: { pr_dpto: string, pr_muni: string}[]): string[][]{
+        const provincesAndCities = events.map(event => [event.pr_dpto, event.pr_muni]);
+        return Array.from(new Set(provincesAndCities));
     }
 
     static filterEventsByCrop(events: DataFormat[], crop: string): DataFormat[] {

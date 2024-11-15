@@ -1,4 +1,4 @@
-import { DataFormat, EventsData } from "@/interfaces";
+import { DataFormat, Event, EventFormat, EventsData } from "@/interfaces";
 import dayjs from "dayjs";
 
 class CalendarController {
@@ -36,6 +36,26 @@ class CalendarController {
         }));
     }
 
+    static formatEvent(data: EventFormat): Event[] {
+        return data.data.map((event: Event) => ({
+            ...event,
+            initialDate: event.date, // Convert to Date object
+            end: event.datesEnd,
+            title: event.name,
+            province: event.province,
+            responsable: event.responsable,
+            city: event.city || "",
+            crop: event.crop || [],
+            eje: event.eje || [],
+            guess_type: event.guess_type || [],
+            event_objective: event.event_objective,
+            institution: event.institution || [],
+            event_type: event.event_type,
+            form_state: event.form_state,
+            email: event.email
+        }));
+    }
+
     static extractProvinces(events: { province: string }[]): string[] {
         const provinces = events.map(event => event.province);
         return Array.from(new Set(provinces));
@@ -44,6 +64,11 @@ class CalendarController {
     static extractCities(events: { city: string }[]): string[] {
         const cities = events.map(event => event.city);
         return Array.from(new Set(cities));
+    }
+
+    static extractProvincesAndCities(events: { province: string, city: string}[]): string[][]{
+        const provincesAndCities = events.map(event => [event.province, event.city]);
+        return Array.from(new Set(provincesAndCities));
     }
 
     static filterEventsByCrop(events: EventsData[], crop: string): EventsData[] {

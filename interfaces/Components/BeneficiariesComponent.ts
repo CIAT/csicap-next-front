@@ -3,6 +3,7 @@ export interface DataFormat {
     gen_name: string;
     declaracion: string;
     finca: string;
+    cal_qty: string;
     pr_ethnic_group: string;
     type_property: string;
     hash: string;
@@ -12,5 +13,6 @@ export interface DataFormat {
     pr_secundary_crop: string | null;
     conflicto: string;
     edad: string;
-    pr_dpto: string
+    pr_dpto: string;
+    pr_muni: string;
 }
