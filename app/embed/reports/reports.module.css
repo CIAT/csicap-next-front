@@ -2,7 +2,7 @@
     width: 50%;
     padding-top: 20px;
     padding-bottom: 20px;
-    height: auto;
+    height: 100%;
 }
 
 .second_div{
@@ -15,7 +15,7 @@
 
 .preview_div {
     padding: 10px 0 0 10px;
-    height: auto;
+    height: 100%;
 }
 
 .filter_div {
@@ -31,6 +31,11 @@
     flex-direction: row;
     min-height: 100%;
     max-height: fit-content;
+}
+
+.pdf {
+    width: 100%;
+    height: calc(100vh - 30vh);
 }
 
 @media screen and (max-width: 767px) {
