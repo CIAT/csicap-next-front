@@ -1,7 +1,7 @@
 "use client";
 
 import { NextPage } from "next";
-import styles from "./assistance.module.css";
+import styles from "./producers.module.css";
 import styleBeneficiaries from "@/components/ui/card/CardBeneficiaries.module.css";
 import {
   Chart,
@@ -18,9 +18,9 @@ import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { useEffect, useState } from "react";
 import {Event, EventsData, sectionStateData} from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
-import BeneficiariesRepository from "@/helpers/Component/Repository/BeneficiariesRepository";
+import ProducersRepository from "@/helpers/Component/Repository/ProducersRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
-import BeneficiariesController from "@/helpers/Component/Controller/BeneficiariesController";
+import ProducersController from "@/helpers/Component/Controller/ProducersController";
 import CardComponent from "@/components/ui/card/Card";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
@@ -114,7 +114,7 @@ function countPrimaryCrop(data: DataFormat[]): { [key: string]: number } {
   return primaryCropCount;
 }
 
-const BeneficiariosPage: NextPage = () => {
+const ProducersPage: NextPage = () => {
 
   const [events, setEvents] = useState<DataFormat[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<DataFormat[]>(
@@ -128,7 +128,7 @@ const BeneficiariosPage: NextPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<DataFormat | null>(null);
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [totalData, setTotalData] = useState<number>(0);
-  const [totalRegisteredData, setTotalRegisteredData] = useState<number>(0);
+  const [totalProducersData, setTotalProducersData] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
   const [typeHouseNumber, setTypeHouseNumber] = useState<number[]>([]);
@@ -143,9 +143,9 @@ const BeneficiariosPage: NextPage = () => {
   >([]);
 
   useEffect(() => {
-    BeneficiariesRepository.fetchEvents()
+    ProducersRepository.fetchEvents()
       .then((data: DataFormat[]) => {
-        const formattedEvents = BeneficiariesController.formatEvents(data);
+        const formattedEvents = ProducersController.formatEvents(data);
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
 
@@ -156,7 +156,7 @@ const BeneficiariosPage: NextPage = () => {
         const totalDataRecord = countTotalRecords(data);
         setTotalData(totalDataRecord);
         const totalRegistered = countTotalRegistered(data)+countTotalRecords(data);
-        setTotalRegisteredData(totalRegistered);
+        setTotalProducersData(totalRegistered);
         const genderCount = countGenders(data);
         setGenderLabel(Object.keys(genderCount));
         setGenderNumber(Object.values(genderCount));
@@ -299,7 +299,7 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="w-full h-full flex flex-wrap">
       <Tabs aria-label="Options">
         {/* Tab Beneficiarios */}
         <Tab key="registrados" title="Registrados" className="w-full h-full flex flex-wrap">
@@ -311,7 +311,7 @@ const BeneficiariosPage: NextPage = () => {
                     <div className={styles.top_div_division}>
                     <label className={styles.top_card_label}>{totalData}</label>
                     <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
-                    <label className={styles.other_card_label}>{totalRegisteredData}</label>
+                    <label className={styles.other_card_label}>{totalProducersData}</label>
                   </div>
                   
                 ) : (
@@ -363,7 +363,7 @@ const BeneficiariosPage: NextPage = () => {
             <div className={styles.bottom_div}>
               <div className={styles.flex_container}>
                 <div className={styles.width}>
-                  <ChartCardComponent title="Número de registrados" header={
+                  <ChartCardComponent title="Número de productores" header={
                     <FormControl sx={{m: 1, minWidth: 120}} size="small">
                       <InputLabel id="filter-select-label">Filtrar</InputLabel>
                       <Select
@@ -390,11 +390,11 @@ const BeneficiariosPage: NextPage = () => {
                   </ChartCardComponent>
                 </div>
                 <div className={styles.width}>
-                  <CardComponent title="Registrados por municipio" styles={styleBeneficiaries}>
+                  <CardComponent title="Productores por municipio" styles={styleBeneficiaries}>
                     <div className="w-full h-full">
                       {treemapData.length > 0 ? (
                           <MapComponent
-                          polygons={BeneficiariesController.extractProvincesAndCities(filteredEvents)}
+                          polygons={ProducersController.extractProvincesAndCities(filteredEvents)}
                           data={counts}/>
                       ) : (
                           <LoadingAnimation/>
@@ -406,72 +406,9 @@ const BeneficiariosPage: NextPage = () => {
             </div>
           </div>
         </Tab>
-
-        {/* Tab Cultivos Priorizados */}
-        {/*<Tab key="cultivos" title="Cultivos Priorizados" className="w-full h-full flex flex-wrap">*/}
-        {/*  <div className="w-full h-full flex flex-wrap">*/}
-        {/*    /!* Card superior *!/*/}
-        {/*    <div className={styles.top_div}>*/}
-        {/*      <CardComponent*/}
-        {/*        title="Total Hectáreas"*/}
-        {/*        styles={styleBeneficiaries}*/}
-        {/*      >*/}
-        {/*        <div className={styles.top_div_division}>*/}
-        {/*          <label className={styles.top_card_label}>9557</label>*/}
-        {/*        </div>*/}
-        {/*      </CardComponent>*/}
-        {/*      <CardComponent*/}
-        {/*        title="Género"*/}
-        {/*        styles={styleBeneficiaries}*/}
-        {/*      >*/}
-        {/*        <div className={styles.doughnut_chart}>*/}
-        {/*          <Doughnut data={sex} options={config} />*/}
-        {/*        </div>*/}
-        {/*      </CardComponent>*/}
-
-        {/*      /!* Doughnut: Tipo de propiedad *!/*/}
-        {/*      <CardComponent*/}
-        {/*        title="Tipo de propiedad"*/}
-        {/*        styles={styleBeneficiaries}*/}
-        {/*      >*/}
-        {/*        <div className={styles.doughnut_chart}>*/}
-        {/*          <Doughnut data={typeOfHousing} options={config2} />*/}
-        {/*        </div>*/}
-        {/*      </CardComponent>*/}
-        {/*      /!* Doughnut: Etnia *!/*/}
-        {/*      <CardComponent*/}
-        {/*        title="Etnia"*/}
-        {/*        styles={styleBeneficiaries}*/}
-        {/*      >*/}
-        {/*        <div className={styles.doughnut_chart}>*/}
-        {/*          <Doughnut data={etnia} options={config3} />*/}
-        {/*        </div>*/}
-        {/*      </CardComponent>*/}
-        {/*    </div>*/}
-        {/*    <div className={styles.bottom_div}>*/}
-        {/*      <div className={styles.flex_container}>*/}
-        {/*        <div className={styles.width}>*/}
-        {/*          <CardComponent title="TreeMap" styles={styleBeneficiaries}>*/}
-        {/*            <ReactChart type="treemap" data={data} options={options} />*/}
-        {/*          </CardComponent>*/}
-        {/*        </div>*/}
-        {/*        <div className={styles.width}>*/}
-        {/*          <CardComponent title="Mapa Colombia" styles={styleBeneficiaries}>*/}
-        {/*            <div className="w-full h-full">*/}
-        {/*              <MapComponent*/}
-        {/*                polygons={[]}*/}
-        {/*                data={{}}*/}
-        {/*              />*/}
-        {/*            </div>*/}
-        {/*          </CardComponent>*/}
-        {/*        </div>*/}
-        {/*      </div>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</Tab>*/}
       </Tabs>
     </div>
   );
 };
 
-export default BeneficiariosPage;
+export default ProducersPage;

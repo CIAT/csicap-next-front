@@ -493,11 +493,11 @@ class MapController {
 
             if (cityBeneficiariesCounts[province][city]) {
                 const currentCount = parseInt(cityBeneficiariesCounts[province][city].replace(/\D/g, ''), 10);
-                cityBeneficiariesCounts[province][city] = `Registrados: ${currentCount + 1}`;
+                cityBeneficiariesCounts[province][city] = `Productores: ${currentCount + 1}`;
                 return;
             }
 
-            cityBeneficiariesCounts[province][city] = 'Registrados: 1';
+            cityBeneficiariesCounts[province][city] = 'Productores: 1';
         });
         return cityBeneficiariesCounts;
     }

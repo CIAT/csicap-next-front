@@ -1,6 +1,6 @@
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
 
-class BeneficiariesController {
+class ProducersController {
     static getUniqueCrops(data: DataFormat[]): string[] {
         const crops: string[] = data.flatMap(data => data.produccion);
         return Array.from(new Set(crops));
@@ -8,7 +8,7 @@ class BeneficiariesController {
 
     static formatEvents(data: DataFormat[]) {
         return data.map((item: DataFormat) => ({
-            ...item, // Extraer los datos de la propiedad `data`
+            ...item,
             gremio: item.gremio,
             sexo: item.gen_name,
             etnia: item.pr_ethnic_group,
@@ -37,14 +37,6 @@ class BeneficiariesController {
         }
         return events.filter(event => event.produccion.includes(crop));
     }
-
-    // static filterEventsByProvince(events: DataFormat[], province: string): DataFormat[] {
-    //     if (province === "") {
-    //         return events;
-    //     }
-    //     return events.filter(event => event.department_where_you_work.includes(province));
-    // }
-
 }
 
-export default BeneficiariesController;
+export default ProducersController;

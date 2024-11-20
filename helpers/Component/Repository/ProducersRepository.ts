@@ -1,8 +1,8 @@
 import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
 
-class BeneficiariesRepository {
+class ProducersRepository {
     static async fetchEvents(): Promise<DataFormat[]> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_BENEFICIARIES;
+        const url = process.env.NEXT_PUBLIC_URL_GET_PRODUCERS;
         if(!url){
             return <DataFormat[]>{};
         }
@@ -15,4 +15,4 @@ class BeneficiariesRepository {
     }
 }
 
-export default BeneficiariesRepository;
+export default ProducersRepository;
