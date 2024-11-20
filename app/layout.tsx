@@ -7,7 +7,7 @@ import "./globals.css";
 import "../components/static/static.module.css";
 import Header from "@/components/static/Header";
 import Footer from "@/components/static/Footer";
-import { metadata } from "@/components/Metadata/Metadata"; // Importa los metadatos
+import { metadata } from "@/components/Metadata/Metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,19 +28,14 @@ export default function RootLayout({
 
             {metadata.openGraph && (
                 <>
-                    <meta property="og:title" content={metadata.openGraph.title} />
-                    <meta property="og:description" content={metadata.openGraph.description} />
-                    {metadata.openGraph.images?.map((image, index) => (
-                        <meta
-                            key={index}
-                            property="og:image"
-                            content={image.url}
-                        />
-                    ))}
-                    <meta property="og:type" content={metadata.openGraph.type} />
+                    <meta property="og:title" content={metadata.openGraph.title}/>
+                    <meta property="og:description" content={metadata.openGraph.description}/>
+                    <meta property="og:image" content={metadata.openGraph.image.url}
+                    />
+                    <meta property="og:type" content={metadata.openGraph.type}/>
                 </>
             )}
-            <link rel="icon" href="/next.png" />
+            <link rel="icon" href="/next.png"/>
         </head>
         <body className={`${inter.className} ${layoutClassName}`}>
         <NextUIProvider>
