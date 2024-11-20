@@ -95,7 +95,7 @@
 .div{
   display: flex;
   flex-wrap: wrap;
-  height: 90vh;
+  height: 100%;
 }
 
 .top_div {

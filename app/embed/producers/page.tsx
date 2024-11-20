@@ -299,11 +299,11 @@ const ProducersPage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
+    <div className={styles.producers}>
       <Tabs aria-label="Options">
         {/* Tab Beneficiarios */}
-        <Tab key="registrados" title="Productores" className="w-full h-full flex flex-wrap">
-          <div className="w-full h-full flex flex-wrap">
+        <Tab key="registrados" title="Productores">
+          <div>
             {/* Card superior */}
             <div className={styles.top_div}>
               <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>

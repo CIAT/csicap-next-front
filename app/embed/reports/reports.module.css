@@ -29,7 +29,7 @@
 .reports {
     display: flex;
     flex-direction: row;
-    min-height: 90vh;
+    min-height: 100%;
     max-height: fit-content;
 }
 
@@ -44,9 +44,12 @@
         padding-right: 10px;
     }
     .preview_div{
+        display: none;
         width: 100%;
     }
     .second_div{
+        padding: 20px 10px;
         width: 100%;
+        height: 100vh;
     }
 }

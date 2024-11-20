@@ -163,7 +163,7 @@ const BeneficiariosPage: NextPage = () => {
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [selectedFilter, setSelectedFilter] = useState<string>("institution");
-  const [treemapTitle, setTreemapTitle] = useState("Número de técnicos");
+  const [treemapTitle, setTreemapTitle] = useState("Número de profesionales");
   const [allEventData, setAllEventData] = useState<DataFormat>([]); // Store all event data once fetched
   const [counts, setCounts] = useState<NestedDictionary>({});
 
@@ -408,12 +408,12 @@ const BeneficiariosPage: NextPage = () => {
   };
 
   return (
-      <div className="w-full h-full flex flex-wrap">
+      <div className={styles.professionals}>
         {/* Card superior */}
-        <div className="w-full h-full flex flex-wrap">
+        <div className={styles.professionals}>
           <div className={styles.top_div}>
             {/* Card: Total técnicos */}
-            <CardComponent title="Total técnicos registrados" styles={styleTechnical}>
+            <CardComponent title="Total profesionales registrados" styles={styleTechnical}>
               {treemapData.length > 0 ? (
                   <div className={styles.top_div_division}>
                     <label className={styles.top_card_label}>{totalData}</label>
@@ -490,7 +490,7 @@ const BeneficiariosPage: NextPage = () => {
               </div>
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
-                <CardComponent title="Técnicos por municipio" styles={styleTechnical}>
+                <CardComponent title="Profesionales por municipio" styles={styleTechnical}>
                   {treemapData.length > 0 && filteredEvents && counts ? (
                       <div className="w-full h-full">
                         <MapComponent

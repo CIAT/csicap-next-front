@@ -1,7 +1,5 @@
-'use client';
-
-import { FC, useState } from "react";
-import Link from 'next/link';
+import { FC, useState, useEffect } from "react";
+import Link from "next/link";
 import styles from "./static.module.css";
 
 interface HeaderProps {
@@ -10,18 +8,50 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ showHeader }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detectar si el dispositivo es móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+    setActiveDropdown(null); // Cierra cualquier dropdown al abrir/cerrar el menú.
   };
 
   const closeMenu = () => {
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
+    setIsMenuOpen(false);
+    setActiveDropdown(null);
+  };
+
+  const handleDropdown = (dropdown: string) => {
+    if (isMobile) {
+      setActiveDropdown((prev) => (prev === dropdown ? null : dropdown));
     }
   };
 
-  // Función para cambiar la ruta según el estado de showHeader
+  const handleMouseEnter = (dropdown: string) => {
+    if (!isMobile) {
+      setActiveDropdown(dropdown);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setActiveDropdown(null);
+    }
+  };
+
   const getLink = (path: string) => (showHeader ? path : `/embed${path}`);
 
   return (
@@ -29,33 +59,69 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
         {showHeader && (
             <div className={styles.logoStyle}>
               <Link href="/" className="h-full w-full">
-                <img src="/logo.png" alt="alliance-logo"/>
+                <img src="/logo.png" alt="alliance-logo" />
               </Link>
             </div>
         )}
         <div className={styles.hamburger} onClick={toggleMenu}>
-          <img src="/menu.png" alt="menu"/>
+          <img src="/menu.png" alt="menu" />
           <span className={styles.hamburgerIcon}></span>
         </div>
         <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
           <ul>
-            <li className={styles.header_nav_item}>
-              <Link href={getLink("/events")} onClick={closeMenu}>Eventos</Link>
+            <li
+                className={styles.header_nav_item}
+                onMouseEnter={() => handleMouseEnter("monitoreo")}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => handleDropdown("monitoreo")}
+            >
+              Monitoreo
+              {activeDropdown === "monitoreo" && (
+                  <ul className={styles.dropdownMenu}>
+                    <li>
+                      <Link href={getLink("/calendar")} onClick={closeMenu}>
+                        Calendario
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getLink("/events")} onClick={closeMenu}>
+                        Eventos
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getLink("/assistance")} onClick={closeMenu}>
+                        Asistentes
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getLink("/reports")} onClick={closeMenu}>
+                        Reportes
+                      </Link>
+                    </li>
+                  </ul>
+              )}
             </li>
-            <li className={styles.header_nav_item}>
-              <Link href={getLink("/assistance")} onClick={closeMenu}>Asistentes</Link>
-            </li>
-            <li className={styles.header_nav_item}>
-              <Link href={getLink("/producers")} onClick={closeMenu}>Productores</Link>
-            </li>
-            <li className={styles.header_nav_item}>
-              <Link href={getLink("/professionals")} onClick={closeMenu}>Profesionales</Link>
-            </li>
-            <li className={styles.header_nav_item}>
-              <Link href={getLink("/calendario")} onClick={closeMenu}>Calendario</Link>
-            </li>
-            <li className={styles.header_nav_item}>
-              <Link href={getLink("/reports")} onClick={closeMenu}>Reportes</Link>
+            <li
+                className={styles.header_nav_item}
+                onMouseEnter={() => handleMouseEnter("registro")}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => handleDropdown("registro")}
+            >
+              Registro de beneficiarios
+              {activeDropdown === "registro" && (
+                  <ul className={styles.dropdownMenu}>
+                    <li>
+                      <Link href={getLink("/producers")} onClick={closeMenu}>
+                        Productores
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={getLink("/professionals")} onClick={closeMenu}>
+                        Profesionales
+                      </Link>
+                    </li>
+                  </ul>
+              )}
             </li>
           </ul>
         </nav>
