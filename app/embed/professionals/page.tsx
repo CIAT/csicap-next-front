@@ -1,7 +1,7 @@
 "use client";
 
 import { NextPage } from "next";
-import styles from "./assistance.module.css";
+import styles from "./professionals.module.css";
 import styleTechnical from "@/components/ui/card/CardBeneficiaries.module.css";
 import CardComponent from "@/components/ui/card/Card";
 import {
@@ -20,7 +20,7 @@ import ChartCardComponent from "@/components/events/chartCard";
 import { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
 import { DataFormat, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
-import TechnicalController from "@/helpers/Component/Controller/TechnicalController";
+import ProfessionalController from "@/helpers/Component/Controller/ProfessionalController";
 import {
   InputLabel,
   MenuItem,
@@ -177,7 +177,7 @@ const BeneficiariosPage: NextPage = () => {
   useEffect(() => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
-        const formattedEvents = TechnicalController.formatEvents(data);
+        const formattedEvents = ProfessionalController.formatEvents(data);
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
         setDataCalendarResp(200);
@@ -494,7 +494,7 @@ const BeneficiariosPage: NextPage = () => {
                   {treemapData.length > 0 && filteredEvents && counts ? (
                       <div className="w-full h-full">
                         <MapComponent
-                            polygons={TechnicalController.extractMunicipalitiesCode(filteredEvents)}
+                            polygons={ProfessionalController.extractMunicipalitiesCode(filteredEvents)}
                             data={counts}
                         />
                       </div>

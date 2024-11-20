@@ -5,8 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
-
-mapboxgl.accessToken = "pk.eyJ1IjoiZXNwZXJhbnphb3JvemNvIiwiYSI6ImNsYm5ya3ZzNzA3aG4zb3FzY3Z0NTVuMm0ifQ.zzzCxKwH2AuC9jI-EsAdng";
+import {mapBoxAccessToken} from "@/config";
 
 const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data, useQuintile = false }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -21,7 +20,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
       if (mapContainerRef.current) {
         const map = new mapboxgl.Map({
           container: mapContainerRef.current,
-          style: "mapbox://styles/mapbox/navigation-day-v1",
+          accessToken: mapBoxAccessToken,
+          style: "mapbox://styles/ciatkm/ckhgfstwq018818o06dqero91",
           center: [-74.297333, 4.570868],
           zoom: 5
         });
