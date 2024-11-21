@@ -30,6 +30,7 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
+import {PageProps} from "@/interfaces/Components/PageProps";
 
 
 Chart.register(
@@ -212,7 +213,9 @@ const countInstitutions = (assists: Assistance[]) => {
   return institutionCount;
 };
 
-const AssistancePage: NextPage = () => {
+const AssistancePage: NextPage<PageProps> = ({customStyles}) => {
+  const styles = customStyles || require("./assistance.module.css");
+
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(events);
   const [counts, setCounts] = useState<NestedDictionary>({});

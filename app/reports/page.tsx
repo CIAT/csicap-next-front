@@ -1,7 +1,6 @@
 "use client";
 
 import { NextPage } from "next";
-import styles from "./reports.module.css";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
@@ -22,8 +21,11 @@ import LoadingAnimation from "@/components/loadingAnimation";
 import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 import ReportsController from "@/helpers/Component/Controller/ReportsController";
 import { Report, ReportNames } from "@/interfaces/Components/ReportsComponent";
+import {PageProps} from "@/interfaces/Components/PageProps";
 
-const ReportsPage: NextPage = () => {
+const ReportsPage: NextPage<PageProps> = ({customStyles}) => {
+  const styles = customStyles || require("./reports.module.css");
+
   const [events, setEvents] = useState<EventsData[]>([]);
   const [counts, setCounts] = useState<NestedDictionary>({});
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -179,9 +181,7 @@ const ReportsPage: NextPage = () => {
           {pdfUrl ? (
             <iframe
               src={pdfUrl}
-              width="100%"
-              height="600"
-              style={{ border: "none" }}
+              className={styles.pdf}
             />
           ) : (
             <p>Seleciona un Reporte</p>

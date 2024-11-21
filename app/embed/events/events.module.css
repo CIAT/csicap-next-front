@@ -1,3 +1,10 @@
+.header_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
 .card {
   padding-bottom: 20px;
   justify-content: center;

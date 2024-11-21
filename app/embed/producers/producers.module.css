@@ -28,13 +28,13 @@
 }
 .other_card_label {
     display: block;
-    margin-top: 10px; 
+    margin-top: 10px;
     font-weight: bold;
 }
 .title_card_label {
     display: block;
     font-size: 0.6em;
-    margin-top: 4px; 
+    margin-top: 4px;
     font-weight: bold;
     font-style: italic;
 }
@@ -52,7 +52,7 @@
     height: 26vh;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
 }
 
 .top_card {

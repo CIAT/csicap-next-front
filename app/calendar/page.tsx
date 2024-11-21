@@ -20,8 +20,12 @@ import LoadingAnimation from "@/components/loadingAnimation";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {parseISO} from "date-fns";
+import {NextPage} from "next";
+import {PageProps} from "@/interfaces/Components/PageProps";
 
-export default function DataCalendarResults() {
+const CalendarPage:NextPage<PageProps> = ({customStyles}) => {
+  const styles = customStyles || require("./calendar.module.css");
+
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(
     events
@@ -242,3 +246,5 @@ export default function DataCalendarResults() {
     </div >
   );
 }
+
+export default CalendarPage;

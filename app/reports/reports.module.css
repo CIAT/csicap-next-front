@@ -33,6 +33,11 @@
     max-height: fit-content;
 }
 
+.pdf {
+    width: 100%;
+    height: calc(100vh - 30vh);
+}
+
 @media screen and (max-width: 767px) {
     .reports{
         flex-direction: column;

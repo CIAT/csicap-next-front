@@ -32,6 +32,7 @@ import LoadingAnimation from "@/components/loadingAnimation";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
+import {PageProps} from "@/interfaces/Components/PageProps";
 
 Chart.register(
   ArcElement,
@@ -147,7 +148,8 @@ function countOrganizations(events: DataFormat) {
   return organizations;
 }
 
-const BeneficiariosPage: NextPage = () => {
+const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
+  const styles = customStyles || require("./professionals.module.css");
 
   const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
@@ -510,4 +512,4 @@ const BeneficiariosPage: NextPage = () => {
   );
 };
 
-export default BeneficiariosPage;
+export default ProfessionalsPage;

@@ -14,7 +14,6 @@ import {
   LinearScale,
 } from "chart.js";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
-import styles from "./events.module.css";
 import ChartCardComponent from "@/components/events/chartCard";
 import CardComponent from "@/components/events/Card";
 import {
@@ -27,11 +26,9 @@ import {
 import LoadingAnimation from "@/components/loadingAnimation";
 import { parseISO } from "date-fns";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
-import {
-  DataFormat,
-  EventsData,
-} from "@/interfaces/Components/CalendarComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
+import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import {PageProps} from "@/interfaces/Components/PageProps";
 
 interface Event {
   date: string;
@@ -248,7 +245,15 @@ function countGuestTypes(events: Event[]) {
   return guestTypeCount;
 }
 
-const EventPage: NextPage = () => {
+const EventPage: NextPage<PageProps> = ({customStyles}) => {
+  const styles = customStyles || require("./events.module.css");
+
+  const treemapChartTotalEventsId: string = "treemap_chart_total_events";
+  const doughnutChartTotalEventsId: string = "doughnut_chart_total_events";
+  const doughnutChartAxesByEventId: string = "doughnut_chart_axes_by_event";
+  const doughnutChartGuestByEventId: string = "doughnut_chart_guest_by_event";
+  const barChartInstitutionsId: string = "bar_chart_institutions";
+
   const [institutionData, setInstitutionData] = useState<number[]>([]);
   const [institutionLabels, setInstitutionLabels] = useState<string[]>([]);
   const [ejeData, setEjeData] = useState<number[]>([]);
@@ -592,25 +597,31 @@ const EventPage: NextPage = () => {
         <ChartCardComponent
           title="Número de eventos"
           header={
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={selectedFilter}
-                onChange={handleFilterChange}
-                label="Filtrar"
-              >
-                <MenuItem value="crop">Cultivo</MenuItem>
-                <MenuItem value="ejes">Eje</MenuItem>
-                <MenuItem value="city">Lugar</MenuItem>
-                <MenuItem value="institution">Institución</MenuItem>
-              </Select>
-            </FormControl>
+            <div className={styles.header_container}>
+              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+                <Select
+                    labelId="demo-select-small-label"
+                    id="demo-select-small"
+                    value={selectedFilter}
+                    onChange={handleFilterChange}
+                    label="Filtrar"
+                >
+                  <MenuItem value="crop">Cultivo</MenuItem>
+                  <MenuItem value="ejes">Eje</MenuItem>
+                  <MenuItem value="city">Lugar</MenuItem>
+                  <MenuItem value="institution">Institución</MenuItem>
+                </Select>
+              </FormControl>
+              <ExportDropdown
+                  chartId={treemapChartTotalEventsId}
+              />
+            </div>
           }
         >
           {treemapData.length > 0 ? (
             <ReactChart
+              id={treemapChartTotalEventsId}
               type="treemap"
               data={treemapChartData}
               options={options}
@@ -622,37 +633,65 @@ const EventPage: NextPage = () => {
       </div>
 
       <div className={styles.card_container}>
-        <CardComponent title="Total Eventos">
+        <CardComponent
+            title="Total Eventos"
+            id={doughnutChartTotalEventsId}
+        >
           <div className="w-full h-full">
             {allEventData.length > 0 ? (
-              <Doughnut data={eventsTotal} options={config2} />
+              <Doughnut
+                  id={doughnutChartTotalEventsId}
+                  data={eventsTotal}
+                  options={config2}
+              />
             ) : (
               <LoadingAnimation />
             )}
           </div>
         </CardComponent>
-        <CardComponent title="Ejes por evento">
+        <CardComponent
+            title="Ejes por evento"
+            id={doughnutChartAxesByEventId}
+        >
           <div className="w-full h-full">
             {allEventData.length > 0 ? (
-              <Doughnut data={ejesChartData} options={config2} />
+              <Doughnut
+                  id={doughnutChartAxesByEventId}
+                  data={ejesChartData}
+                  options={config2}
+              />
             ) : (
               <LoadingAnimation />
             )}
           </div>
         </CardComponent>
-        <CardComponent title="Tipo de invitados por evento">
+        <CardComponent
+            title="Tipo de invitados por evento"
+            id={doughnutChartGuestByEventId}
+        >
           <div className="w-full h-full">
             {allEventData.length > 0 ? (
-              <Doughnut data={guestTypesChartData} options={config2} />
+              <Doughnut
+                  id={doughnutChartGuestByEventId}
+                  data={guestTypesChartData}
+                  options={config2}
+              />
             ) : (
               <LoadingAnimation />
             )}
           </div>
         </CardComponent>
-        <CardComponent title="Instituciones organizadoras">
+        <CardComponent
+            title="Instituciones organizadoras"
+            id={barChartInstitutionsId}
+        >
           <div className="w-full h-full">
             {allEventData.length > 0 ? (
-              <Bar data={institutionsChartData} options={barChartOptions} />
+              <Bar
+                  id={barChartInstitutionsId}
+                  data={institutionsChartData}
+                  options={barChartOptions}
+              />
             ) : (
               <LoadingAnimation />
             )}

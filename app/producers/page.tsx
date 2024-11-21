@@ -30,6 +30,7 @@ import ChartCardComponent from "@/components/events/chartCard";
 import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import RegisteredController from "@/helpers/Component/Controller/RegisteredController";
+import {PageProps} from "@/interfaces/Components/PageProps";
 
 Chart.register(
   ArcElement,
@@ -114,7 +115,8 @@ function countPrimaryCrop(data: DataFormat[]): { [key: string]: number } {
   return primaryCropCount;
 }
 
-const ProducersPage: NextPage = () => {
+const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
+  const styles = customStyles || require("./producers.module.css");
 
   const [events, setEvents] = useState<DataFormat[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<DataFormat[]>(
@@ -299,10 +301,10 @@ const ProducersPage: NextPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-wrap">
+    <div className={styles.producers}>
       <Tabs aria-label="Options">
         {/* Tab Beneficiarios */}
-        <Tab key="registrados" title="Productores" className="w-full h-full flex flex-wrap">
+        <Tab key="registrados" title="Productores">
           <div className="w-full h-full flex flex-wrap">
             {/* Card superior */}
             <div className={styles.top_div}>
@@ -335,7 +337,7 @@ const ProducersPage: NextPage = () => {
               {/* Doughnut: Tipo de propiedad */}
               <CardComponent
                   title="Tipo de propiedad"
-                styles={styleBeneficiaries}
+                  styles={styleBeneficiaries}
               >
                 {treemapData.length > 0 ? (
                     <div className={styles.doughnut_chart}>
