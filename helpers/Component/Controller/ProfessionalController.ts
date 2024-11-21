@@ -1,6 +1,6 @@
 import { DataFormat, DataItem, FormattedBeneficiary, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
 
-class TechnicalController {
+class ProfessionalController {
 
     static getUniqueCrops(data: TechnicalBeneficiaries[]): string[] {
         const crops: string[] = data.flatMap(data => data.crops_worked_last_12_months);
@@ -56,4 +56,4 @@ class TechnicalController {
     }
 }
 
-export default TechnicalController;
+export default ProfessionalController;

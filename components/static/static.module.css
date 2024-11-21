@@ -27,11 +27,12 @@
 }
 
 .headerStyle {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px 60px 10px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logoStyle {
@@ -45,6 +46,7 @@
 .nav_style {
   display: flex;
   align-items: center;
+  padding: 10px 5px;
 }
 
 .nav_style ul {
@@ -52,11 +54,8 @@
   display: flex;
 }
 
-.nav_style li {
-  margin-left: 15px;
-}
-
 .header_nav_item {
+  position: relative;
   margin-left: 0;
   padding: 10px;
   text-align: center;
@@ -76,6 +75,38 @@
   margin: 6px 0;
 }
 
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  border-radius: 8px;
+}
+
+.dropdownMenu li {
+  padding: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdownMenu li:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdownToggle {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
 /* Mobile responsive rules */
 @media (max-width: 768px) {
   .logoStyle {
@@ -92,7 +123,7 @@
     left: 0;
     background-color: #80C41C;
     padding: 0;
-    z-index: 1000;
+    z-index: 100;
     margin-top: 10px;
   }
 
@@ -113,6 +144,7 @@
     width: 100%;
     padding: 0;
   }
+
   .nav_style li {
     margin-left: 0;
   }
@@ -121,6 +153,13 @@
     padding: 10px;
     border-bottom: 1px solid white;
     color: white;
+  }
+
+  .dropdownMenu {
+    top: 100%;
+    left: 0;
+    border-radius: 0;
+    color: black;
   }
 
   .footerStyle {
@@ -138,6 +177,25 @@
   .logoStyle img {
     max-width: 100px;
   }
+
+  .nav_style {
+    flex-direction: column;
+  }
+
+  .dropdownMenu {
+    width: 100%;
+  }
+
+  .header_nav_item {
+    text-align: left;
+    padding: 15px;
+  }
+
+  .dropdownToggle {
+    padding: 10px 15px;
+    border-bottom: 1px solid white;
+    color: white;
+  }
 }
 
 
@@ -149,10 +207,6 @@
 
   .nav_style {
     display: flex;
-  }
-
-  .nav_style ul {
-    flex-direction: row;
   }
 }
 

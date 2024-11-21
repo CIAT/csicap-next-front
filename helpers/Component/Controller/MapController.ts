@@ -385,7 +385,7 @@ class MapController {
     }
 
     static updateCountEventsByCityCodes(events: { municipalities_code: string[] }[]): NestedDictionary {
-        const cityCodeTechnicianCounts: NestedDictionary = {};
+        const cityCodeProfessionalCounts: NestedDictionary = {};
 
         // Verificar si events es un arreglo
         if (!Array.isArray(events)) {
@@ -404,16 +404,16 @@ class MapController {
                         const cityName = this.removeAccents(cityData.cityName);
 
                         // Inicializar la provincia si no existe
-                        if (!cityCodeTechnicianCounts[provinceName]) {
-                            cityCodeTechnicianCounts[provinceName] = {};
+                        if (!cityCodeProfessionalCounts[provinceName]) {
+                            cityCodeProfessionalCounts[provinceName] = {};
                         }
 
-                        // Sumar el conteo de técnicos para la ciudad
-                        if (cityCodeTechnicianCounts[provinceName][cityName]) {
-                            const currentCount = parseInt(cityCodeTechnicianCounts[provinceName][cityName].replace(/\D/g, ''), 10);
-                            cityCodeTechnicianCounts[provinceName][cityName] = `Técnicos: ${currentCount + 1}`;
+                        // Sumar el conteo de Profesionales para la ciudad
+                        if (cityCodeProfessionalCounts[provinceName][cityName]) {
+                            const currentCount = parseInt(cityCodeProfessionalCounts[provinceName][cityName].replace(/\D/g, ''), 10);
+                            cityCodeProfessionalCounts[provinceName][cityName] = `Profesionales: ${currentCount + 1}`;
                         } else {
-                            cityCodeTechnicianCounts[provinceName][cityName] = 'Técnicos: 1';
+                            cityCodeProfessionalCounts[provinceName][cityName] = 'Profesionales: 1';
                         }
                     }
                 });
@@ -421,7 +421,7 @@ class MapController {
                 console.warn('El evento es nulo o municipalities_code no es un arreglo:', event);
             }
         });
-        return cityCodeTechnicianCounts;
+        return cityCodeProfessionalCounts;
     }
 
     static getPolygonsByCodeCityAndProvince(polygons: string[]) {
@@ -493,11 +493,11 @@ class MapController {
 
             if (cityBeneficiariesCounts[province][city]) {
                 const currentCount = parseInt(cityBeneficiariesCounts[province][city].replace(/\D/g, ''), 10);
-                cityBeneficiariesCounts[province][city] = `Registrados: ${currentCount + 1}`;
+                cityBeneficiariesCounts[province][city] = `Productores: ${currentCount + 1}`;
                 return;
             }
 
-            cityBeneficiariesCounts[province][city] = 'Registrados: 1';
+            cityBeneficiariesCounts[province][city] = 'Productores: 1';
         });
         return cityBeneficiariesCounts;
     }

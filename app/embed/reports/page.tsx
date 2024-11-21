@@ -179,9 +179,7 @@ const ReportsPage: NextPage = () => {
           {pdfUrl ? (
             <iframe
               src={pdfUrl}
-              width="100%"
-              height="600"
-              style={{ border: "none" }}
+              className={styles.pdf}
             />
           ) : (
             <p>Seleciona un Reporte</p>
