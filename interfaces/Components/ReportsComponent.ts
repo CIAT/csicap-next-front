@@ -41,6 +41,7 @@ export interface ReportNames {
   is_reported: string;
   not_assistant: string;
   event_id: string;
+  datesEnd: string;
 }
 
 export interface ReportNamesFormat {

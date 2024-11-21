@@ -7,21 +7,15 @@ import CalendarController from "@/helpers/Component/Controller/CalendarControlle
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
 import { NestedDictionary } from "@/interfaces/Map/NestedDictionary";
-
+import Select from "react-select";
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { DataFormat, EventsData } from "@/interfaces";
 import LoadingAnimation from "@/components/loadingAnimation";
 import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 import ReportsController from "@/helpers/Component/Controller/ReportsController";
-import { Report, ReportNames } from "@/interfaces/Components/ReportsComponent";
+import { ReportNames } from "@/interfaces/Components/ReportsComponent";
+import { Console } from "console";
 
 const ReportsPage: NextPage = () => {
   const [events, setEvents] = useState<EventsData[]>([]);
@@ -29,7 +23,10 @@ const ReportsPage: NextPage = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
   const [allEventData, setAllEventData] = useState<ReportNames[]>([]); // Store all event data once fetched
-  const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [selectedReport, setSelectedReport] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
 
   useEffect(() => {
     async function fetchReports() {
@@ -58,14 +55,15 @@ const ReportsPage: NextPage = () => {
 
   const fetchPdf = async (selectedReportId: string) => {
     try {
-      // Encode the reportId to handle any special characters like "&"
       const encodedReportId = encodeURIComponent(selectedReportId);
-      const response = await fetch(`/api/generate-pdf?reportId=${encodedReportId}`);
+      const response = await fetch(
+        `/api/generate-pdf?reportId=${encodedReportId}`
+      );
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to generate PDF: ${errorText}`);
       }
-  
+
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
@@ -73,20 +71,17 @@ const ReportsPage: NextPage = () => {
       console.error("Error fetching PDF:", error);
     }
   };
-  
-  
 
   const downloadPdf = () => {
     if (pdfUrl) {
       const link = document.createElement("a");
       link.href = pdfUrl;
-      link.download = `generated_report_${reportId}.pdf`; // Use the reportId in the filename
+      link.download = `generated_report_${reportId}.pdf`;
       link.click();
     }
   };
 
   const handleDownloadDocx = async (selectedReportId: string) => {
-
     const encodedReportId = encodeURIComponent(selectedReportId);
     if (!reportId) {
       alert("Please select a report to download.");
@@ -94,20 +89,19 @@ const ReportsPage: NextPage = () => {
     }
 
     try {
-      // Make the request to the API to generate and download the docx file
-      const response = await fetch(`/api/generate-docx?reportId=${encodedReportId}`);
+      const response = await fetch(
+        `/api/generate-docx?reportId=${encodedReportId}`
+      );
       if (!response.ok) {
         throw new Error("Failed to generate the document");
       }
 
-      // Get the blob from the response and create a download link
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
 
-      // Create a temporary link and trigger the download
       const link = document.createElement("a");
       link.href = url;
-      link.download = `report_${reportId}.docx`; // Use the report ID in the filename
+      link.download = `report_${reportId}.docx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -117,13 +111,33 @@ const ReportsPage: NextPage = () => {
     }
   };
 
-  // Handle report selection and trigger PDF fetch
-  const handleReportSelection = (event: SelectChangeEvent<string | null>) => {
-    const selectedId = event.target.value as string;
-    setReportId(selectedId);
-    fetchPdf(selectedId);
-    setSelectedReport(selectedId);
+  const handleReportSelection = (
+    selectedOption: { value: string; label: string } | null
+  ) => {
+    if (selectedOption) {
+      setReportId(selectedOption.value);
+      fetchPdf(selectedOption.value);
+      setSelectedReport(selectedOption);
+    } else {
+      setReportId(null);
+      setSelectedReport(null);
+    }
   };
+
+  const reportOptions = allEventData
+    .filter(
+      (report) => report.is_reported === "1" && report.not_assistant === "0"
+    )
+    .sort(
+      (a, b) => new Date(b.datesEnd).getTime() - new Date(a.datesEnd).getTime()
+    ) // Sort by descending date
+    .map((report) => ({
+      value: report.event_id,
+      label: capitalizeFirstLetter(report.name),
+      date: report.datesEnd, // Include date for debugging
+    }));
+
+  console.log("Final Sorted Report Options:", reportOptions);
 
   function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -133,31 +147,15 @@ const ReportsPage: NextPage = () => {
     <div className={styles.reports}>
       <div className={styles.first_div}>
         <div className={styles.filter_div}>
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+          <div style={{ width: "300px" }}>
             <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={reportId}
+              options={reportOptions}
+              value={selectedReport}
               onChange={handleReportSelection}
-              label="Filtrar"
-            >
-              {allEventData.map((report) => {
-                if (
-                  report.is_reported === "1" &&
-                  report.not_assistant === "0"
-                ) {
-                  return (
-                    <MenuItem key={report.name} value={report.event_id}>
-                      {capitalizeFirstLetter(report.name)}
-                    </MenuItem>
-                  );
-                } else {
-                  return null; // Don't render anything if the conditions are not met
-                }
-              })}
-            </Select>
-          </FormControl>
+              placeholder="Filtrar"
+              isSearchable
+            />
+          </div>
           <div className="gap-2 flex flex-row">
             <Button
               variant="contained"
@@ -168,7 +166,9 @@ const ReportsPage: NextPage = () => {
             </Button>
             <Button
               variant="contained"
-              onClick={() => selectedReport && handleDownloadDocx(selectedReport)}
+              onClick={() =>
+                selectedReport && handleDownloadDocx(selectedReport.value)
+              }
               disabled={!selectedReport}
             >
               Word
