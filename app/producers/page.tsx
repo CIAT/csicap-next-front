@@ -15,7 +15,7 @@ import {
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {Event, EventsData, sectionStateData} from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import ProducersRepository from "@/helpers/Component/Repository/ProducersRepository";
@@ -31,6 +31,7 @@ import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import RegisteredController from "@/helpers/Component/Controller/RegisteredController";
 import {PageProps} from "@/interfaces/Components/PageProps";
+import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 Chart.register(
   ArcElement,
@@ -117,6 +118,11 @@ function countPrimaryCrop(data: DataFormat[]): { [key: string]: number } {
 
 const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
   const styles = customStyles || require("./producers.module.css");
+
+  const treemapChartProducersCountId: string = "treemap_chart_producers_count";
+  const doughnutProducersGenreId: string = "doughnut_producers_genre";
+  const doughnutProducersPropertyTypeId: string = "doughnut_producers_property_type";
+  const doughnutProducersEthnicity: string = "doughnut_producers_ethnicity";
 
   const [events, setEvents] = useState<DataFormat[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<DataFormat[]>(
@@ -322,12 +328,17 @@ const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
               </CardComponent>
               {/* Doughnut: Género */}
               <CardComponent
+                  id={doughnutProducersGenreId}
                   title="Género"
                   styles={styleBeneficiaries}
               >
                 {treemapData.length > 0 ? (
                     <div className={styles.doughnut_chart}>
-                      <Doughnut data={sex} options={config}/>
+                      <Doughnut
+                          id={doughnutProducersGenreId}
+                          data={sex}
+                          options={config}
+                      />
                     </div>
                 ) : (
                     <LoadingAnimation/>
@@ -336,12 +347,17 @@ const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
 
               {/* Doughnut: Tipo de propiedad */}
               <CardComponent
+                  id={doughnutProducersPropertyTypeId}
                   title="Tipo de propiedad"
                   styles={styleBeneficiaries}
               >
                 {treemapData.length > 0 ? (
                     <div className={styles.doughnut_chart}>
-                      <Doughnut data={typeOfHousing} options={config}/>
+                      <Doughnut
+                          id={doughnutProducersPropertyTypeId}
+                          data={typeOfHousing}
+                          options={config}
+                      />
                     </div>
                 ) : (
                     <LoadingAnimation/>
@@ -350,12 +366,17 @@ const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
 
               {/* Doughnut: Etnia */}
               <CardComponent
+                  id={doughnutProducersEthnicity}
                   title="Etnia"
                   styles={styleBeneficiaries}
               >
                 {treemapData.length > 0 ? (
                     <div className={styles.doughnut_chart}>
-                      <Doughnut data={etnia} options={config}/>
+                      <Doughnut
+                          id={doughnutProducersEthnicity}
+                          data={etnia}
+                          options={config}
+                      />
                     </div>
                 ) : (
                     <LoadingAnimation/>
@@ -366,22 +387,28 @@ const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
               <div className={styles.flex_container}>
                 <div className={styles.width}>
                   <ChartCardComponent title="Número de productores" header={
-                    <FormControl sx={{m: 1, minWidth: 120}} size="small">
-                      <InputLabel id="filter-select-label">Filtrar</InputLabel>
-                      <Select
-                          labelId="filter-select-label"
-                          id="filter-select"
-                          value={selectedFilter}
-                          onChange={handleFilterChange}
-                          label="Filtrar"
-                      >
-                        <MenuItem value="institution">Institución</MenuItem>
-                        <MenuItem value="crop">Cultivo</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <div className={styles.header_container}>
+                      <FormControl sx={{m: 1, minWidth: 120}} size="small">
+                        <InputLabel id="filter-select-label">Filtrar</InputLabel>
+                        <Select
+                            labelId="filter-select-label"
+                            id="filter-select"
+                            value={selectedFilter}
+                            onChange={handleFilterChange}
+                            label="Filtrar"
+                        >
+                          <MenuItem value="institution">Institución</MenuItem>
+                          <MenuItem value="crop">Cultivo</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <ExportDropdown
+                          chartId={treemapChartProducersCountId}
+                      />
+                    </div>
                   }>
                     {treemapData.length > 0 ? (
                         <ReactChart
+                            id={treemapChartProducersCountId}
                             type="treemap"
                             data={data}
                             options={options}
@@ -392,7 +419,9 @@ const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
                   </ChartCardComponent>
                 </div>
                 <div className={styles.width}>
-                  <CardComponent title="Productores por municipio" styles={styleBeneficiaries}>
+                  <CardComponent
+                      title="Productores por municipio"
+                      styles={styleBeneficiaries}>
                     <div className="w-full h-full">
                       {treemapData.length > 0 ? (
                           <MapComponent

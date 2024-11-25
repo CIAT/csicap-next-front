@@ -17,7 +17,7 @@ import { Doughnut } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart as ReactChart } from "react-chartjs-2";
 import ChartCardComponent from "@/components/events/chartCard";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
 import { DataFormat, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
 import ProfessionalController from "@/helpers/Component/Controller/ProfessionalController";
@@ -33,6 +33,7 @@ import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {PageProps} from "@/interfaces/Components/PageProps";
+import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 Chart.register(
   ArcElement,
@@ -150,6 +151,12 @@ function countOrganizations(events: DataFormat) {
 
 const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
   const styles = customStyles || require("./professionals.module.css");
+
+  const treemapChartProfessionalCountId: string = "treemap_chart_professional_count";
+  const doughnutChartProfessionalGenreId: string = "doughnut_chart_professional_genre";
+  const doughnutChartProfessionalOccupationId: string = "doughnut_chart_professional_occupation";
+  const doughnutProducersEthnicity: string = "doughnut_professional_ethnicity";
+
 
   const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
@@ -415,7 +422,10 @@ const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
         <div className="w-full h-full flex flex-wrap">
           <div className={styles.top_div}>
             {/* Card: Total técnicos */}
-            <CardComponent title="Total profesionales registrados" styles={styleTechnical}>
+            <CardComponent
+                title="Total profesionales registrados"
+                styles={styleTechnical}
+            >
               {treemapData.length > 0 ? (
                   <div className={styles.top_div_division}>
                     <label className={styles.top_card_label}>{totalData}</label>
@@ -426,10 +436,18 @@ const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
             </CardComponent>
 
             {/* Card: Género */}
-            <CardComponent title="Género" styles={styleTechnical}>
+            <CardComponent
+                id={doughnutChartProfessionalGenreId}
+                title="Género"
+                styles={styleTechnical}
+            >
               {treemapData.length > 0 ? (
                   <div className={styles.doughnut_chart}>
-                    <Doughnut data={gender} options={config}/>
+                    <Doughnut
+                        id={doughnutChartProfessionalGenreId}
+                        data={gender}
+                        options={config}
+                    />
                   </div>
               ) : (
                   <LoadingAnimation/>
@@ -437,10 +455,18 @@ const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
             </CardComponent>
 
             {/* Card: Nivel Educativo */}
-            <CardComponent title="Nivel educativo" styles={styleTechnical}>
+            <CardComponent
+                id={doughnutChartProfessionalOccupationId}
+                title="Nivel educativo"
+                styles={styleTechnical}
+            >
               {treemapData.length > 0 ? (
                   <div className={styles.doughnut_chart}>
-                    <Doughnut data={educationalLevel} options={config2}/>
+                    <Doughnut
+                        id={doughnutChartProfessionalOccupationId}
+                        data={educationalLevel}
+                        options={config2}
+                    />
                   </div>
               ) : (
                   <LoadingAnimation/>
@@ -448,10 +474,18 @@ const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
             </CardComponent>
 
             {/* Card: Etnia */}
-            <CardComponent title="Etnia" styles={styleTechnical}>
+            <CardComponent
+                id={doughnutProducersEthnicity}
+                title="Etnia"
+                styles={styleTechnical}
+            >
               {treemapData.length > 0 ? (
                   <div className={styles.doughnut_chart}>
-                    <Doughnut data={etnia} options={config3}/>
+                    <Doughnut
+                        id={doughnutProducersEthnicity}
+                        data={etnia}
+                        options={config3}
+                    />
                   </div>
               ) : (
                   <LoadingAnimation/>
@@ -465,19 +499,24 @@ const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
               <div className={styles.width}>
                 {/* Gráfico de Treemap */}
                 <ChartCardComponent title={treemapTitle} header={
-                  <FormControl sx={{m: 1, minWidth: 120}} size="small">
-                    <InputLabel id="filter-select-label">Filtrar</InputLabel>
-                    <Select
-                        labelId="filter-select-label"
-                        id="filter-select"
-                        value={selectedFilter}
-                        onChange={handleFilterChange}
-                        label="Filtrar"
-                    >
-                      <MenuItem value="institution">Institución</MenuItem>
-                      <MenuItem value="crop">Cultivo</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <div className={styles.header_container}>
+                    <FormControl sx={{m: 1, minWidth: 120}} size="small">
+                      <InputLabel id="filter-select-label">Filtrar</InputLabel>
+                      <Select
+                          labelId="filter-select-label"
+                          id="filter-select"
+                          value={selectedFilter}
+                          onChange={handleFilterChange}
+                          label="Filtrar"
+                      >
+                        <MenuItem value="institution">Institución</MenuItem>
+                        <MenuItem value="crop">Cultivo</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <ExportDropdown
+                        chartId={treemapChartProfessionalCountId}
+                    />
+                  </div>
                 }>
                   {treemapData.length > 0 ? (
                       <ReactChart

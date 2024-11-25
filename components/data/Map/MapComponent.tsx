@@ -7,7 +7,7 @@ import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
 import {mapBoxAccessToken} from "@/config";
 
-const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data, useQuintile = false }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);  // Track if the map and style are fully loaded
@@ -59,7 +59,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
 
   return (
       <>
-        <div ref={mapContainerRef} id="map" className={style["mapContainer"]}></div>
+        <div id={(id || "map")} ref={mapContainerRef} className={style["mapContainer"]}></div>
         {useQuintile && (
             <div className={style["legend"]}>
               <h4>Asistentes por municipio</h4>

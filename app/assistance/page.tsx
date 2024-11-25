@@ -20,7 +20,7 @@ import {TreemapController, TreemapElement} from "chartjs-chart-treemap";
 import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
 import { DataFormat, EventsData , Event} from "@/interfaces";
@@ -31,6 +31,7 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 import {PageProps} from "@/interfaces/Components/PageProps";
+import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 
 Chart.register(
@@ -215,6 +216,11 @@ const countInstitutions = (assists: Assistance[]) => {
 
 const AssistancePage: NextPage<PageProps> = ({customStyles}) => {
   const styles = customStyles || require("./assistance.module.css");
+
+  const doughnutChartAssistantsGenreId: string = "doughnut_chart_assistants_genre";
+  const doughnutChartAssistantsAgeId: string = "doughnut_chart_assistants_age";
+  const doughnutChartAssistantsOccupationId: string = "doughnut_chart_assistants_occupation";
+  const treemapChartAssistantsCountId: string = "treemap_chart_assistants_count";
 
   const [events, setEvents] = useState<EventsData[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(events);
@@ -464,7 +470,10 @@ const AssistancePage: NextPage<PageProps> = ({customStyles}) => {
     <div className={styles.div}>
       <div className={styles.top_div}>
         {/* Card: Total asistentes */}
-        <CardComponent title="Total asistentes" styles={styleTechnical}>
+        <CardComponent
+            title="Total asistentes"
+            styles={styleTechnical}
+        >
           <label className={styles.top_card_label}>
             {allAssistanceData.length > 0 ? (
               allAssistanceData.length
@@ -475,27 +484,51 @@ const AssistancePage: NextPage<PageProps> = ({customStyles}) => {
         </CardComponent>
 
         {/* Card: Género */}
-        <CardComponent title="Género" styles={styleTechnical}>
+        <CardComponent
+            id={doughnutChartAssistantsGenreId}
+            title="Género"
+            styles={styleTechnical}
+        >
           {allAssistanceData.length > 0 ? (
-            <Doughnut data={genderChartData} options={config} />
+            <Doughnut
+                id={doughnutChartAssistantsGenreId}
+                data={genderChartData}
+                options={config}
+            />
           ) : (
             <LoadingAnimation />
           )}
         </CardComponent>
 
         {/* Card: Edad */}
-        <CardComponent title="Edad" styles={styleTechnical}>
+        <CardComponent
+            id={doughnutChartAssistantsAgeId}
+            title="Edad"
+            styles={styleTechnical}
+        >
           {allAssistanceData.length > 0 ? (
-            <Doughnut data={ageChartData} options={config} />
+            <Doughnut
+                id={doughnutChartAssistantsAgeId}
+                data={ageChartData}
+                options={config}
+            />
           ) : (
             <LoadingAnimation />
           )}
         </CardComponent>
 
         {/* Card: Ocupacion */}
-        <CardComponent title="Ocupación" styles={styleTechnical}>
+        <CardComponent
+            id={doughnutChartAssistantsOccupationId}
+            title="Ocupación"
+            styles={styleTechnical}
+        >
           {allAssistanceData.length > 0 ? (
-            <Doughnut data={occupationChartData} options={config} />
+            <Doughnut
+                id={doughnutChartAssistantsOccupationId}
+                data={occupationChartData}
+                options={config}
+            />
           ) : (
             <LoadingAnimation />
           )}
@@ -507,31 +540,44 @@ const AssistancePage: NextPage<PageProps> = ({customStyles}) => {
           <ChartCardComponent
             title="Número de asistentes"
             header={
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-                <Select
-                  labelId="demo-select-small-label"
-                  id="demo-select-small"
-                  value={selectedFilter}
-                  onChange={handleFilterChange}
-                  label="Filtrar"
-                >
-                  <MenuItem value="crop">Cultivo</MenuItem>
-                  <MenuItem value="ejes">Eje</MenuItem>
-                  <MenuItem value="city">Lugar</MenuItem>
-                  <MenuItem value="institution">Institución</MenuItem>
-                </Select>
-              </FormControl>
+              <div className={styles.header_container}>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
+                  <Select
+                      labelId="demo-select-small-label"
+                      id="demo-select-small"
+                      value={selectedFilter}
+                      onChange={handleFilterChange}
+                      label="Filtrar"
+                  >
+                    <MenuItem value="crop">Cultivo</MenuItem>
+                    <MenuItem value="ejes">Eje</MenuItem>
+                    <MenuItem value="city">Lugar</MenuItem>
+                    <MenuItem value="institution">Institución</MenuItem>
+                  </Select>
+                </FormControl>
+                <ExportDropdown
+                    chartId={treemapChartAssistantsCountId}
+                />
+              </div>
             }
           >
             {treemapData.length > 0 ? (
-            <ReactChart type="treemap" data={treeData} options={options} />
+            <ReactChart
+                id={treemapChartAssistantsCountId}
+                type="treemap"
+                data={treeData}
+                options={options}
+            />
             ) : (<div className="flex w-full h-full items-center justify-center"><LoadingAnimation /></div>)}
           </ChartCardComponent>
         </div>
 
         <div className={styles.width}>
-          <ChartCardComponent title="Asistentes por municipio" header={<></>}>
+          <ChartCardComponent
+              title="Asistentes por municipio"
+              header={<></>}
+          >
             <div className="w-full h-full">
               <MapComponent
                 polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
