@@ -52,6 +52,7 @@ class ReportsController {
       event_id: report.event_id || "NN/A",
       is_reported: report.is_reported || "0",
       not_assistant: report.not_assistant || "0",
+      datesEnd: report.datesEnd || "N/A",
     }));
   }
   

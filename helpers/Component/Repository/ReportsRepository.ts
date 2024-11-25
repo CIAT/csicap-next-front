@@ -1,6 +1,4 @@
-import { DataFormat, Event, EventFormat } from "@/interfaces";
 import { ReportFormat, ReportNamesFormat } from "@/interfaces/Components/ReportsComponent";
-import { report } from "process";
 
 class ReportsRepository {
     static async fetchEvents(): Promise<ReportNamesFormat> {

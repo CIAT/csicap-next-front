@@ -164,7 +164,7 @@ export async function GET(request: Request) {
     const fieldsToPrint = [
       { label: "Fecha de inicio", value: reportData.date },
       { label: "Fecha de finalización", value: reportData.datesEnd },
-      { label: "Provincia", value: reportData.province },
+      { label: "Departamento", value: reportData.province },
       { label: "Ciudad", value: reportData.city },
       {
         label: "Justificación del evento",
@@ -186,7 +186,7 @@ export async function GET(request: Request) {
       },
       { label: "Actividades del GCF", value: reportData.gcf_activities },
       { label: "Componentes", value: reportData.component },
-      { label: "Eje", value: reportData.eje },
+      { label: "Eje(s)", value: reportData.eje },
       { label: "Tipo de invitado", value: reportData.guess_type },
       {
         label: "Ocupación principal",
@@ -201,7 +201,7 @@ export async function GET(request: Request) {
       { label: "Conclusión", value: reportData.conclusion },
       { label: "Responsable", value: reportData.responsable },
       { label: "Institución", value: reportData.institution },
-      { label: "Cosecha", value: reportData.crop },
+      { label: "Cadena Productiva", value: reportData.crop },
     ];
 
     // Modified content rendering to handle only actual arrays as bullet points
