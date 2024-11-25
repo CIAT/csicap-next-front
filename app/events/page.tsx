@@ -28,7 +28,7 @@ import { parseISO } from "date-fns";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
-import {PageProps} from "@/interfaces/Components/PageProps";
+import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 
 interface Event {
   date: string;
@@ -245,7 +245,7 @@ function countGuestTypes(events: Event[]) {
   return guestTypeCount;
 }
 
-const EventPage: NextPage<PageProps> = ({customStyles}) => {
+const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./events.module.css");
 
   const treemapChartTotalEventsId: string = "treemap_chart_total_events";

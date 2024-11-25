@@ -32,7 +32,7 @@ import LoadingAnimation from "@/components/loadingAnimation";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-import {PageProps} from "@/interfaces/Components/PageProps";
+import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 Chart.register(
@@ -149,7 +149,7 @@ function countOrganizations(events: DataFormat) {
   return organizations;
 }
 
-const ProfessionalsPage: NextPage<PageProps> = ({customStyles}) => {
+const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./professionals.module.css");
 
   const treemapChartProfessionalCountId: string = "treemap_chart_professional_count";

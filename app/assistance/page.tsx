@@ -30,7 +30,7 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
-import {PageProps} from "@/interfaces/Components/PageProps";
+import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 
@@ -214,7 +214,7 @@ const countInstitutions = (assists: Assistance[]) => {
   return institutionCount;
 };
 
-const AssistancePage: NextPage<PageProps> = ({customStyles}) => {
+const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./assistance.module.css");
 
   const doughnutChartAssistantsGenreId: string = "doughnut_chart_assistants_genre";

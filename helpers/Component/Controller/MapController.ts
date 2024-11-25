@@ -2,7 +2,7 @@ import colombiaGeoJSONByCities from "@/components/maps/ColombiaDepartments.json"
 import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -26,7 +26,7 @@ class MapController {
     }
 
     static applyFillColor(map: mapboxgl.Map, steps: Number[]) {
-        const fillColor = [
+        const fillColor: DataDrivenPropertyValueSpecification<string> = [
             'case',
             ['==', ['get', 'value'], null],
             'white',

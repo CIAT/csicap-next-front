@@ -30,7 +30,7 @@ import ChartCardComponent from "@/components/events/chartCard";
 import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import RegisteredController from "@/helpers/Component/Controller/RegisteredController";
-import {PageProps} from "@/interfaces/Components/PageProps";
+import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 Chart.register(
@@ -116,7 +116,7 @@ function countPrimaryCrop(data: DataFormat[]): { [key: string]: number } {
   return primaryCropCount;
 }
 
-const ProducersPage: NextPage<PageProps> = ({customStyles}) => {
+const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./producers.module.css");
 
   const treemapChartProducersCountId: string = "treemap_chart_producers_count";

@@ -1,3 +1,3 @@
-export interface PageProps {
+export interface PageCustomProps {
     customStyles?: { [key: string]: string };
 }

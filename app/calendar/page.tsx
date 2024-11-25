@@ -21,9 +21,9 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {parseISO} from "date-fns";
 import {NextPage} from "next";
-import {PageProps} from "@/interfaces/Components/PageProps";
+import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 
-const CalendarPage:NextPage<PageProps> = ({customStyles}) => {
+const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./calendar.module.css");
 
   const [events, setEvents] = useState<EventsData[]>([]);
