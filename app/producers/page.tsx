@@ -120,9 +120,9 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./producers.module.css");
 
   const treemapChartProducersCountId: string = "treemap_chart_producers_count";
-  const doughnutProducersGenreId: string = "doughnut_producers_genre";
-  const doughnutProducersPropertyTypeId: string = "doughnut_producers_property_type";
-  const doughnutProducersEthnicity: string = "doughnut_producers_ethnicity";
+  const doughnutProducersGenreId: string = "doughnut_chart_producers_genre";
+  const doughnutProducersPropertyTypeId: string = "doughnut_chart_producers_property_type";
+  const doughnutProducersEthnicity: string = "doughnut_chart_producers_ethnicity";
 
   const [events, setEvents] = useState<DataFormat[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<DataFormat[]>(
