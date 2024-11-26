@@ -520,6 +520,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 }>
                   {treemapData.length > 0 ? (
                       <ReactChart
+                          id={treemapChartProfessionalCountId}
                           type="treemap"
                           data={treeMap}
                           options={options}

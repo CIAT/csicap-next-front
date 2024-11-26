@@ -1,14 +1,7 @@
-import React from "react";
-import {
-    FormControl,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    Box,
-} from "@mui/material";
+import React, { useState } from "react";
 import { EllipsisVertical } from "lucide-react";
+import styles from "./ExportDropdown.module.css"; // Estilos personalizados
 import { downloadChart } from "@/helpers/Component/download/DownloadChart";
-import styles from "./ExportDropdown.module.css";
 
 interface ExportDropdownProps {
     chartId?: string;
@@ -16,69 +9,49 @@ interface ExportDropdownProps {
 }
 
 const ExportDropdown: React.FC<ExportDropdownProps> = ({ chartId, chartData }) => {
-    const [selectedFilter, setSelectedFilter] = React.useState<string>("");
+    const [isOpen, setIsOpen] = useState(false);
 
-    const handleFilterChange = (event: SelectChangeEvent) => {
-        const value = event.target.value as string;
-        setSelectedFilter(value);
+    const handleFilterChange = (value: string) => {
+        setIsOpen(false); // Cerrar el menú al seleccionar una opción
 
-        if (value === "image") {
+        if (value === "image" && chartId) {
             downloadChart(chartId);
         }
 
-        if (value === "data") {
+        if (value === "data" && chartData) {
             console.log("Descargar datos");
         }
     };
 
     return (
-        <div>
-            <FormControl
-                className={styles.container}
-                size="small"
+        <div className={styles.container}>
+            <button
+                className={styles.iconButton}
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Opciones de exportación"
             >
-                <Select
-                    value={selectedFilter}
-                    onChange={handleFilterChange}
-                    displayEmpty
-                    renderValue={() => null}
-                    IconComponent={() => null}
-                    classes={{
-                        select: styles.select,
-                        outlined: styles.notchedOutline,
-                    }}
-                    sx={{
-                        padding: "2px",
-                        margin: "3px",
-                        borderRadius: "50%",
-                        height: "95%",
-                        aspectRatio: "1 / 1",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                    MenuProps={{
-                        anchorOrigin: {
-                            vertical: "bottom",
-                            horizontal: "right",
-                        },
-                        transformOrigin: {
-                            vertical: "top",
-                            horizontal: "right",
-                        }
-                    }}
-                >
+                <EllipsisVertical className={styles.icon} />
+            </button>
+            {isOpen && (
+                <ul className={styles.dropdownMenu}>
                     {chartId && (
-                        <MenuItem value="image">Descargar gráfica</MenuItem>
+                        <li
+                            className={styles.menuItem}
+                            onClick={() => handleFilterChange("image")}
+                        >
+                            Descargar gráfica
+                        </li>
                     )}
                     {chartData && (
-                        <MenuItem value="data">Descargar datos</MenuItem>
+                        <li
+                            className={styles.menuItem}
+                            onClick={() => handleFilterChange("data")}
+                        >
+                            Descargar datos
+                        </li>
                     )}
-                </Select>
-                <Box className={styles.iconContainer}>
-                    <EllipsisVertical className={styles.icon}/>
-                </Box>
-            </FormControl>
+                </ul>
+            )}
         </div>
     );
 };
