@@ -284,8 +284,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     };
 
     let occupationCount: { [key: string]: number } = {
-      "Tecnico/profesional": 0,
-      "Productor(a) agropecuario(a)": 0,
+      "Técnico/Profesional": 0,
+      "Productor(a) Agropecuario(a)": 0,
       "Investigador(a)": 0,
       Otro: 0,
     };
@@ -295,7 +295,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     let otherCount = 0;
 
     const currentYear = new Date().getFullYear(); // Current year
-
+   
     allAssistanceData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
       const occupation = item?.group_ocupations;
@@ -313,9 +313,9 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
       // Count occupation
       if (occupation === "Técnico/Profesional") {
-        occupationCount["Tecnico/profesional"]++;
-      } else if (occupation === "Productor(a) agropecuario(a)") {
-        occupationCount["Productor(a) agropecuario(a)"]++;
+        occupationCount["Técnico/Profesional"]++;
+      } else if (occupation === "Productor(a) Agropecuario(a)") {
+        occupationCount["Productor(a) Agropecuario(a)"]++;
       } else if (occupation === "Investigador(a)") {
         occupationCount["Investigador(a)"]++;
       } else {
