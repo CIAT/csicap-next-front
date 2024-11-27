@@ -298,7 +298,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
     allAssistanceData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
-      const occupation = item?.main_occupation;
+      const occupation = item?.group_ocupations;
       const birthDate = item.birth_date ? new Date(item.birth_date) : null; // Parse the birth date
       const age = birthDate ? currentYear - birthDate.getFullYear() : null; // Calculate age
 

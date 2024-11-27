@@ -5,4 +5,5 @@ export interface Assistance {
     event_id: string;
     sex_complete: string;
     fecha: string;
+    group_ocupations:string;
 }
