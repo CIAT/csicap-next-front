@@ -203,7 +203,7 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
               </div>
             </div>
             <div className={styles.card_container}>
-              <ChartCardComponent title="Eventos por departamento" header={<></>}>
+              <ChartCardComponent title="Eventos por municipio" header={<></>}>
                 <MapComponent
                     data={counts}
                     polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
