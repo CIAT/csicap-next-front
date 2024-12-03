@@ -17,7 +17,6 @@ import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 
 const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./reports.module.css");
-
   const [events, setEvents] = useState<EventsData[]>([]);
   const [counts, setCounts] = useState<NestedDictionary>({});
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -147,7 +146,7 @@ const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
     <div className={styles.reports}>
       <div className={styles.first_div}>
         <div className={styles.filter_div}>
-          <div style={{ width: "300px" }}>
+          <div style={{ width: "60%" }}>
             <Select
               options={reportOptions}
               value={selectedReport}
