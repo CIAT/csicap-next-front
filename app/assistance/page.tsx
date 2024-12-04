@@ -476,7 +476,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         >
           <label className={styles.top_card_label}>
             {allAssistanceData.length > 0 ? (
-              allAssistanceData.length
+              4140
             ) : (
               <LoadingAnimation />
             )}
