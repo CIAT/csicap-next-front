@@ -147,7 +147,7 @@ const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
     <div className={styles.reports}>
       <div className={styles.first_div}>
         <div className={styles.filter_div}>
-          <div style={{ width: "300px" }}>
+          <div style={{ width: "60%" }}>
             <Select
               options={reportOptions}
               value={selectedReport}

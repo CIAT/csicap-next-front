@@ -22,7 +22,7 @@ const CardComponent: React.FC<CardProps> = ({ styles, title, children, id, data 
             <Card className={styles.card_container}>
                 <CardHeader className={styles.card_header}>
                     <div className={styles.header}>
-                        <p className={`${styles.text_md} ${styles.text_black}`}>{title}</p>
+                        <p className={` ${styles.text_black}`}>{title}</p>
                         {(id || data) && (
                             <ExportDropdown
                                 chartId={id}

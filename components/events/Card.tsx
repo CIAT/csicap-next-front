@@ -22,7 +22,7 @@ const CardComponent: NextPage<CardComponentProps> = ({title, id, data, children 
         <Card className="w-full h-full">
           <CardHeader className={styles.card_header}>
               <div className={styles.header}>
-                  <p className="text-md text-black font-serif">{title}</p>
+                  <p className="text-black font-serif">{title}</p>
                   {(id || data) && (
                       <ExportDropdown
                           chartId={id}
