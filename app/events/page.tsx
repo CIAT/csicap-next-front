@@ -29,24 +29,10 @@ import CalendarRepository from "@/helpers/Component/Repository/CalendarRepositor
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
-
-interface Event {
-  date: string;
-  eje: string[];
-  responsable: string;
-  city: string;
-  guess_type: string[];
-  institution: string[];
-  event_type: string;
-  province: string;
-  form_state: string;
-  name: string;
-  datesEnd: string;
-  crop: string[];
-  email: string | null;
-  event_objective: string;
-  event_id: string;
-}
+import {EventFormat} from "@/interfaces/Components/Events";
+import EventsController from "@/helpers/Component/Controller/EventsController";
+import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
+import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
 
 Chart.register(
   Tooltip,
@@ -95,21 +81,21 @@ const colors = [
 ];
 
 // Calculate finished, in-progress, and programmed events based on form_state and datesEnd
-function calculateEventStatus(events: Event[]) {
+function calculateEventStatus(events: EventFormat[]) {
   let finishedEvents = 0;
   let inProgressEvents = 0;
   let programmedEvents = 0;
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  events.forEach((event) => {
+  events.forEach((EventFormat) => {
     // Validar si datesEnd es válido antes de parsearlo
-    const eventEndDate = event.datesEnd ? parseISO(event.datesEnd) : null;
+    const eventEndDate = EventFormat.datesEnd ? parseISO(EventFormat.datesEnd) : null;
 
-    if (event.form_state === "0") {
+    if (EventFormat.form_state === "0") {
       // Si form_state es 0, cuenta como finalizado
       finishedEvents += 1;
-    } else if (event.form_state === "1") {
+    } else if (EventFormat.form_state === "1") {
       // Si form_state es 1, revisar la fecha si está presente
       if (eventEndDate && eventEndDate >= currentDate) {
         programmedEvents += 1;
@@ -124,15 +110,15 @@ function calculateEventStatus(events: Event[]) {
 }
 
 // Count occurrences of each "eje"
-function countEjes(events: Event[]) {
+function countEjes(events: EventFormat[]) {
   const ejeCount: { [key: string]: number } = {};
   let multiejeCount = 0;
 
-  events.forEach((event) => {
-    if (event.eje.length >= 2) {
+  events.forEach((EventFormat) => {
+    if (EventFormat.eje.length >= 2) {
       multiejeCount += 1;
     } else {
-      event.eje.forEach((eje) => {
+      EventFormat.eje.forEach((eje) => {
         ejeCount[eje] = (ejeCount[eje] || 0) + 1;
       });
     }
@@ -143,15 +129,15 @@ function countEjes(events: Event[]) {
   return ejeCount;
 }
 
-function countInstitutionsTreeMap(events: Event[]) {
+function countInstitutionsTreeMap(events: EventFormat[]) {
   const institutionCount: { [key: string]: number } = {};
   let multiInstitutionCount = 0;
 
-  events.forEach((event) => {
-    if (event.institution.length >= 2) {
+  events.forEach((EventFormat) => {
+    if (EventFormat.institution.length >= 2) {
       multiInstitutionCount += 1;
     } else {
-      event.institution.forEach((institution) => {
+      EventFormat.institution.forEach((institution) => {
         institutionCount[institution] =
           (institutionCount[institution] || 0) + 1;
       });
@@ -164,7 +150,7 @@ function countInstitutionsTreeMap(events: Event[]) {
 }
 
 // Count occurrences of each "institution"
-function countInstitutions(events: Event[]) {
+function countInstitutions(events: EventFormat[]) {
   const predefinedInstitutions = new Set([
     "CIMMYT",
     "CIAT (Alianza Bioversity-CIAT)",
@@ -187,8 +173,8 @@ function countInstitutions(events: Event[]) {
     Otras: 0,
   };
 
-  events.forEach((event) => {
-    event.institution.forEach((institution) => {
+  events.forEach((EventFormat) => {
+    EventFormat.institution.forEach((institution) => {
       if (predefinedInstitutions.has(institution)) {
         institutionCount[institution] =
           (institutionCount[institution] || 0) + 1;
@@ -201,15 +187,15 @@ function countInstitutions(events: Event[]) {
   return institutionCount;
 }
 
-function countCrop(events: Event[]) {
+function countCrop(events: EventFormat[]) {
   const cropCount: { [key: string]: number } = {};
   let multicultivoCount = 0;
 
-  events.forEach((event) => {
-    if (event.crop.length >= 2 || event.crop.includes("Todas")) {
+  events.forEach((EventFormat) => {
+    if (EventFormat.crop.length >= 2 || EventFormat.crop.includes("Todas")) {
       multicultivoCount += 1;
     } else {
-      event.crop.forEach((crop) => {
+      EventFormat.crop.forEach((crop) => {
         cropCount[crop] = (cropCount[crop] || 0) + 1;
       });
     }
@@ -222,22 +208,22 @@ function countCrop(events: Event[]) {
 }
 
 // Count occurrences for cities
-function countCities(events: Event[]) {
+function countCities(events: EventFormat[]) {
   const cityCount: { [key: string]: number } = {};
 
-  events.forEach((event) => {
-    cityCount[event.city] = (cityCount[event.city] || 0) + 1;
+  events.forEach((EventFormat) => {
+    cityCount[EventFormat.city] = (cityCount[EventFormat.city] || 0) + 1;
   });
 
   return cityCount;
 }
 
 // Count occurrences of each "guest_type"
-function countGuestTypes(events: Event[]) {
+function countGuestTypes(events: EventFormat[]) {
   const guestTypeCount: { [key: string]: number } = {};
 
-  events.forEach((event) => {
-    event.guess_type.forEach((guest) => {
+  events.forEach((EventFormat) => {
+    EventFormat.guess_type.forEach((guest) => {
       guestTypeCount[guest] = (guestTypeCount[guest] || 0) + 1;
     });
   });
@@ -264,19 +250,76 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
-  const [allEventData, setAllEventData] = useState<Event[]>([]); // Store all event data once fetched
+  const [allEventData, setAllEventData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
+  const [tempEventData, setTempEventData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
   const [fontSize, setFontSize] = useState(10); // Default font size
 
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    const newFilter = event.target.value;
-    setSelectedFilter(newFilter);
-    processTreemapData(newFilter, allEventData); // Use the stored event data
-  };
+  const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
+  const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
+  const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
+  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>([]);
+  const [tooltipValues, setTooltipValues] = useState<
+      Array<CustomTooltipData>
+  >([
+    {
+      value: "",
+      label: "Componente"
+    },
+    {
+      value: "",
+      label: "Eje"
+    },
+    {
+      value: "",
+      label: "Instituciones"
+    },
+    {
+      value: "",
+      label: "Cultivo"
+    },
+    {
+      value: "",
+      label: "Departamento"
+    },
+    {
+      value: "",
+      label: "Municipio"
+    },
+    {
+      value: "",
+      label: "Actividades GCF"
+    }
+  ]);
+  const tooltipOptions: Array<CustomTooltipData[]> = [componentState, axisState, institutionState, cropState, departmentState, cityState, gcfActivityState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setComponentState, setAxisState, setInstitutionState, setCropState, setDepartmentState, setCityState, setGCFActivityState];
+  const filterTypes = ["component", "axis", "institution", "crop", "department", "city", "gcfActivity"];
+  const placeHolders = ["Componente", "Eje", "Instituciones", "Cultivo", "Departamento", "Municipio", "Actividades GCF"];
 
   useEffect(() => {
     async function fetchAndProcessData() {
       const dataset = await CalendarRepository.fetchCustomEvent();
-      setAllEventData(CalendarController.formatEvent(dataset));
+      const formattedEvents = CalendarController.formatEvent(dataset);
+
+      const uniqueComponents = EventsController.getUniqueComponents(formattedEvents);
+      const uniqueAxis = EventsController.getUniqueAxis(formattedEvents);
+      const uniqueInstitutions = EventsController.getUniqueInstitutions(formattedEvents);
+      const uniqueCrops = EventsController.getUniqueCrops(formattedEvents);
+      const uniqueDepartments = EventsController.getUniqueDepartments(formattedEvents);
+      const uniqueCities = EventsController.getUniqueCities(formattedEvents);
+      const uniqueGCFActivities = EventsController.getUniqueGCFActivities(formattedEvents);
+
+      setAllEventData(formattedEvents);
+      setTempEventData(formattedEvents);
+      setComponentState([...uniqueComponents]);
+      setAxisState([...uniqueAxis]);
+      setInstitutionState([...uniqueInstitutions]);
+      setCropState([...uniqueCrops]);
+      setDepartmentState([...uniqueDepartments]);
+      setCityState([...uniqueCities]);
+      setGCFActivityState([...uniqueGCFActivities]);
 
       initializeTreemapData(dataset.data);
 
@@ -334,16 +377,16 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     // Set initial font size
     setFontSize(getFontSize());
 
-    // Add event listener for window resize
+    // Add EventFormat listener for window resize
     window.addEventListener("resize", handleResize);
 
-    // Cleanup event listener on component unmount
+    // Cleanup EventFormat listener on component unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  const initializeTreemapData = (data: Event[]) => {
+  const initializeTreemapData = (data: EventFormat[]) => {
     let filterData = countCrop(data); // Usar countCrop en lugar de countCrops
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
@@ -352,7 +395,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setTreemapData(mappedData);
   };
 
-  const processTreemapData = (filter: string, data: Event[]) => {
+  const processTreemapData = (filter: string, data: EventFormat[]) => {
     let filterData: { [key: string]: number } = {};
 
     switch (filter) {
@@ -433,17 +476,17 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
     datasets: [
       {
-        label: "Event Status",
-        data: eventStatusData, // Dynamically set the data here
+        label: "EventFormat Status",
+        data: eventStatusData,
         backgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
         hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
       },
     ],
   };
   const ejeCounts: { [key: string]: number } = {};
-  allEventData.forEach((event) => {
-    if (event.eje && Array.isArray(event.eje)) {
-      event.eje.forEach((eje) => {
+  tempEventData.forEach((EventFormat) => {
+    if (EventFormat.eje && Array.isArray(EventFormat.eje)) {
+      EventFormat.eje.forEach((eje) => {
         ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
       });
     }
@@ -591,28 +634,178 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
   };
 
+  useEffect(() => {
+    initializeTreemapData(tempEventData);
+
+    // Calculate finished/in-progress events
+    const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(tempEventData);
+    setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
+
+    // Calculate eje counts
+    const ejeCount = countEjes(tempEventData);
+    setEjeData(Object.values(ejeCount));
+
+    // Calculate institution counts
+    const institutionCount = countInstitutions(tempEventData);
+    setInstitutionLabels(Object.keys(institutionCount));
+    setInstitutionData(Object.values(institutionCount));
+    const guestTypeCount = countGuestTypes(tempEventData);
+    let guestTypeLabels = Object.keys(guestTypeCount);
+    let guestTypeData = Object.values(guestTypeCount);
+    guestTypeLabels.push("Otro");
+    guestTypeData.push(0);
+    if (guestTypeData[guestTypeData.length - 1] === undefined) {
+      guestTypeData.push(0);
+    }
+
+    for (let i = guestTypeLabels.length - 1; i >= 0; i--) {
+      const label = guestTypeLabels[i];
+
+      if (!LabelsParticipants.includes(label)) {
+        guestTypeData[guestTypeData.length - 1] += guestTypeData[i];
+        guestTypeLabels.splice(i, 1);
+        guestTypeData.splice(i, 1);
+      }
+    }
+
+    setGuestTypeLabels(guestTypeLabels);
+    setGuestTypeData(guestTypeData);
+  }, [tempEventData]);
+
+// Función para obtener valores únicos de los eventos
+  const getUniqueValuesFunctions = () => [
+    (events: EventFormat[]) => EventsController.getUniqueComponents(events),
+    (events: EventFormat[]) => EventsController.getUniqueAxis(events),
+    (events: EventFormat[]) => EventsController.getUniqueInstitutions(events),
+    (events: EventFormat[]) => EventsController.getUniqueCrops(events),
+    (events: EventFormat[]) => EventsController.getUniqueDepartments(events),
+    (events: EventFormat[]) => EventsController.getUniqueCities(events),
+    (events: EventFormat[]) => EventsController.getUniqueGCFActivities(events),
+  ];
+
+// Función para actualizar los estados de los tooltips
+  const updateTooltipStates = (
+      events: EventFormat[],
+      setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>
+  ) => {
+    const uniqueValuesFunctions = getUniqueValuesFunctions();
+    const updatedTooltipStates = uniqueValuesFunctions.map((fn) => fn(events));
+    updatedTooltipStates.forEach((values, index) => {
+      try {
+        setTooltipStates[index](values);
+      } catch (error) {
+        console.error(`Error updating tooltip state at index ${index}:`, error);
+      }
+    });
+  };
+
+  const handleTooltipChange = (
+      selectedValue: string,
+      filterType: string,
+      formattedEvents: EventFormat[],
+      setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>,
+      tooltipValues: CustomTooltipData[],
+      setTooltipValues: React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
+  ) => {
+    const filterFunctions: Record<string, (events: EventFormat[], value: string) => EventFormat[]> = {
+      component: EventsController.filterEventsByComponent,
+      axis: EventsController.filterEventsByAxis,
+      institution: EventsController.filterEventsByInstitution,
+      crop: EventsController.filterEventsByCrop,
+      department: EventsController.filterEventsByDepartment,
+      city: EventsController.filterEventsByCity,
+      gcfActivity: EventsController.filterEventsByCGFActivity,
+    };
+
+    // Filtrar eventos según el filtro seleccionado
+    const filteredEvents =
+        filterFunctions[filterType]?.(formattedEvents, selectedValue) || formattedEvents;
+
+    // Actualizar los estados de los tooltips
+    updateTooltipStates(filteredEvents, setTooltipStates);
+
+    // Actualizar el valor seleccionado del filtro actual
+    const updatedTooltipValues = tooltipValues.map((tooltip, index) => {
+      const currentFilterType = filterTypes[index];
+      if (currentFilterType === filterType) {
+        return { label: selectedValue, value: selectedValue };
+      }
+      return tooltip;
+    });
+
+    // Asegurarnos de que el estado de tooltipValues se actualice correctamente
+    setTooltipValues(updatedTooltipValues);
+  };
+
+  // Función para resetear todos los filtros
+  const handleReset = (
+      allEventData: EventFormat[],
+      setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>,
+      setTooltipValues: React.Dispatch<React.SetStateAction<CustomTooltipData[]>>,
+      setTempEventData: React.Dispatch<React.SetStateAction<EventFormat[]>>
+  ) => {
+    // Restaurar los eventos originales
+    setTempEventData(allEventData);
+
+    // Actualizar los estados de los tooltips con los valores originales
+    updateTooltipStates(allEventData, setTooltipStates);
+
+    // Resetear los valores de los filtros seleccionados y restaurar placeholders
+    setTooltipValues(
+        placeHolders.map((placeholder) => ({
+          label: placeholder,
+          value: "", // Valor vacío para que no haya un filtro seleccionado
+        }))
+    );
+  };
+
+  // Función para aplicar los valores de los filtros a los datos temporales
+  const handleOnClick = (
+      tooltipValues: CustomTooltipData[],
+      formattedEvents: EventFormat[],
+      setTempEventData: React.Dispatch<React.SetStateAction<EventFormat[]>>
+  ) => {
+    let filteredEvents = [...formattedEvents];
+
+    // Aplicar los filtros uno por uno
+    tooltipValues.forEach((tooltip, index) => {
+      const filterFunctions: Record<string, (events: EventFormat[], value: string) => EventFormat[]> = {
+        component: EventsController.filterEventsByComponent,
+        axis: EventsController.filterEventsByAxis,
+        institution: EventsController.filterEventsByInstitution,
+        crop: EventsController.filterEventsByCrop,
+        department: EventsController.filterEventsByDepartment,
+        city: EventsController.filterEventsByCity,
+        gcfActivity: EventsController.filterEventsByCGFActivity,
+      };
+
+      const filterType = filterTypes[index];
+      if (tooltip.value && filterFunctions[filterType]) {
+        filteredEvents = filterFunctions[filterType](filteredEvents, tooltip.value);
+      }
+    });
+    console.log(filteredEvents)
+    // Establecer los eventos filtrados
+    setTempEventData(filteredEvents);
+  };
+
   return (
     <div className={styles.event_page}>
+      <CustomTooltip
+          filterTypes={filterTypes}
+          options={tooltipOptions}
+          onChange={(selectedValue, filterType) =>
+              handleTooltipChange(selectedValue, filterType, tempEventData, setTooltipOptions, tooltipValues, setTooltipValues)}
+          onClick={() => handleOnClick(tooltipValues, tempEventData, setTempEventData)}
+          onReset={() => handleReset(allEventData, setTooltipOptions, setTooltipValues, setTempEventData)}
+          placeholders={placeHolders}
+          values={tooltipValues}
+      />
       <div className={styles.div}>
         <ChartCardComponent
           title="Número de eventos"
           header={
             <div className={styles.header_container}>
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel id="demo-select-small-label">Filtrar</InputLabel>
-                <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    value={selectedFilter}
-                    onChange={handleFilterChange}
-                    label="Filtrar"
-                >
-                  <MenuItem value="crop">Cultivo</MenuItem>
-                  <MenuItem value="ejes">Eje</MenuItem>
-                  <MenuItem value="city">Lugar</MenuItem>
-                  <MenuItem value="institution">Institución</MenuItem>
-                </Select>
-              </FormControl>
               <ExportDropdown
                   chartId={treemapChartTotalEventsId}
               />
@@ -638,7 +831,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
             id={doughnutChartTotalEventsId}
         >
           <div className="w-full h-full">
-            {allEventData.length > 0 ? (
+            {tempEventData.length > 0 ? (
               <Doughnut
                   id={doughnutChartTotalEventsId}
                   data={eventsTotal}
@@ -654,7 +847,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
             id={doughnutChartAxesByEventId}
         >
           <div className="w-full h-full">
-            {allEventData.length > 0 ? (
+            {tempEventData.length > 0 ? (
               <Doughnut
                   id={doughnutChartAxesByEventId}
                   data={ejesChartData}
@@ -670,7 +863,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
             id={doughnutChartGuestByEventId}
         >
           <div className="w-full h-full">
-            {allEventData.length > 0 ? (
+            {tempEventData.length > 0 ? (
               <Doughnut
                   id={doughnutChartGuestByEventId}
                   data={guestTypesChartData}
@@ -686,7 +879,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
             id={barChartInstitutionsId}
         >
           <div className="w-full h-full">
-            {allEventData.length > 0 ? (
+            {tempEventData.length > 0 ? (
               <Bar
                   id={barChartInstitutionsId}
                   data={institutionsChartData}

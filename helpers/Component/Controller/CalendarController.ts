@@ -42,9 +42,11 @@ class CalendarController {
             initialDate: event.date, // Convert to Date object
             end: event.datesEnd,
             title: event.name,
-            province: event.province,
             responsable: event.responsable,
+            component: event.component,
             city: event.city || "",
+            province: event.province || "",
+            gcf_activities: event.gcf_activities || [],
             crop: event.crop || [],
             eje: event.eje || [],
             guess_type: event.guess_type || [],

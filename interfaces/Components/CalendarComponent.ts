@@ -26,10 +26,12 @@ export interface Event {
     eje: string[];
     responsable: string;
     city: string;
+    component: string[];
     guess_type: string[];
     institution: string[];
     event_type: string;
     province: string;
+    gcf_activities: string[];
     form_state: string;
     name: string;
     datesEnd: string;

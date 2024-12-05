@@ -137,8 +137,6 @@ const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
       date: report.datesEnd, // Include date for debugging
     }));
 
-  console.log("Final Sorted Report Options:", reportOptions);
-
   function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
