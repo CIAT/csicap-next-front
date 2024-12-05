@@ -17,7 +17,6 @@ import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 
 const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./reports.module.css");
-
   const [events, setEvents] = useState<EventsData[]>([]);
   const [counts, setCounts] = useState<NestedDictionary>({});
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);

@@ -26,8 +26,11 @@
   height: 100%;
 }
 
-.card_header{
-  height: 40px;
+.card_header {
+  display: flex;
+  height: 45px;
+  font-size: 1rem;
+  padding: 5px 15px;
 }
 
 .card {
@@ -162,4 +165,11 @@
     flex-direction: column;
     height: auto;
   }
+}
+
+@media (min-width: 2000px) {
+  .card_header {
+    font-size: 1.5rem;
+  }
+  
 }
