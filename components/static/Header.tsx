@@ -1,5 +1,8 @@
+"use client";
+
 import { FC, useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Import usePathname
 import styles from "./static.module.css";
 
 interface HeaderProps {
@@ -11,7 +14,11 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detectar si el dispositivo es móvil
+  // Determine the current pathname
+  const pathname = usePathname();
+  const isHomePage = pathname === "/"; // Check if the current page is the home page
+
+  // Detect if the device is mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -26,7 +33,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    setActiveDropdown(null); // Cierra cualquier dropdown al abrir/cerrar el menú.
+    setActiveDropdown(null); // Close any dropdown when toggling the menu
   };
 
   const closeMenu = () => {
@@ -55,77 +62,86 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
   const getLink = (path: string) => (showHeader ? path : `/embed${path}`);
 
   return (
-      <header className={styles.headerStyle}>
-        {showHeader && (
-            <div className={styles.logoStyle}>
-              <Link href="/" className="h-full w-full">
-                <img src="/logo.png" alt="alliance-logo" />
-              </Link>
-            </div>
-        )}
-        <div className={styles.hamburger} onClick={toggleMenu}>
-          <img src="/menu.png" alt="menu" />
-          <span className={styles.hamburgerIcon}></span>
+    <header className={styles.headerStyle}>
+      {showHeader && (
+        <div className={styles.logoStyle}>
+          <Link href="/" className="h-full w-full">
+            <img src="/logo.png" alt="alliance-logo" />
+          </Link>
         </div>
-        <nav className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}>
-          <ul>
+      )}
+      <div className={styles.hamburger} onClick={toggleMenu}>
+        <img src="/menu.png" alt="menu" />
+        <span className={styles.hamburgerIcon}></span>
+      </div>
+      <nav
+        className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}
+      >
+        <ul>
+          {/* Conditionally render Monitoreo only if not on the home page */}
+          {!isHomePage && (
             <li
-                className={styles.header_nav_item}
-                onMouseEnter={() => handleMouseEnter("monitoreo")}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleDropdown("monitoreo")}
+              className={styles.header_nav_item}
+              onMouseEnter={() => handleMouseEnter("monitoreo")}
+              onMouseLeave={handleMouseLeave}
+              onClick={() => handleDropdown("monitoreo")}
             >
               Monitoreo
               {activeDropdown === "monitoreo" && (
-                  <ul className={styles.dropdownMenu}>
-                    <li>
-                      <Link href={getLink("/calendar")} onClick={closeMenu}>
-                        Calendario
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getLink("/events")} onClick={closeMenu}>
-                        Eventos
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getLink("/assistance")} onClick={closeMenu}>
-                        Asistentes
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getLink("/reports")} onClick={closeMenu}>
-                        Reportes
-                      </Link>
-                    </li>
-                  </ul>
+                <ul className={styles.dropdownMenu}>
+                  <li>
+                    <Link href={getLink("/calendar")} onClick={closeMenu}>
+                      Calendario
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={getLink("/events")} onClick={closeMenu}>
+                      Eventos
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={getLink("/assistance")} onClick={closeMenu}>
+                      Asistentes
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={getLink("/reports")} onClick={closeMenu}>
+                      Reportes
+                    </Link>
+                  </li>
+                </ul>
               )}
             </li>
+          )}
+
+          {/* Conditionally render Registro only if not on the home page */}
+          {!isHomePage && (
             <li
-                className={styles.header_nav_item}
-                onMouseEnter={() => handleMouseEnter("registro")}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleDropdown("registro")}
+              className={styles.header_nav_item}
+              onMouseEnter={() => handleMouseEnter("registro")}
+              onMouseLeave={handleMouseLeave}
+              onClick={() => handleDropdown("registro")}
             >
               Registro de beneficiarios
               {activeDropdown === "registro" && (
-                  <ul className={styles.dropdownMenu}>
-                    <li>
-                      <Link href={getLink("/producers")} onClick={closeMenu}>
-                        Productores
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href={getLink("/professionals")} onClick={closeMenu}>
-                        Profesionales
-                      </Link>
-                    </li>
-                  </ul>
+                <ul className={styles.dropdownMenu}>
+                  <li>
+                    <Link href={getLink("/producers")} onClick={closeMenu}>
+                      Productores
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={getLink("/professionals")} onClick={closeMenu}>
+                      Profesionales
+                    </Link>
+                  </li>
+                </ul>
               )}
             </li>
-          </ul>
-        </nav>
-      </header>
+          )}
+        </ul>
+      </nav>
+    </header>
   );
 };
 

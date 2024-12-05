@@ -58,8 +58,10 @@
   position: relative;
   margin-left: 0;
   padding: 10px;
+  margin-left: 40px;
   text-align: center;
   border-bottom: 1px solid white;
+  font-size: 1rem;
 }
 
 /* Hamburger menu settings */
@@ -228,5 +230,13 @@
 
   .footer_text {
     font-size: small;
+  }
+}
+
+@media (min-width: 2000px) {
+
+  .header_nav_item{
+    padding-left: 60px;
+    font-size: 1.5rem;
   }
 }

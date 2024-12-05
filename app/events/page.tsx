@@ -364,7 +364,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
   useEffect(() => {
     const getFontSize = () => {
       if (window.innerWidth > 2000) {
-        return 12; // Larger font size for larger screens
+        return 20; // Larger font size for larger screens
       } else {
         return 10; // Default font size
       }
@@ -483,6 +483,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
       },
     ],
   };
+  
   const ejeCounts: { [key: string]: number } = {};
   tempEventData.forEach((EventFormat) => {
     if (EventFormat.eje && Array.isArray(EventFormat.eje)) {
