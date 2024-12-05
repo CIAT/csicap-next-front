@@ -785,7 +785,6 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
         filteredEvents = filterFunctions[filterType](filteredEvents, tooltip.value);
       }
     });
-    console.log(filteredEvents)
     // Establecer los eventos filtrados
     setTempEventData(filteredEvents);
   };
