@@ -305,13 +305,13 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
       const dataset = await CalendarRepository.fetchCustomEvent();
       const formattedEvents = CalendarController.formatEvent(dataset);
 
-      const uniqueComponents = EventsController.getUniqueComponents(formattedEvents);
-      const uniqueAxis = EventsController.getUniqueAxis(formattedEvents);
-      const uniqueInstitutions = EventsController.getUniqueInstitutions(formattedEvents);
-      const uniqueCrops = EventsController.getUniqueCrops(formattedEvents);
-      const uniqueDepartments = EventsController.getUniqueDepartments(formattedEvents);
-      const uniqueCities = EventsController.getUniqueCities(formattedEvents);
-      const uniqueGCFActivities = EventsController.getUniqueGCFActivities(formattedEvents);
+      const uniqueComponents = EventsController.getUniqueValues(formattedEvents, "component", true);
+      const uniqueAxis = EventsController.getUniqueValues(formattedEvents, "eje", true);
+      const uniqueInstitutions = EventsController.getUniqueValues(formattedEvents, "institution", true);
+      const uniqueCrops = EventsController.getUniqueValues(formattedEvents, "crop", true);
+      const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "province");
+      const uniqueCities = EventsController.getUniqueValues(formattedEvents, "city");
+      const uniqueGCFActivities = EventsController.getUniqueValues(formattedEvents, "gcf_activities", true);
 
       setAllEventData(formattedEvents);
       setTempEventData(formattedEvents);
@@ -647,18 +647,35 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setGuestTypeData(guestTypeData);
   }, [tempEventData]);
 
+  useEffect(() => {
+    // Código que depende de la actualización de setTooltipValues
+    console.log('Tooltip values updated:', tooltipValues);
+  }, [tooltipValues]); // Ejecutar el efecto cuando tooltipValues cambie
+
 
   return (
     <div className={styles.event_page}>
       <CustomTooltip
-          filterTypes={filterTypes}
           options={tooltipOptions}
+          values={tooltipValues}
           onChange={(selectedValue, filterType) =>
-              handleTooltipChange(selectedValue, filterType, tempEventData, setTooltipOptions, tooltipValues, setTooltipValues, filterFunctionsEvents, getUniqueValuesFunctionsEvents(), filterTypes)}
+              handleTooltipChange(
+                  selectedValue,
+                  filterType,
+                  tempEventData,
+                  setTooltipOptions,
+                  tooltipValues,
+                  setTooltipValues,
+                  filterFunctionsEvents,
+                  getUniqueValuesFunctionsEvents(),
+                  filterTypes,
+              )}
           onClick={() => handleOnClick(tooltipValues, tempEventData, setTempEventData, filterFunctionsEvents, filterTypes)}
           onReset={() => handleReset(allEventData, setTooltipOptions, setTooltipValues, setTempEventData, getUniqueValuesFunctionsEvents(), placeHolders)}
           placeholders={placeHolders}
-          values={tooltipValues}
+          filterTypes={filterTypes}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => String(option.value)}
       />
       <div className={styles.div}>
         <ChartCardComponent

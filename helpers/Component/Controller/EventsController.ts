@@ -1,200 +1,82 @@
-import {EventFormat} from "@/interfaces/Components/Events";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
-import {EventsData} from "@/interfaces";
 
 class EventController {
-    static getUniqueComponents(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
-        const uniqueComponents = new Set<string>();
+    /**
+     * Obtiene valores únicos de una propiedad de un conjunto de eventos.
+     */
+    static getUniqueValues<T, K extends keyof T>(
+        events: T[],
+        key: K,
+        isArray: boolean = false
+    ): CustomTooltipData[] {
+        const uniqueValues = new Set<string>();
+
         events.forEach(event => {
-            event.component.forEach(component => uniqueComponents.add(component));
+            const value = event[key];
+
+            if (isArray) {
+                // Si la propiedad es un array, agregar cada elemento al Set
+                const values = value as unknown as string[];
+                values?.forEach(val => {
+                    if(val !== "nan"){
+                        uniqueValues.add(val)
+                    }
+                });
+            } else {
+                // Si la propiedad es un string, agregarla directamente
+                uniqueValues.add(value as unknown as string);
+            }
         });
-        return this.sortLabels([...uniqueComponents]).map(component => ({
-            value: component,
-            label: component
+
+        return this.sortLabels([...uniqueValues]).map(value => ({
+            value: value,
+            label: value,
         }));
     }
 
-    static getUniqueAxis(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
-        const uniqueAxis = new Set<string>();
-        events.forEach(event => {
-            event.eje.forEach(eje => uniqueAxis.add(eje));
+    /**
+     * Filtra eventos por un valor específico en una propiedad.
+     */
+    static filterEventsByValue<T, K extends keyof T>(
+        events: T[],
+        key: K,
+        value: string,
+        isArray: boolean = false
+    ): T[] {
+        if (value === "") return events;
+
+        return events.filter(event => {
+            if (isArray) {
+                // Si la propiedad es un array, verificar si incluye el valor
+                const values = event[key] as unknown as string[];
+                return values?.some(val => {
+                    if(val !== "nan"){
+                       return value === val
+                    }
+                });
+            }
+            // Si la propiedad es un string, compararla directamente
+            return event[key] === value;
         });
-        return this.sortLabels([...uniqueAxis]).map(axe => ({
-            value: axe,
-            label: axe
-        }));
     }
 
-    static getUniqueInstitutions(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
-        const uniqueInstitutions = new Set<string>();
-        events.forEach(event => {
-            event.institution.forEach(institution => uniqueInstitutions.add(institution));
-        });
-        return this.sortLabels([...uniqueInstitutions]).map(institution => ({
-            value: institution,
-            label: institution
-        }));
-    }
-
-    static getUniqueCrops(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
-        const uniqueCrops = new Set<string>();
-        events.forEach(event => {
-            event.crop.forEach(crop => uniqueCrops.add(crop));
-        });
-        return this.sortLabels([...uniqueCrops]).map(crop => ({
-            value: crop,
-            label: crop
-        }));
-    }
-
-    static getUniqueDepartments(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
-        const uniqueDepartments = new Set<string>();
-        events.forEach(event => {
-            uniqueDepartments.add(event.province);
-        });
-        return this.sortLabels([...uniqueDepartments]).map(department => ({
-            value: department,
-            label: department
-        }));
-    }
-
-    static getUniqueCities(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
-        const uniqueCities = new Set<string>();
-        events.forEach(event => {
-            uniqueCities.add(event.city);
-        });
-        return this.sortLabels([...uniqueCities]).map(city => ({
-            value: city,
-            label: city
-        }));
-    }
-
-    static getUniqueGCFActivities(events: EventFormat[]): CustomTooltipData[] {
-        const uniqueGCFActivities = new Set<string>();
-        events.forEach(event => {
-            event.gcf_activities.forEach(activity => {
-                if(activity !== "nan"){
-                    uniqueGCFActivities.add(activity)
-                }
-            });
-        });
-        return this.sortByPrefixedVersion([...uniqueGCFActivities]).map(activity => ({
-            value: activity,
-            label: activity
-        }));
-    }
-
+    /**
+     * Ordena etiquetas alfabéticamente o numéricamente si tienen prefijos numéricos.
+     */
     static sortLabels(labels: string[]): string[] {
         return labels.sort((a, b) => {
-            // Extraer números al inicio del label, si existen
             const regex = /^\d+/;
             const numA = a.match(regex)?.[0];
             const numB = b.match(regex)?.[0];
 
-            // Si ambos tienen números, comparar numéricamente
             if (numA && numB) {
                 return parseInt(numA) - parseInt(numB);
             }
-
-            // Si solo uno tiene número, priorizar el que tiene número
             if (numA) return -1;
             if (numB) return 1;
 
-            // Si ninguno tiene número, comparar alfabéticamente
             return a.localeCompare(b);
         });
-    }
-
-    static sortByPrefixedVersion(labels: string[]): string[] {
-        return labels.sort((a, b) => {
-            // Extraer la parte numérica al inicio de cada cadena
-            const parseVersion = (str: string): number[] => {
-                const match = str.match(/^(\d+(\.\d+)*)/);
-                return match ? match[0].split('.').map(num => parseInt(num, 10)) : [];
-            };
-
-            const versionA = parseVersion(a);
-            const versionB = parseVersion(b);
-
-            // Comparar los números en cada nivel
-            for (let i = 0; i < Math.max(versionA.length, versionB.length); i++) {
-                const numA = versionA[i] || 0;
-                const numB = versionB[i] || 0;
-
-                if (numA !== numB) {
-                    return numA - numB;
-                }
-            }
-
-            // Si las versiones son iguales, comparar alfabéticamente el texto
-            return a.localeCompare(b);
-        });
-    }
-
-    static filterEventsByComponent(events: EventFormat[], component: string): EventFormat[] {
-        if(component === ""){
-            return events;
-        }
-
-        return events.filter(event => {
-            return event.component.some(components => components === component);
-        })
-    }
-
-    static filterEventsByAxis(events: EventFormat[], axe: string): EventFormat[] {
-        if(axe === ""){
-            return events;
-        }
-
-        return events.filter(event => {
-            return event.eje.some(eje => eje === axe);
-        })
-    }
-
-    static filterEventsByInstitution(events: EventFormat[], institution: string): EventFormat[] {
-        if(institution === ""){
-            return events;
-        }
-
-        return events.filter(event => {
-            return event.institution.some(tempInstitution => institution === tempInstitution);
-        })
-    }
-
-    static filterEventsByCrop(events: EventFormat[], crop: string): EventFormat[] {
-        if(crop === ""){
-            return events;
-        }
-
-        return events.filter(event => {
-            return event.crop.some(tempCrop => tempCrop === crop);
-        })
-    }
-
-    static filterEventsByDepartment(events: EventFormat[], department: string): EventFormat[] {
-        if(department === ""){
-            return events;
-        }
-
-        return events.filter(event => event.province === department)
-    }
-
-    static filterEventsByCity(events: EventFormat[], city: string): EventFormat[] {
-        if(city === ""){
-            return events;
-        }
-
-        return events.filter(event => event.city === city)
-    }
-
-    static filterEventsByCGFActivity(events: EventFormat[], activity: string): EventFormat[] {
-        if(activity === ""){
-            return events;
-        }
-
-        return events.filter(event => {
-            return event.gcf_activities.some(gcf_activity => gcf_activity === activity);
-        })
     }
 }
 

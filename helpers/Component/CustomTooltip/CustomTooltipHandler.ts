@@ -1,6 +1,7 @@
 import { CustomTooltipData } from "@/interfaces/Components/CustomTooltip";
 import React from "react";
 
+// Función para manejar los cambios del tooltip
 export const handleTooltipChange = <T,>(
     selectedValue: string,
     filterType: string,
@@ -32,6 +33,7 @@ export const handleTooltipChange = <T,>(
     setTooltipValues(updatedTooltipValues);
 };
 
+// Función para manejar el reset
 export const handleReset = <T,>(
     allData: T[],
     setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>,
@@ -50,11 +52,12 @@ export const handleReset = <T,>(
     setTooltipValues(
         placeholders.map((placeholder) => ({
             label: placeholder,
-            value: "", // Valor vacío para que no haya un filtro seleccionado
+            value: "",
         }))
     );
 };
 
+// Función para manejar el clic en los filtros
 export const handleOnClick = <T,>(
     tooltipValues: CustomTooltipData[],
     allData: T[],
@@ -76,6 +79,7 @@ export const handleOnClick = <T,>(
     setTempData(filteredData);
 };
 
+// Función para actualizar los estados de los tooltips
 const updateTooltipStates = <T,>(
     items: T[],
     setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>,
