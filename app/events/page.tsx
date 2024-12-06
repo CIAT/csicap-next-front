@@ -33,6 +33,8 @@ import {EventFormat} from "@/interfaces/Components/Events";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import {filterFunctionsEvents, getUniqueValuesFunctionsEvents} from "@/interfaces/Components/CustomTooltipHandler";
+import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 
 Chart.register(
   Tooltip,
@@ -395,34 +397,6 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setTreemapData(mappedData);
   };
 
-  const processTreemapData = (filter: string, data: EventFormat[]) => {
-    let filterData: { [key: string]: number } = {};
-
-    switch (filter) {
-      case "crop":
-        filterData = countCrop(data); // Usar countCrop en lugar de countCrops
-        break;
-      case "ejes":
-        filterData = countEjes(data);
-        break;
-      case "city":
-        filterData = countCities(data);
-        break;
-      case "institution":
-        filterData = countInstitutionsTreeMap(data);
-        break;
-      default:
-        return;
-    }
-
-    // Crear datos para el treemap
-    const mappedData = Object.keys(filterData).map((key) => ({
-      name: key,
-      value: filterData[key],
-    }));
-    setTreemapData(mappedData);
-  };
-
   const treemapChartData = {
     datasets: [
       {
@@ -673,121 +647,6 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setGuestTypeData(guestTypeData);
   }, [tempEventData]);
 
-// Función para obtener valores únicos de los eventos
-  const getUniqueValuesFunctions = () => [
-    (events: EventFormat[]) => EventsController.getUniqueComponents(events),
-    (events: EventFormat[]) => EventsController.getUniqueAxis(events),
-    (events: EventFormat[]) => EventsController.getUniqueInstitutions(events),
-    (events: EventFormat[]) => EventsController.getUniqueCrops(events),
-    (events: EventFormat[]) => EventsController.getUniqueDepartments(events),
-    (events: EventFormat[]) => EventsController.getUniqueCities(events),
-    (events: EventFormat[]) => EventsController.getUniqueGCFActivities(events),
-  ];
-
-// Función para actualizar los estados de los tooltips
-  const updateTooltipStates = (
-      events: EventFormat[],
-      setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>
-  ) => {
-    const uniqueValuesFunctions = getUniqueValuesFunctions();
-    const updatedTooltipStates = uniqueValuesFunctions.map((fn) => fn(events));
-    updatedTooltipStates.forEach((values, index) => {
-      try {
-        setTooltipStates[index](values);
-      } catch (error) {
-        console.error(`Error updating tooltip state at index ${index}:`, error);
-      }
-    });
-  };
-
-  const handleTooltipChange = (
-      selectedValue: string,
-      filterType: string,
-      formattedEvents: EventFormat[],
-      setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>,
-      tooltipValues: CustomTooltipData[],
-      setTooltipValues: React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
-  ) => {
-    const filterFunctions: Record<string, (events: EventFormat[], value: string) => EventFormat[]> = {
-      component: EventsController.filterEventsByComponent,
-      axis: EventsController.filterEventsByAxis,
-      institution: EventsController.filterEventsByInstitution,
-      crop: EventsController.filterEventsByCrop,
-      department: EventsController.filterEventsByDepartment,
-      city: EventsController.filterEventsByCity,
-      gcfActivity: EventsController.filterEventsByCGFActivity,
-    };
-
-    // Filtrar eventos según el filtro seleccionado
-    const filteredEvents =
-        filterFunctions[filterType]?.(formattedEvents, selectedValue) || formattedEvents;
-
-    // Actualizar los estados de los tooltips
-    updateTooltipStates(filteredEvents, setTooltipStates);
-
-    // Actualizar el valor seleccionado del filtro actual
-    const updatedTooltipValues = tooltipValues.map((tooltip, index) => {
-      const currentFilterType = filterTypes[index];
-      if (currentFilterType === filterType) {
-        return { label: selectedValue, value: selectedValue };
-      }
-      return tooltip;
-    });
-
-    // Asegurarnos de que el estado de tooltipValues se actualice correctamente
-    setTooltipValues(updatedTooltipValues);
-  };
-
-  // Función para resetear todos los filtros
-  const handleReset = (
-      allEventData: EventFormat[],
-      setTooltipStates: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>>,
-      setTooltipValues: React.Dispatch<React.SetStateAction<CustomTooltipData[]>>,
-      setTempEventData: React.Dispatch<React.SetStateAction<EventFormat[]>>
-  ) => {
-    // Restaurar los eventos originales
-    setTempEventData(allEventData);
-
-    // Actualizar los estados de los tooltips con los valores originales
-    updateTooltipStates(allEventData, setTooltipStates);
-
-    // Resetear los valores de los filtros seleccionados y restaurar placeholders
-    setTooltipValues(
-        placeHolders.map((placeholder) => ({
-          label: placeholder,
-          value: "", // Valor vacío para que no haya un filtro seleccionado
-        }))
-    );
-  };
-
-  // Función para aplicar los valores de los filtros a los datos temporales
-  const handleOnClick = (
-      tooltipValues: CustomTooltipData[],
-      formattedEvents: EventFormat[],
-      setTempEventData: React.Dispatch<React.SetStateAction<EventFormat[]>>
-  ) => {
-    let filteredEvents = [...formattedEvents];
-
-    // Aplicar los filtros uno por uno
-    tooltipValues.forEach((tooltip, index) => {
-      const filterFunctions: Record<string, (events: EventFormat[], value: string) => EventFormat[]> = {
-        component: EventsController.filterEventsByComponent,
-        axis: EventsController.filterEventsByAxis,
-        institution: EventsController.filterEventsByInstitution,
-        crop: EventsController.filterEventsByCrop,
-        department: EventsController.filterEventsByDepartment,
-        city: EventsController.filterEventsByCity,
-        gcfActivity: EventsController.filterEventsByCGFActivity,
-      };
-
-      const filterType = filterTypes[index];
-      if (tooltip.value && filterFunctions[filterType]) {
-        filteredEvents = filterFunctions[filterType](filteredEvents, tooltip.value);
-      }
-    });
-    // Establecer los eventos filtrados
-    setTempEventData(filteredEvents);
-  };
 
   return (
     <div className={styles.event_page}>
@@ -795,9 +654,9 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
           filterTypes={filterTypes}
           options={tooltipOptions}
           onChange={(selectedValue, filterType) =>
-              handleTooltipChange(selectedValue, filterType, tempEventData, setTooltipOptions, tooltipValues, setTooltipValues)}
-          onClick={() => handleOnClick(tooltipValues, tempEventData, setTempEventData)}
-          onReset={() => handleReset(allEventData, setTooltipOptions, setTooltipValues, setTempEventData)}
+              handleTooltipChange(selectedValue, filterType, tempEventData, setTooltipOptions, tooltipValues, setTooltipValues, filterFunctionsEvents, getUniqueValuesFunctionsEvents(), filterTypes)}
+          onClick={() => handleOnClick(tooltipValues, tempEventData, setTempEventData, filterFunctionsEvents, filterTypes)}
+          onReset={() => handleReset(allEventData, setTooltipOptions, setTooltipValues, setTempEventData, getUniqueValuesFunctionsEvents(), placeHolders)}
           placeholders={placeHolders}
           values={tooltipValues}
       />

@@ -1,8 +1,9 @@
 import {EventFormat} from "@/interfaces/Components/Events";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import {EventsData} from "@/interfaces";
 
 class EventController {
-    static getUniqueComponents(events: EventFormat[]): CustomTooltipData[] {
+    static getUniqueComponents(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
         const uniqueComponents = new Set<string>();
         events.forEach(event => {
             event.component.forEach(component => uniqueComponents.add(component));
@@ -13,7 +14,7 @@ class EventController {
         }));
     }
 
-    static getUniqueAxis(events: EventFormat[]): CustomTooltipData[] {
+    static getUniqueAxis(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
         const uniqueAxis = new Set<string>();
         events.forEach(event => {
             event.eje.forEach(eje => uniqueAxis.add(eje));
@@ -24,7 +25,7 @@ class EventController {
         }));
     }
 
-    static getUniqueInstitutions(events: EventFormat[]): CustomTooltipData[] {
+    static getUniqueInstitutions(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
         const uniqueInstitutions = new Set<string>();
         events.forEach(event => {
             event.institution.forEach(institution => uniqueInstitutions.add(institution));
@@ -35,7 +36,7 @@ class EventController {
         }));
     }
 
-    static getUniqueCrops(events: EventFormat[]): CustomTooltipData[] {
+    static getUniqueCrops(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
         const uniqueCrops = new Set<string>();
         events.forEach(event => {
             event.crop.forEach(crop => uniqueCrops.add(crop));
@@ -46,7 +47,7 @@ class EventController {
         }));
     }
 
-    static getUniqueDepartments(events: EventFormat[]): CustomTooltipData[] {
+    static getUniqueDepartments(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
         const uniqueDepartments = new Set<string>();
         events.forEach(event => {
             uniqueDepartments.add(event.province);
@@ -57,7 +58,7 @@ class EventController {
         }));
     }
 
-    static getUniqueCities(events: EventFormat[]): CustomTooltipData[] {
+    static getUniqueCities(events: EventFormat[] | EventsData[]): CustomTooltipData[] {
         const uniqueCities = new Set<string>();
         events.forEach(event => {
             uniqueCities.add(event.city);
