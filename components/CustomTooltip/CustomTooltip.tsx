@@ -36,7 +36,6 @@ const CustomTooltip = <T,>({
                             const selectedValue = selectedOption
                                 ? getOptionValue(selectedOption)
                                 : '';
-                            console.log(selectedValue)
                             onChange(selectedValue, filterTypes[index]);
                         }}
                         getOptionLabel={getOptionLabel}

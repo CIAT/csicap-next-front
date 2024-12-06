@@ -647,12 +647,6 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setGuestTypeData(guestTypeData);
   }, [tempEventData]);
 
-  useEffect(() => {
-    // Código que depende de la actualización de setTooltipValues
-    console.log('Tooltip values updated:', tooltipValues);
-  }, [tooltipValues]); // Ejecutar el efecto cuando tooltipValues cambie
-
-
   return (
     <div className={styles.event_page}>
       <CustomTooltip
