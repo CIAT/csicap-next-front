@@ -472,6 +472,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         {/* Card: Total asistentes */}
         <CardComponent
             title="Total asistentes"
+            styles={styleTechnical}
         >
           <label className={styles.top_card_label}>
             {allAssistanceData.length > 0 ? (
@@ -486,6 +487,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         <CardComponent
             id={doughnutChartAssistantsGenreId}
             title="Género"
+            styles={styleTechnical}
         >
           {allAssistanceData.length > 0 ? (
             <Doughnut
@@ -502,6 +504,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         <CardComponent
             id={doughnutChartAssistantsAgeId}
             title="Edad"
+            styles={styleTechnical}
         >
           {allAssistanceData.length > 0 ? (
             <Doughnut
@@ -518,6 +521,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         <CardComponent
             id={doughnutChartAssistantsOccupationId}
             title="Ocupación"
+            styles={styleTechnical}
         >
           {allAssistanceData.length > 0 ? (
             <Doughnut

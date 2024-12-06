@@ -1,6 +1,6 @@
 import React from "react";
-import SelectNetwork from "@/components/Select/SelectNetwork";
-import YearsSlider from "@/components/YearSlider/YearSlider";
+// import SelectNetwork from "@/components/Select/SelectNetwork";
+// import YearsSlider from "@/components/YearSlider/YearSlider";
 import styles from "./tool.module.css";
 
 interface FiltersPanelProps {
@@ -38,7 +38,7 @@ const ToolTip: React.FC<FiltersPanelProps> = ({
     <div className={styles.toolTip}>
       <div className={styles.selectDiv}>
         <div className={styles.selects}>
-          <SelectNetwork
+          {/* <SelectNetwork
             className={styles.selectStyle}
             options={select1Options}
             onChange={(selected) => {
@@ -68,15 +68,15 @@ const ToolTip: React.FC<FiltersPanelProps> = ({
                 : null
             }
             placeholder={placeHolder2}
-          />
+          /> */}
         </div>
         <div className={styles.yearSlider}>
-          <YearsSlider
+          {/* <YearsSlider
             values={sliderValues}
             setValues={setSliderValues}
             min={1971}
             max={2024}
-          />
+          /> */}
         </div>
         <div className={styles.buttonDiv}>
           <button className={styles.buttons} onClick={handleApply}>
