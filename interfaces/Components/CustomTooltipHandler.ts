@@ -59,13 +59,13 @@ export const filterFunctionsCalendar: Record<
     (events: EventsData[], value: string) => EventsData[]
 > = {
     component: (events, value) =>
-        EventsController.filterEventsByValue(events, "component", value),
+        EventsController.filterEventsByValue(events, "component", value, true),
     axis: (events, value) =>
-        EventsController.filterEventsByValue(events, "eje", value),
+        EventsController.filterEventsByValue(events, "eje", value, true),
     institution: (events, value) =>
-        EventsController.filterEventsByValue(events, "institution", value),
+        EventsController.filterEventsByValue(events, "institution", value, true),
     crop: (events, value) =>
-        EventsController.filterEventsByValue(events, "crop", value),
+        EventsController.filterEventsByValue(events, "crop", value, true),
     department: (events, value) =>
         EventsController.filterEventsByValue(events, "province", value),
     city: (events, value) =>

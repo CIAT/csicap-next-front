@@ -670,8 +670,23 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   getUniqueValuesFunctionsEvents(),
                   filterTypes,
               )}
-          onClick={() => handleOnClick(tooltipValues, tempEventData, setTempEventData, filterFunctionsEvents, filterTypes)}
-          onReset={() => handleReset(allEventData, setTooltipOptions, setTooltipValues, setTempEventData, getUniqueValuesFunctionsEvents(), placeHolders)}
+          onClick={() =>
+              handleOnClick(
+                  tooltipValues,
+                  tempEventData,
+                  setTempEventData,
+                  filterFunctionsEvents,
+                  filterTypes
+              )}
+          onReset={() =>
+              handleReset(
+                  allEventData,
+                  setTooltipOptions,
+                  setTooltipValues,
+                  setTempEventData,
+                  getUniqueValuesFunctionsEvents(),
+                  placeHolders
+              )}
           placeholders={placeHolders}
           filterTypes={filterTypes}
           getOptionLabel={(option) => option.label}

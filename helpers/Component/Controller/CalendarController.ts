@@ -25,6 +25,7 @@ class CalendarController {
             province: event.province,
             responsable: event.responsable,
             city: event.city || "",
+            component: event.component || [],
             crop: event.crop || [],
             eje: event.eje || [],
             guess_type: event.guess_type || [],
@@ -73,6 +74,26 @@ class CalendarController {
         return Array.from(new Set(provincesAndCities));
     }
 
+    static filterEventsByComponent(events: EventsData[], component: string): EventsData[] {
+        if(component === ""){
+            return events;
+        }
+
+        return events.filter(event => {
+            return event.component.some(components => components === component);
+        })
+    }
+
+    static filterEventsByInstitution(events: EventsData[], institution: string): EventsData[] {
+        if(institution === ""){
+            return events;
+        }
+
+        return events.filter(event => {
+            return event.institution.some(tempInstitution => institution === tempInstitution);
+        })
+    }
+
     static filterEventsByCrop(events: EventsData[], crop: string): EventsData[] {
         if (crop === "") {
             return events;
@@ -85,7 +106,7 @@ class CalendarController {
         );
     }
 
-    static filterEventsByProvince(events: EventsData[], province: string): EventsData[] {
+    static filterEventsByDepartment(events: EventsData[], province: string): EventsData[] {
         if (province === "") {
             return events;
         }
@@ -95,7 +116,7 @@ class CalendarController {
         );
     }
 
-    static filterEventsByCities(events: EventsData[], city: string): EventsData[] {
+    static filterEventsByCity(events: EventsData[], city: string): EventsData[] {
         if (city === "") {
             return events;
         }
@@ -105,7 +126,7 @@ class CalendarController {
         );
     }
 
-    static filterEventsByAxe(events: EventsData[], axe: string): EventsData[] {
+    static filterEventsByAxis(events: EventsData[], axe: string): EventsData[] {
         if (axe === "") {
             return events;
         }

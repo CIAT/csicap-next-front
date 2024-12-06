@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import styles from "./calendar.module.css";
+import React, { useEffect, useState } from "react";
 import cardStyle from "@/components/calendar/Card/cardComponent.module.css";
 import { EventsData, DataFormat, sectionStateData } from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
@@ -13,7 +12,6 @@ import CalendarModal from "@/components/Modals/CalendarModal/CalendarModal";
 import dayjs from "dayjs";
 import MapComponent from "@/components/data/Map/MapComponent";
 import OverviewCard from "@/components/calendar/overvieww";
-import ToolbarFilter from "@/components/ToolbarFilter/ToolbarFilter";
 import CardComponent from "@/components/calendar/Card/CardComponent";
 import LoadingAnimation from "@/components/loadingAnimation";
 
@@ -22,12 +20,20 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {parseISO} from "date-fns";
 import {NextPage} from "next";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
+import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import EventsController from "@/helpers/Component/Controller/EventsController";
+import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
+import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import {
+  filterFunctionsCalendar,
+  getUniqueValuesFunctionsCalendar,
+} from "@/interfaces/Components/CustomTooltipHandler";
 
 const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
   const styles = customStyles || require("./calendar.module.css");
 
   const [events, setEvents] = useState<EventsData[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<EventsData[]>(
+  const [tempEventData, setTempEventData] = useState<EventsData[]>(
     events
   );
   const [filtersApplied, setFiltersApplied] = useState(false);
@@ -40,10 +46,44 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
     crop: "",
     city: ""
   });
-  const [cropState, setCropState] = useState<string[]>([]);
-  const [axesState, setAxesState] = useState<string[]>([]);
-  const [cityState, setCityState] = useState<string[]>([]);
+  const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
+  const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
+  const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
+  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
   const [counts, setCounts] = useState<NestedDictionary>({});
+
+  const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
+    {
+      value: "",
+      label: "Componente"
+    },
+    {
+      value: "",
+      label: "Eje"
+    },
+    {
+      value: "",
+      label: "Institución"
+    },
+    {
+      value: "",
+      label: "Cultivo"
+    },
+    {
+      value: "",
+      label: "Departamento"
+    },
+    {
+      value: "",
+      label: "Municipio"
+    }
+  ])
+  const tooltipOptions: Array<CustomTooltipData[]> = [componentState, axisState, institutionState, cropState, departmentState, cityState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setComponentState, setAxisState, setInstitutionState, setCropState, setDepartmentState, setCityState];
+  const filterTypes = ["component", "axis", "institution", "crop", "department", "city"];
+  const placeHolders = ["Componente", "Eje", "Institución", "Cultivo", "Departamento", "Municipio"];
 
   const handleEventClick = (clickInfo: any) => {
     setSelectedEvent(clickInfo.event.extendedProps);
@@ -58,24 +98,27 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
   useEffect(() => {
     CalendarRepository.fetchCalendarEvents()
       .then((data: DataFormat) => {
-        const formattedEvents = CalendarController.formatEvents(data).map(event => ({
-          ...event,
-          axe: event.eje.map(eje => eje.toLowerCase()),
-          crop: event.crop.map(crop => crop.toLowerCase()),
-          city: event.city.toLowerCase(),
-        }));
+        const formattedEvents = CalendarController.formatEvents(data);
+
+        const uniqueAxis = EventsController.getUniqueValues(formattedEvents, "eje", true);
+        const uniqueComponents = EventsController.getUniqueValues(formattedEvents, "component", true);
+        const uniqueInstitutions = EventsController.getUniqueValues(formattedEvents, "institution", true);
+        const uniqueCrops = EventsController.getUniqueValues(formattedEvents, "crop", true);
+        const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "province");
+        const uniqueCities = EventsController.getUniqueValues(formattedEvents, "city");
 
         setCounts(MapController.updateCountEventsByCity(formattedEvents));
 
-        const uniqueAxes = CalendarController.getUniqueAxes(formattedEvents);
-        const uniqueCrop = CalendarController.getUniqueCrops(formattedEvents);
-        const uniqueCities = CalendarController.extractCities(formattedEvents);
-        setEvents(formattedEvents);
-        setFilteredEvents(formattedEvents);
-        setAxesState([...uniqueAxes]);
-        setCropState([...uniqueCrop]);
+        setComponentState([...uniqueComponents]);
+        setAxisState([...uniqueAxis]);
+        setInstitutionState([...uniqueInstitutions]);
+        setCropState([...uniqueCrops]);
+        setDepartmentState([...uniqueDepartments]);
         setCityState([...uniqueCities]);
         setDataCalendarResp(200);
+
+        setEvents(formattedEvents);
+        setTempEventData(formattedEvents);
       })
       .catch(error => {
         console.error("Error fetching events:", error);
@@ -87,38 +130,6 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
     setSectionState(sectionState);
   }, [sectionState]);
 
-  const filterEvents = (state: sectionStateData) => {
-    let tempEvents: EventsData[] = [];
-
-    const normalizedState = {
-      axe: state.axe.toLowerCase(),
-      crop: state.crop.toLowerCase(),
-      city: state.city.toLowerCase(),
-    };
-
-    tempEvents = CalendarController.filterEventsByCrop(events, normalizedState.crop.toLowerCase());
-    tempEvents = CalendarController.filterEventsByCities(tempEvents, normalizedState.city.toLowerCase());
-    tempEvents = CalendarController.filterEventsByAxe(tempEvents, normalizedState.axe.toLowerCase());
-
-    setSectionState((prev: sectionStateData) => ({
-      ...prev,
-      city: normalizedState.city,
-    }));
-
-    if (normalizedState.city === '') {
-      MapController.resetSelectedProvinceAndCity();
-    }
-
-    setFilteredEvents(tempEvents);
-
-    if (normalizedState.axe || normalizedState.crop || normalizedState.city) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-  };
-
-
   const resetFilters = () => {
     setSectionState({
       axe: "",
@@ -126,7 +137,7 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
       city: ""
     });
     MapController.resetSelectedProvinceAndCity();
-    setFilteredEvents(events);
+    setTempEventData(events);
     setFiltersApplied(false);
   };
 
@@ -134,6 +145,43 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
     <div className={styles.container}>
       {dataCalendarResp === 200 ? (
           <>
+            <CustomTooltip
+                options={tooltipOptions}
+                values={tooltipValues}
+                onChange={(selectedValue, filterType) =>
+                    handleTooltipChange(
+                        selectedValue,
+                        filterType,
+                        tempEventData,
+                        setTooltipOptions,
+                        tooltipValues,
+                        setTooltipValues,
+                        filterFunctionsCalendar,
+                        getUniqueValuesFunctionsCalendar(),
+                        filterTypes
+                    )}
+                onClick={() =>
+                    handleOnClick(
+                        tooltipValues,
+                        tempEventData,
+                        setTempEventData,
+                        filterFunctionsCalendar,
+                        filterTypes
+                    )}
+                onReset={() =>
+                    handleReset(
+                        events,
+                        setTooltipOptions,
+                        setTooltipValues,
+                        setTempEventData,
+                        getUniqueValuesFunctionsCalendar(),
+                        placeHolders
+                    )}
+                placeholders={placeHolders}
+                filterTypes={filterTypes}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => String(option.value)}
+            />
             <div className={styles.card_container}>
               <div className={styles.overview}>
                 <CardComponent title="Visión General" header={<></>} style={cardStyle}>
@@ -141,23 +189,7 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
                 </CardComponent>
               </div>
               <div className={styles.sub_card_container}>
-                <ChartCardComponent title="Calendario de eventos" header={
-                  <div className={styles.filter_button_container}>
-                    <ToolbarFilter
-                        filterEvents={(newState: sectionStateData) => filterEvents(newState)}
-                        axesState={axesState}
-                        cropState={cropState}
-                        cityState={cityState}
-                        sectionState={sectionState}
-                        setSectionState={setSectionState}
-                    />
-                    {filtersApplied && (
-                        <button onClick={resetFilters} className={`${styles.button} ${styles.reset_button}`}>
-                          Restaurar
-                        </button>
-                    )}
-                  </div>
-                }>
+                <ChartCardComponent title="Calendario de eventos" header={<></>}>
                   <FullCalendar
                       plugins={[dayGridPlugin]}
                       headerToolbar={{
@@ -167,7 +199,7 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
                       }}
                       height='100%'
                       fixedWeekCount={false}
-                      events={filteredEvents.map(event => {
+                      events={tempEventData.map(event => {
                         const currentDate = new Date();
                         currentDate.setHours(0, 0, 0, 0);
                         const eventEndDate = event.datesEnd ? parseISO(String(event.datesEnd)) : null;
@@ -206,8 +238,7 @@ const CalendarPage:NextPage<PageCustomProps> = ({customStyles}) => {
               <ChartCardComponent title="Eventos por municipio" header={<></>}>
                 <MapComponent
                     data={counts}
-                    polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
-                    filterData={(newState: sectionStateData) => filterEvents(newState)}
+                    polygons={CalendarController.extractProvincesAndCities(tempEventData)}
                 />
               </ChartCardComponent>
             </div>
