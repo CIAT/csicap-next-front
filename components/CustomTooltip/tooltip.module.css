@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  height: 12vh;
+  padding: 20px 20px 0 20px;
+}
+
+.button{
+  background: #a0a0a0;
+  border-radius: 8px;
+  margin: 0 5px;
+  transition: 1s ease;
+}

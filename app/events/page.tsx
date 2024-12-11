@@ -16,25 +16,25 @@ import {
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import ChartCardComponent from "@/components/events/chartCard";
 import CardComponent from "@/components/events/Card";
-import {
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
 import { parseISO } from "date-fns";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
-import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
-import {EventFormat} from "@/interfaces/Components/Events";
+import { PageCustomProps } from "@/interfaces/Components/PageCustomProps";
+import { EventFormat } from "@/interfaces/Components/Events";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
-import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
-import {filterFunctionsEvents, getUniqueValuesFunctionsEvents} from "@/interfaces/Components/CustomTooltipHandler";
-import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import { CustomTooltipData } from "@/interfaces/Components/CustomTooltip";
+import {
+  filterFunctionsEvents,
+  getUniqueValuesFunctionsEvents,
+} from "@/interfaces/Components/CustomTooltipHandler";
+import {
+  handleOnClick,
+  handleReset,
+  handleTooltipChange,
+} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 
 Chart.register(
   Tooltip,
@@ -92,7 +92,9 @@ function calculateEventStatus(events: EventFormat[]) {
 
   events.forEach((EventFormat) => {
     // Validar si datesEnd es válido antes de parsearlo
-    const eventEndDate = EventFormat.datesEnd ? parseISO(EventFormat.datesEnd) : null;
+    const eventEndDate = EventFormat.datesEnd
+      ? parseISO(EventFormat.datesEnd)
+      : null;
 
     if (EventFormat.form_state === "0") {
       // Si form_state es 0, cuenta como finalizado
@@ -233,7 +235,7 @@ function countGuestTypes(events: EventFormat[]) {
   return guestTypeCount;
 }
 
-const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
+const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   const styles = customStyles || require("./events.module.css");
 
   const treemapChartTotalEventsId: string = "treemap_chart_total_events";
@@ -257,60 +259,124 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
-  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>(
+    []
+  );
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
-  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>(
+    []
+  );
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
-  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>([]);
-  const [tooltipValues, setTooltipValues] = useState<
-      Array<CustomTooltipData>
-  >([
+  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>(
+    []
+  );
+  const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
     {
       value: "",
-      label: "Componente"
+      label: "Componente",
     },
     {
       value: "",
-      label: "Eje"
+      label: "Eje",
     },
     {
       value: "",
-      label: "Instituciones"
+      label: "Instituciones",
     },
     {
       value: "",
-      label: "Cultivo"
+      label: "Cultivo",
     },
     {
       value: "",
-      label: "Departamento"
+      label: "Departamento",
     },
     {
       value: "",
-      label: "Municipio"
+      label: "Municipio",
     },
     {
       value: "",
-      label: "Actividades GCF"
-    }
+      label: "Actividades GCF",
+    },
   ]);
-  const tooltipOptions: Array<CustomTooltipData[]> = [componentState, axisState, institutionState, cropState, departmentState, cityState, gcfActivityState];
-  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setComponentState, setAxisState, setInstitutionState, setCropState, setDepartmentState, setCityState, setGCFActivityState];
-  const filterTypes = ["component", "axis", "institution", "crop", "department", "city", "gcfActivity"];
-  const placeHolders = ["Componente", "Eje", "Instituciones", "Cultivo", "Departamento", "Municipio", "Actividades GCF"];
+  const tooltipOptions: Array<CustomTooltipData[]> = [
+    componentState,
+    axisState,
+    institutionState,
+    cropState,
+    departmentState,
+    cityState,
+    gcfActivityState,
+  ];
+  const setTooltipOptions: Array<
+    React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
+  > = [
+    setComponentState,
+    setAxisState,
+    setInstitutionState,
+    setCropState,
+    setDepartmentState,
+    setCityState,
+    setGCFActivityState,
+  ];
+  const filterTypes = [
+    "component",
+    "axis",
+    "institution",
+    "crop",
+    "department",
+    "city",
+    "gcfActivity",
+  ];
+  const placeHolders = [
+    "Componente",
+    "Eje",
+    "Instituciones",
+    "Cultivo",
+    "Departamento",
+    "Municipio",
+    "Actividades GCF",
+  ];
 
   useEffect(() => {
     async function fetchAndProcessData() {
       const dataset = await CalendarRepository.fetchCustomEvent();
       const formattedEvents = CalendarController.formatEvent(dataset);
 
-      const uniqueComponents = EventsController.getUniqueValues(formattedEvents, "component", true);
-      const uniqueAxis = EventsController.getUniqueValues(formattedEvents, "eje", true);
-      const uniqueInstitutions = EventsController.getUniqueValues(formattedEvents, "institution", true);
-      const uniqueCrops = EventsController.getUniqueValues(formattedEvents, "crop", true);
-      const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "province");
-      const uniqueCities = EventsController.getUniqueValues(formattedEvents, "city");
-      const uniqueGCFActivities = EventsController.getUniqueValues(formattedEvents, "gcf_activities", true);
+      const uniqueComponents = EventsController.getUniqueValues(
+        formattedEvents,
+        "component",
+        true
+      );
+      const uniqueAxis = EventsController.getUniqueValues(
+        formattedEvents,
+        "eje",
+        true
+      );
+      const uniqueInstitutions = EventsController.getUniqueValues(
+        formattedEvents,
+        "institution",
+        true
+      );
+      const uniqueCrops = EventsController.getUniqueValues(
+        formattedEvents,
+        "crop",
+        true
+      );
+      const uniqueDepartments = EventsController.getUniqueValues(
+        formattedEvents,
+        "province"
+      );
+      const uniqueCities = EventsController.getUniqueValues(
+        formattedEvents,
+        "city"
+      );
+      const uniqueGCFActivities = EventsController.getUniqueValues(
+        formattedEvents,
+        "gcf_activities",
+        true
+      );
 
       setAllEventData(formattedEvents);
       setTempEventData(formattedEvents);
@@ -422,7 +488,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
       },
     ],
   };
-  
+
   const ejeCounts: { [key: string]: number } = {};
   tempEventData.forEach((EventFormat) => {
     if (EventFormat.eje && Array.isArray(EventFormat.eje)) {
@@ -548,10 +614,10 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
         ticks: {
           // Cambia el tamaño de la fuente
           font: {
-            size: 10, 
+            size: 10,
           },
           // Aplica rotación a las etiquetas
-          maxRotation: 90, 
+          maxRotation: 90,
           minRotation: 90,
         },
       },
@@ -582,7 +648,8 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
     initializeTreemapData(tempEventData);
 
     // Calculate finished/in-progress events
-    const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(tempEventData);
+    const { finishedEvents, inProgressEvents, programmedEvents } =
+      calculateEventStatus(tempEventData);
     setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
 
     // Calculate eje counts
@@ -619,131 +686,131 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
   return (
     <div className={styles.event_page}>
       <CustomTooltip
-          options={tooltipOptions}
-          values={tooltipValues}
-          onChange={(selectedValue, filterType) =>
-              handleTooltipChange(
-                  selectedValue,
-                  filterType,
-                  tempEventData,
-                  setTooltipOptions,
-                  tooltipValues,
-                  setTooltipValues,
-                  filterFunctionsEvents,
-                  getUniqueValuesFunctionsEvents(),
-                  filterTypes,
-              )}
-          onClick={() =>
-              handleOnClick(
-                  tooltipValues,
-                  tempEventData,
-                  setTempEventData,
-                  filterFunctionsEvents,
-                  filterTypes
-              )}
-          onReset={() =>
-              handleReset(
-                  allEventData,
-                  setTooltipOptions,
-                  setTooltipValues,
-                  setTempEventData,
-                  getUniqueValuesFunctionsEvents(),
-                  placeHolders
-              )}
-          placeholders={placeHolders}
-          filterTypes={filterTypes}
-          getOptionLabel={(option) => option.label}
-          getOptionValue={(option) => String(option.value)}
+        options={tooltipOptions}
+        values={tooltipValues}
+        onChange={(selectedValue, filterType) =>
+          handleTooltipChange(
+            selectedValue,
+            filterType,
+            tempEventData,
+            setTooltipOptions,
+            tooltipValues,
+            setTooltipValues,
+            filterFunctionsEvents,
+            getUniqueValuesFunctionsEvents(),
+            filterTypes
+          )
+        }
+        onClick={() =>
+          handleOnClick(
+            tooltipValues,
+            tempEventData,
+            setTempEventData,
+            filterFunctionsEvents,
+            filterTypes
+          )
+        }
+        onReset={() =>
+          handleReset(
+            allEventData,
+            setTooltipOptions,
+            setTooltipValues,
+            setTempEventData,
+            getUniqueValuesFunctionsEvents(),
+            placeHolders
+          )
+        }
+        placeholders={placeHolders}
+        filterTypes={filterTypes}
+        getOptionLabel={(option) => option.label}
+        getOptionValue={(option) => String(option.value)}
       />
-      <div className={styles.div}>
-        <ChartCardComponent
-          title="Número de eventos"
-          header={
-            <div className={styles.header_container}>
-              <ExportDropdown
-                  chartId={treemapChartTotalEventsId}
+      <div style={{display:"flex", flexDirection:"row", height:"100vh"}}>
+        <div className={styles.div}>
+          <ChartCardComponent
+            title="Número de eventos"
+            header={
+              <div className={styles.header_container}>
+                <ExportDropdown chartId={treemapChartTotalEventsId} />
+              </div>
+            }
+          >
+            {treemapData.length > 0 ? (
+              <ReactChart
+                id={treemapChartTotalEventsId}
+                type="treemap"
+                data={treemapChartData}
+                options={options}
               />
-            </div>
-          }
-        >
-          {treemapData.length > 0 ? (
-            <ReactChart
-              id={treemapChartTotalEventsId}
-              type="treemap"
-              data={treemapChartData}
-              options={options}
-            />
-          ) : (
-            <LoadingAnimation />
-          )}
-        </ChartCardComponent>
-      </div>
+            ) : (
+              <LoadingAnimation />
+            )}
+          </ChartCardComponent>
+        </div>
 
-      <div className={styles.card_container}>
-        <CardComponent
-            title="Total Eventos"
-            id={doughnutChartTotalEventsId}
-        >
-          <div className="w-full h-full">
-            {tempEventData.length > 0 ? (
-              <Doughnut
+        <div className={styles.card_container}>
+          <CardComponent title="Total Eventos" id={doughnutChartTotalEventsId}>
+            <div className="w-full h-full">
+              {tempEventData.length > 0 ? (
+                <Doughnut
                   id={doughnutChartTotalEventsId}
                   data={eventsTotal}
                   options={config2}
-              />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
-        <CardComponent
+                />
+              ) : (
+                <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent
             title="Ejes por evento"
             id={doughnutChartAxesByEventId}
-        >
-          <div className="w-full h-full">
-            {tempEventData.length > 0 ? (
-              <Doughnut
+          >
+            <div className="w-full h-full">
+              {tempEventData.length > 0 ? (
+                <Doughnut
                   id={doughnutChartAxesByEventId}
                   data={ejesChartData}
                   options={config2}
-              />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
-        <CardComponent
+                />
+              ) : (
+                <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent
             title="Tipo de invitados por evento"
             id={doughnutChartGuestByEventId}
-        >
-          <div className="w-full h-full">
-            {tempEventData.length > 0 ? (
-              <Doughnut
+          >
+            <div className="w-full h-full">
+              {tempEventData.length > 0 ? (
+                <Doughnut
                   id={doughnutChartGuestByEventId}
                   data={guestTypesChartData}
                   options={config2}
-              />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
-        <CardComponent
+                />
+              ) : (
+                <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+          <CardComponent
             title="Instituciones organizadoras"
             id={barChartInstitutionsId}
-        >
-          <div className="w-full h-full">
-            {tempEventData.length > 0 ? (
-              <Bar
+          >
+            <div className="w-full h-full">
+              {tempEventData.length > 0 ? (
+                <Bar
                   id={barChartInstitutionsId}
                   data={institutionsChartData}
                   options={barChartOptions}
-              />
-            ) : (
-              <LoadingAnimation />
-            )}
-          </div>
-        </CardComponent>
+                />
+              ) : (
+                <LoadingAnimation />
+              )}
+            </div>
+          </CardComponent>
+        </div>
       </div>
     </div>
   );
