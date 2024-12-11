@@ -76,7 +76,7 @@
 
 .chart_card_header {
     display: flex;
-    height: 50px;
+    height: 4vh;
     gap: 3px;
     justify-content: space-between;
     align-items: center;

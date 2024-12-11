@@ -243,7 +243,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => String(option.value)}
           />
-          <div style={{display:"flex", flexDirection:"row"}}>
+          <div style={{display:"flex", flexDirection:"row", height:"100%"}}>
             <div className={styles.card_container}>
               <div className={styles.overview}>
                 <CardComponent

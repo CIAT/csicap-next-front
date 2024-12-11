@@ -49,12 +49,12 @@ const CustomTooltip = <T,>({
         ))}
       </div>
       <div>
-        <Button onClick={onClick} className={styles.button}>
+        <button onClick={onClick} className={styles.button}>
           Aplicar
-        </Button>
-        <Button onClick={onReset} className={styles.button}>
+        </button>
+        <button onClick={onReset} className={styles.button}>
           Restaurar
-        </Button>
+        </button>
       </div>
     </div>
   );
