@@ -19,7 +19,7 @@ import { Chart as ReactChart } from "react-chartjs-2";
 import ChartCardComponent from "@/components/events/chartCard";
 import React, { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
-import { DataFormat, TechnicalBeneficiaries } from "@/interfaces/Components/TechnicalComponent";
+import {DataFormat, FormattedBeneficiary, TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
 import ProfessionalController from "@/helpers/Component/Controller/ProfessionalController";
 import {
   InputLabel,
@@ -34,6 +34,15 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import {
+  filterFunctionsEvents, filterFunctionsProfessionals,
+  getUniqueValuesFunctionsEvents,
+  getUniqueValuesFunctionsProfessionals
+} from "@/interfaces/Components/CustomTooltipHandler";
+import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
+import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import EventsController from "@/helpers/Component/Controller/EventsController";
 
 Chart.register(
   ArcElement,
@@ -58,37 +67,37 @@ const colores = [
   "#669d16",
 ];
 
-function countTotalRecords(data: { data: object }[]): number {
+function countTotalRecords(data: TechnicalBeneficiaries[]): number {
   return data.length;
 }
 
-function countGenders(data: { data: { gender_at_birth: string } }[]) {
+function countGenders(data: TechnicalBeneficiaries[]) {
   const genderCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const gender = item.data.gender_at_birth;
+    const gender = item.gender_at_birth;
     genderCount[gender] = (genderCount[gender] || 0) + 1;
   });
 
   return genderCount;
 }
 
-function countEducationLevel(data: { data: { highest_educational_level: string } }[]) {
+function countEducationLevel(data: TechnicalBeneficiaries[]) {
   const educationLevelCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const educationLevel = item.data.highest_educational_level;
+    const educationLevel = item.highest_educational_level;
     educationLevelCount[educationLevel] = (educationLevelCount[educationLevel] || 0) + 1;
   });
 
   return educationLevelCount;
 }
 
-function countEthnicity(data: { data: { ethnic_affiliation: string } }[]) {
+function countEthnicity(data: TechnicalBeneficiaries[]) {
   const ethnicityCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const ethnicity = item.data.ethnic_affiliation;
+    const ethnicity = item.ethnic_affiliation;
     ethnicityCount[ethnicity] = (ethnicityCount[ethnicity] || 0) + 1;
   });
 
@@ -109,7 +118,7 @@ function countCrops(data: DataFormat): { [key: string]: number } {
   return cropCount;
 }
 
-function countOrganizations(events: DataFormat) {
+function countOrganizations(events: TechnicalBeneficiaries[]) {
   const predefinedInstitutions = new Set([
     "AGROSAVIA",
     "AUGURA",
@@ -137,7 +146,7 @@ function countOrganizations(events: DataFormat) {
   };
 
   events.forEach((event) => {
-    event.data.affiliated_guild_or_organization.forEach((organization) => {
+    event.affiliated_guild_or_organization.forEach((organization) => {
       if (predefinedInstitutions.has(organization)) {
         organizations[organization] = (organizations[organization] || 0) + 1;
       } else {
@@ -163,7 +172,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
       events
   );
 
-  const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
   const [educationaLevelNumber, setEducationalLevelNumber] = useState<number[]>([]);
@@ -171,9 +179,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [ethnicityNumber, setEthnicityNumber] = useState<number[]>([]);
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
-  const [selectedFilter, setSelectedFilter] = useState<string>("institution");
   const [treemapTitle, setTreemapTitle] = useState("Número de profesionales");
-  const [allEventData, setAllEventData] = useState<DataFormat>([]); // Store all event data once fetched
   const [counts, setCounts] = useState<NestedDictionary>({});
 
   const [treemapData, setTreemapData] = useState<
@@ -183,36 +189,73 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
       { name: string; value: number }[]
   >([]);
 
+  const [educationalLevelState, setEducationalLevelState] = useState<CustomTooltipData[]>([]);
+  const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
+  const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
+  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
+  const [tooltipValues, setTooltipValues] = useState<
+      Array<CustomTooltipData>
+  >([
+    {
+      value: "",
+      label: "Nivel educativo"
+    },
+    {
+      value: "",
+      label: "Género"
+    },
+    {
+      value: "",
+      label: "Cultivo"
+    },
+    {
+      value: "",
+      label: "Departamento"
+    },
+    {
+      value: "",
+      label: "Municipio"
+    },
+    {
+      value: "",
+      label: "Institución"
+    },
+  ]);
+  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, departmentState, cityState, institutionState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setDepartmentState, setCityState, setInstitutionState];
+  const filterTypes = ["educationLevel", "gender", "crop", "department", "city", "institution"];
+  const placeHolders = ["Nivel educativo", "Género", "Cultivo", "Departamento", "Municipio", "Institución"];
+
   useEffect(() => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
         const formattedEvents = ProfessionalController.formatEvents(data);
+
+        const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
+        const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
+        //const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
+        //const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "department_where_you_work");
+        //const uniqueCities = EventsController.getUniqueValues(formattedEvents, "municipalities_where_you_work", true);
+        const uniqueInstitutions = EventsController.getUniqueValues(formattedEvents, "affiliated_guild_or_organization", true);
+
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
-        setDataCalendarResp(200);
-        setCounts(MapController.updateCountEventsByCityCodes(formattedEvents));
+        setEducationalLevelState([...uniqueEducationalLevel]);
+        setGenderState([...uniqueGender]);
+        //setCropState([...uniqueCrop]);
+        //setDepartmentState([...uniqueDepartments]);
+        //setCityState([...uniqueCities]);
+        setInstitutionState([...uniqueInstitutions]);
 
-        setAllEventData(data);
-        initializeTreemapData(data);
+        setEvents(formattedEvents);
+        setFilteredEvents(formattedEvents);
 
-        const totalDataRecord = countTotalRecords(data);
-        setTotalData(totalDataRecord);
-
-        const genderCount = countGenders(data)
-        setGenderLabel(Object.keys(genderCount))
-        setGenderNumber(Object.values(genderCount));
-
-        const educationLevelCount = countEducationLevel(data)
-        setEducationalLevelLabel(Object.keys(educationLevelCount))
-        setEducationalLevelNumber(Object.values(educationLevelCount))
-
-        const ethnicityCount = countEthnicity(data)
-        setEthnicityLabel(Object.keys(ethnicityCount))
-        setEthnicityNumber(Object.values(ethnicityCount))
+        processChartData();
       })
       .catch(error => {
         console.error("Error fetching events:", error);
-        setDataCalendarResp(-1); // Set error state
       });
   }, []);
 
@@ -225,7 +268,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         })));
   }, [treemapData]);
 
-  const initializeTreemapData = (data: DataFormat) => {
+  const initializeTreemapData = (data: TechnicalBeneficiaries[]) => {
     let filterData = countOrganizations(data);
     const mappedData = Object.keys(filterData).map((key) => ({
       name: key,
@@ -233,33 +276,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     }));
     setTreemapData(mappedData);
   };
-
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    const newFilter = event.target.value;
-    setSelectedFilter(newFilter);
-    processTreemapData(newFilter, allEventData);
-  };
-
-  const processTreemapData = (filter: string, data: DataFormat) => {
-    let filterData: { [key: string]: number } = {};
-
-    switch (filter) {
-      case "crop":
-        filterData = countCrops(data);
-        break;
-      case "institution":
-        filterData = countOrganizations(data);
-        break;
-      default:
-        return;
-    }
-
-    const mappedData = Object.keys(filterData).map((key) => ({
-      name: key,
-      value: filterData[key],
-    }));
-    setTreemapData(mappedData);
-  }
 
   const gender = {
     labels: genderLabel,
@@ -416,8 +432,73 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
   };
 
+  useEffect(() => {
+    processChartData();
+  }, [filteredEvents]);
+
+  const processChartData = () => {
+    setCounts(MapController.updateCountEventsByCityCodes(filteredEvents));
+
+    initializeTreemapData(filteredEvents);
+
+    const totalDataRecord = countTotalRecords(filteredEvents);
+    setTotalData(totalDataRecord);
+
+    const genderCount = countGenders(filteredEvents)
+    setGenderLabel(Object.keys(genderCount))
+    setGenderNumber(Object.values(genderCount));
+
+    const educationLevelCount = countEducationLevel(filteredEvents)
+    setEducationalLevelLabel(Object.keys(educationLevelCount))
+    setEducationalLevelNumber(Object.values(educationLevelCount))
+
+    const ethnicityCount = countEthnicity(filteredEvents)
+    setEthnicityLabel(Object.keys(ethnicityCount))
+    setEthnicityNumber(Object.values(ethnicityCount))
+  }
+
   return (
       <div className="w-full h-full flex flex-wrap">
+        <CustomTooltip
+            options={tooltipOptions}
+            values={tooltipValues}
+            onChange={(selectedValue, filterType) =>
+                handleTooltipChange(
+                    selectedValue,
+                    filterType,
+                    filteredEvents,
+                    setTooltipOptions,
+                    tooltipValues,
+                    setTooltipValues,
+                    filterFunctionsProfessionals,
+                    getUniqueValuesFunctionsProfessionals(),
+                    filterTypes
+                )
+            }
+            onClick={() =>
+                handleOnClick(
+                    tooltipValues,
+                    filteredEvents,
+                    setFilteredEvents,
+                    filterFunctionsProfessionals,
+                    filterTypes
+                )
+            }
+            onReset={() =>
+                handleReset(
+                    events,
+                    setTooltipOptions,
+                    setTooltipValues,
+                    setFilteredEvents,
+                    getUniqueValuesFunctionsProfessionals(),
+                    placeHolders
+                )
+            }
+            placeholders={placeHolders}
+            filterTypes={filterTypes}
+            getOptionLabel={(option) => option.label}
+            getOptionValue={(option) => String(option.value)}
+        />
         {/* Card superior */}
         <div className="w-full h-full flex flex-wrap">
           <div className={styles.top_div}>
@@ -500,19 +581,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 {/* Gráfico de Treemap */}
                 <ChartCardComponent title={treemapTitle} header={
                   <div className={styles.header_container}>
-                    <FormControl sx={{m: 1, minWidth: 120}} size="small">
-                      <InputLabel id="filter-select-label">Filtrar</InputLabel>
-                      <Select
-                          labelId="filter-select-label"
-                          id="filter-select"
-                          value={selectedFilter}
-                          onChange={handleFilterChange}
-                          label="Filtrar"
-                      >
-                        <MenuItem value="institution">Institución</MenuItem>
-                        <MenuItem value="crop">Cultivo</MenuItem>
-                      </Select>
-                    </FormControl>
                     <ExportDropdown
                         chartId={treemapChartProfessionalCountId}
                     />

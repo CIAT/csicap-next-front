@@ -246,7 +246,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
   const [institutionData, setInstitutionData] = useState<number[]>([]);
   const [institutionLabels, setInstitutionLabels] = useState<string[]>([]);
-  const [ejeData, setEjeData] = useState<number[]>([]);
   const [eventStatusData, setEventStatusData] = useState([0, 0]);
   const [guestTypeData, setGuestTypeData] = useState<number[]>([]);
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
@@ -281,7 +280,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Instituciones",
+      label: "Institución",
     },
     {
       value: "",
@@ -654,7 +653,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
     // Calculate eje counts
     const ejeCount = countEjes(tempEventData);
-    setEjeData(Object.values(ejeCount));
 
     // Calculate institution counts
     const institutionCount = countInstitutions(tempEventData);

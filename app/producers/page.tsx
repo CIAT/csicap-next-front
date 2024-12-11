@@ -343,14 +343,6 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
   };
 
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    requestIdleCallback(() => {
-      const newFilter = event.target.value;
-      setSelectedFilter(newFilter);
-      setTreemapData(RegisteredController.processTreemapData(newFilter));
-    });
-  };
-
   useEffect(() => {
     processChartData(filteredEvents);
   }, [filteredEvents]);

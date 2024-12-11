@@ -2,6 +2,7 @@ import { EventFormat } from "@/interfaces/Components/Events";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import { EventsData } from "@/interfaces";
 import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
+import {TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
 
 export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
@@ -18,6 +19,21 @@ export const getUniqueValuesFunctionsEvents = () => [
         EventsController.getUniqueValues(events, "city"),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "gcf_activities", true),
+];
+
+export const getUniqueValuesFunctionsProfessionals = () => [
+    (events: TechnicalBeneficiaries[]) =>
+        EventsController.getUniqueValues(events, "highest_educational_level"),
+    (events: TechnicalBeneficiaries[]) =>
+        EventsController.getUniqueValues(events, "gender_at_birth"),
+    // (events: TechnicalBeneficiaries[]) =>
+    //     EventsController.getUniqueValues(events, "crops_worked_last_12_months", true),
+    // (events: TechnicalBeneficiaries[]) =>
+    //     EventsController.getUniqueValues(events, "department_where_you_work", true),
+    // (events: TechnicalBeneficiaries[]) =>
+    //     EventsController.getUniqueValues(events, "municipalities_where_you_work", true),
+    (events: TechnicalBeneficiaries[]) =>
+        EventsController.getUniqueValues(events, "affiliated_guild_or_organization", true),
 ];
 
 export const getUniqueValuesFunctionsCalendar = () => [
@@ -70,6 +86,24 @@ export const filterFunctionsEvents: Record<
         EventsController.filterEventsByValue(events, "city", value),
     gcfActivity: (events, value) =>
         EventsController.filterEventsByValue(events, "gcf_activities", value, true),
+};
+
+export const filterFunctionsProfessionals: Record<
+    string,
+    (events: TechnicalBeneficiaries[], value: string) => TechnicalBeneficiaries[]
+> = {
+    educationLevel: (events, value) =>
+        EventsController.filterEventsByValue(events, "highest_educational_level", value),
+    gender: (events, value) =>
+        EventsController.filterEventsByValue(events, "gender_at_birth", value),
+    // crop: (events, value) =>
+    //     EventsController.filterEventsByValue(events, "crops_worked_last_12_months", value, true),
+    // department: (events, value) =>
+    //     EventsController.filterEventsByValue(events, "department_where_you_work", value, true),
+    // city: (events, value) =>
+    //     EventsController.filterEventsByValue(events, "municipalities_where_you_work", value, true),
+    institution: (events, value) =>
+        EventsController.filterEventsByValue(events, "affiliated_guild_or_organization", value, true),
 };
 
 export const filterFunctionsCalendar: Record<
