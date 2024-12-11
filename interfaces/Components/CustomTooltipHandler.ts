@@ -1,6 +1,7 @@
 import { EventFormat } from "@/interfaces/Components/Events";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import { EventsData } from "@/interfaces";
+import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
 
 export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
@@ -32,6 +33,23 @@ export const getUniqueValuesFunctionsCalendar = () => [
         EventsController.getUniqueValues(events, "province"),
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "city"),
+];
+
+export const getUniqueValuesFunctionsProducers = () => [
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "gen_name"),
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "type_property"),
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "pr_ethnic_group"),
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "pr_primary_crop"),
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "gremio"),
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "pr_dpto"),
+    (events: DataFormat[]) =>
+        EventsController.getUniqueValues(events, "pr_muni"),
 ];
 
 export const filterFunctionsEvents: Record<
@@ -70,4 +88,24 @@ export const filterFunctionsCalendar: Record<
         EventsController.filterEventsByValue(events, "province", value),
     city: (events, value) =>
         EventsController.filterEventsByValue(events, "city", value),
+};
+
+export const filterFunctionsProducers: Record<
+    string,
+    (events: DataFormat[], value: string) => DataFormat[]
+> = {
+    gender: (events, value) =>
+        EventsController.filterEventsByValue(events, "gen_name", value),
+    property: (events, value) =>
+        EventsController.filterEventsByValue(events, "type_property", value),
+    ethnic: (events, value) =>
+        EventsController.filterEventsByValue(events, "pr_ethnic_group", value),
+    primaryCrop: (events, value) =>
+        EventsController.filterEventsByValue(events, "pr_primary_crop", value),
+    guild: (events, value) =>
+        EventsController.filterEventsByValue(events, "gremio", value),
+    department: (events, value) =>
+        EventsController.filterEventsByValue(events, "pr_dpto", value),
+    city: (events, value) =>
+        EventsController.filterEventsByValue(events, "pr_muni", value),
 };

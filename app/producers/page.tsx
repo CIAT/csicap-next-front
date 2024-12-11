@@ -1,7 +1,6 @@
 "use client";
 
 import { NextPage } from "next";
-import styles from "./producers.module.css";
 import styleBeneficiaries from "@/components/ui/card/CardBeneficiaries.module.css";
 import {
   Chart,
@@ -16,7 +15,6 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import React, { useEffect, useState } from "react";
-import {Event, EventsData, sectionStateData} from "@/interfaces";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import ProducersRepository from "@/helpers/Component/Repository/ProducersRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
@@ -28,17 +26,24 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import LoadingAnimation from "@/components/loadingAnimation";
 import ChartCardComponent from "@/components/events/chartCard";
 import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
-import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import RegisteredController from "@/helpers/Component/Controller/RegisteredController";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
+import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import {
+  filterFunctionsProducers,
+  getUniqueValuesFunctionsProducers
+} from "@/interfaces/Components/CustomTooltipHandler";
+import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import EventsController from "@/helpers/Component/Controller/EventsController";
 
 Chart.register(
   ArcElement,
   Legend,
   LinearScale,
-  CategoryScale, // Register the CategoryScale here
-  BarElement, // Register the BarElement for bar charts
+  CategoryScale,
+  BarElement,
   Title,
   TreemapController,
   TreemapElement
@@ -150,38 +155,78 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
       { name: string; value: number }[]
   >([]);
 
+  const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
+  const [propertyState, setPropertyState] = useState<CustomTooltipData[]>([]);
+  const [ethnicState, setEthnicState] = useState<CustomTooltipData[]>([]);
+  const [primaryCropState, setPrimaryCropState] = useState<CustomTooltipData[]>([]);
+  const [guildState, setGuildState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
+  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [tooltipValues, setTooltipValues] = useState<
+      Array<CustomTooltipData>
+  >([
+    {
+      value: "",
+      label: "Género"
+    },
+    {
+      value: "",
+      label: "Tipo de propiedad"
+    },
+    {
+      value: "",
+      label: "Etnia"
+    },
+    {
+      value: "",
+      label: "Cultivo primario"
+    },
+    {
+      value: "",
+      label: "Gremio"
+    },
+    {
+      value: "",
+      label: "Departamento"
+    },
+    {
+      value: "",
+      label: "Municipio"
+    }
+  ]);
+  const tooltipOptions: Array<CustomTooltipData[]> = [genderState, propertyState, ethnicState, primaryCropState, guildState, departmentState, cityState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setGenderState, setPropertyState, setEthnicState, setPrimaryCropState, setGuildState, setDepartmentState, setCityState];
+  const filterTypes = ["gender", "property", "ethnic", "primaryCrop", "guild", "department", "city"];
+  const placeHolders = ["Género", "Tipo de propiedad", "Etnia", "Cultivo primario", "Gremio", "Departamento", "Municipio"];
+
   useEffect(() => {
     ProducersRepository.fetchEvents()
       .then((data: DataFormat[]) => {
         const formattedEvents = ProducersController.formatEvents(data);
+
+        const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gen_name");
+        const uniqueProperty = EventsController.getUniqueValues(formattedEvents, "type_property");
+        const uniqueEthnic = EventsController.getUniqueValues(formattedEvents, "pr_ethnic_group");
+        const uniquePrimaryCrop = EventsController.getUniqueValues(formattedEvents, "pr_primary_crop");
+        const uniqueGuild = EventsController.getUniqueValues(formattedEvents, "gremio");
+        const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "pr_dpto");
+        const uniqueCities = EventsController.getUniqueValues(formattedEvents, "pr_muni");
+
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
+        setGenderState([...uniqueGender]);
+        setPropertyState([...uniqueProperty]);
+        setEthnicState([...uniqueEthnic]);
+        setPrimaryCropState([...uniquePrimaryCrop]);
+        setGuildState([...uniqueGuild]);
+        setDepartmentState([...uniqueDepartments]);
+        setCityState([...uniqueCities]);
 
-        setAllEventsData(data);
-        RegisteredController.countCrops(data);
-        RegisteredController.countOrganizations(data);
-        setCounts(MapController.updateCountBeneficiariesByCity(formattedEvents));
-        const totalDataRecord = countTotalRecords(data);
-        setTotalData(totalDataRecord);
-        const totalRegistered = countTotalRegistered(data)+countTotalRecords(data);
-        setTotalProducersData(totalRegistered);
-        const genderCount = countGenders(data);
-        setGenderLabel(Object.keys(genderCount));
-        setGenderNumber(Object.values(genderCount));
-
-        const housingCount = countTypeOfHousing(data)
-        setTypeHouseLabel(Object.keys(housingCount));
-        setTypeHouseNumber(Object.values(housingCount));
-
-        const ethnicityCount = countEthnicity(data);
-        setEthnicityLabel(Object.keys(ethnicityCount));
-        setEthnicityNumber(Object.values(ethnicityCount));
-
-        setTreemapData(RegisteredController.processTreemapData(selectedFilter));
+        processChartData(data);
       })
       .catch(error => {
         console.error("Error fetching events:", error);
-        setDataCalendarResp(-1); // Set error state
+        setDataCalendarResp(-1);
       });
   }, []);
 
@@ -306,11 +351,76 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     });
   };
 
+  useEffect(() => {
+    processChartData(filteredEvents);
+  }, [filteredEvents]);
+
+  const processChartData = (data: DataFormat[]) => {
+    setAllEventsData(data);
+    RegisteredController.countCrops(data);
+    RegisteredController.countOrganizations(data);
+    setCounts(MapController.updateCountBeneficiariesByCity(data));
+    const totalDataRecord = countTotalRecords(data);
+    setTotalData(totalDataRecord);
+    const totalRegistered = countTotalRegistered(data)+countTotalRecords(data);
+    setTotalProducersData(totalRegistered);
+    const genderCount = countGenders(data);
+    setGenderLabel(Object.keys(genderCount));
+    setGenderNumber(Object.values(genderCount));
+
+    const housingCount = countTypeOfHousing(data)
+    setTypeHouseLabel(Object.keys(housingCount));
+    setTypeHouseNumber(Object.values(housingCount));
+
+    const ethnicityCount = countEthnicity(data);
+    setEthnicityLabel(Object.keys(ethnicityCount));
+    setEthnicityNumber(Object.values(ethnicityCount));
+
+    setTreemapData(RegisteredController.processTreemapData(selectedFilter));
+  }
+
   return (
     <div className={styles.producers}>
       <Tabs aria-label="Options">
-        {/* Tab Beneficiarios */}
+        {/* Tab Productores */}
         <Tab key="registrados" title="Productores">
+          <CustomTooltip
+              options={tooltipOptions}
+              values={tooltipValues}
+              onChange={(selectedValue, filterType) =>
+                  handleTooltipChange(
+                      selectedValue,
+                      filterType,
+                      filteredEvents,
+                      setTooltipOptions,
+                      tooltipValues,
+                      setTooltipValues,
+                      filterFunctionsProducers,
+                      getUniqueValuesFunctionsProducers(),
+                      filterTypes,
+                  )}
+              onClick={() =>
+                  handleOnClick(
+                      tooltipValues,
+                      filteredEvents,
+                      setFilteredEvents,
+                      filterFunctionsProducers,
+                      filterTypes
+                  )}
+              onReset={() =>
+                  handleReset(
+                      events,
+                      setTooltipOptions,
+                      setTooltipValues,
+                      setFilteredEvents,
+                      getUniqueValuesFunctionsProducers(),
+                      placeHolders
+                  )}
+              placeholders={placeHolders}
+              filterTypes={filterTypes}
+              getOptionLabel={(option) => option.label}
+              getOptionValue={(option) => String(option.value)}
+          />
           <div className="w-full h-full flex flex-wrap">
             {/* Card superior */}
             <div className={styles.top_div}>
@@ -388,19 +498,6 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 <div className={styles.width}>
                   <ChartCardComponent title="Número de productores" header={
                     <div className={styles.header_container}>
-                      <FormControl sx={{m: 1, minWidth: 120}} size="small">
-                        <InputLabel id="filter-select-label">Filtrar</InputLabel>
-                        <Select
-                            labelId="filter-select-label"
-                            id="filter-select"
-                            value={selectedFilter}
-                            onChange={handleFilterChange}
-                            label="Filtrar"
-                        >
-                          <MenuItem value="institution">Institución</MenuItem>
-                          <MenuItem value="crop">Cultivo</MenuItem>
-                        </Select>
-                      </FormControl>
                       <ExportDropdown
                           chartId={treemapChartProducersCountId}
                       />

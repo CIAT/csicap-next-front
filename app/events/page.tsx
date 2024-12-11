@@ -248,7 +248,6 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [eventStatusData, setEventStatusData] = useState([0, 0]);
   const [guestTypeData, setGuestTypeData] = useState<number[]>([]);
   const [guestTypeLabels, setGuestTypeLabels] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
@@ -323,41 +322,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
       setCityState([...uniqueCities]);
       setGCFActivityState([...uniqueGCFActivities]);
 
-      initializeTreemapData(dataset.data);
-
-      // Calculate finished/in-progress events
-      const { finishedEvents, inProgressEvents, programmedEvents } = calculateEventStatus(dataset.data);
-      setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
-
-      // Calculate eje counts
-      const ejeCount = countEjes(dataset.data);
-      setEjeData(Object.values(ejeCount));
-
-      // Calculate institution counts
-      const institutionCount = countInstitutions(dataset.data);
-      setInstitutionLabels(Object.keys(institutionCount));
-      setInstitutionData(Object.values(institutionCount));
-      const guestTypeCount = countGuestTypes(dataset.data);
-      let guestTypeLabels = Object.keys(guestTypeCount);
-      let guestTypeData = Object.values(guestTypeCount);
-      guestTypeLabels.push("Otro");
-      guestTypeData.push(0);
-      if (guestTypeData[guestTypeData.length - 1] === undefined) {
-        guestTypeData.push(0);
-      }
-
-      for (let i = guestTypeLabels.length - 1; i >= 0; i--) {
-        const label = guestTypeLabels[i];
-
-        if (!LabelsParticipants.includes(label)) {
-          guestTypeData[guestTypeData.length - 1] += guestTypeData[i];
-          guestTypeLabels.splice(i, 1);
-          guestTypeData.splice(i, 1);
-        }
-      }
-
-      setGuestTypeLabels(guestTypeLabels);
-      setGuestTypeData(guestTypeData);
+      processChartData();
     }
 
     fetchAndProcessData();
@@ -610,6 +575,10 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
   };
 
   useEffect(() => {
+    processChartData();
+  }, [tempEventData]);
+
+  const processChartData = () => {
     initializeTreemapData(tempEventData);
 
     // Calculate finished/in-progress events
@@ -645,7 +614,7 @@ const EventPage: NextPage<PageCustomProps> = ({customStyles}) => {
 
     setGuestTypeLabels(guestTypeLabels);
     setGuestTypeData(guestTypeData);
-  }, [tempEventData]);
+  }
 
   return (
     <div className={styles.event_page}>
