@@ -3,6 +3,7 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 import { EventsData } from "@/interfaces";
 import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
 import {TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
+import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 
 export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
@@ -19,6 +20,19 @@ export const getUniqueValuesFunctionsEvents = () => [
         EventsController.getUniqueValues(events, "city"),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "gcf_activities", true),
+];
+
+export const getUniqueValuesFunctionsAssistants = () => [
+    (events: Assistance[]) =>
+        EventsController.getUniqueValues(events, "sex_complete"),
+    // (events: Assistance[]) =>
+    //     EventsController.getUniqueValues(events, "birth_date"),
+    (events: Assistance[]) =>
+        EventsController.getUniqueValues(events, "pr_primary_crop"),
+    (events: Assistance[]) =>
+        EventsController.getUniqueValues(events, "group_ocupations"),
+    // (events: Assistance[]) =>
+    //     EventsController.getUniqueValues(events, "gcf_activities", true),
 ];
 
 export const getUniqueValuesFunctionsProfessionals = () => [
@@ -86,6 +100,22 @@ export const filterFunctionsEvents: Record<
         EventsController.filterEventsByValue(events, "city", value),
     gcfActivity: (events, value) =>
         EventsController.filterEventsByValue(events, "gcf_activities", value, true),
+};
+
+export const filterFunctionsAssistants: Record<
+    string,
+    (events: Assistance[], value: string) => Assistance[]
+> = {
+    gender: (events, value) =>
+        EventsController.filterEventsByValue(events, "sex_complete", value),
+    age: (events, value) =>
+        EventsController.filterEventsByValue(events, "birth_date", value),
+    occupation: (events, value) =>
+        EventsController.filterEventsByValue(events, "pr_primary_crop", value),
+    crop: (events, value) =>
+        EventsController.filterEventsByValue(events, "group_ocupations", value),
+    // gcfActivity: (events, value) =>
+    //     EventsController.filterEventsByValue(events, "gcf_activities", value, true),
 };
 
 export const filterFunctionsProfessionals: Record<

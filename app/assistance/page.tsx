@@ -32,6 +32,17 @@ import {Assistance} from "@/interfaces/Components/AssistanceComponent";
 import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import {
+  filterFunctionsAssistants,
+  filterFunctionsEvents,
+  getUniqueValuesFunctionsAssistants,
+  getUniqueValuesFunctionsEvents
+} from "@/interfaces/Components/CustomTooltipHandler";
+import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
+import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import EventsController from "@/helpers/Component/Controller/EventsController";
+import EventController from "@/helpers/Component/Controller/EventsController";
 
 
 Chart.register(
@@ -240,7 +251,75 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   >([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [allAssistanceData, setAllAssistanceData] = useState<Assistance[]>([]);
+  const [tempAssistanceData, setTempAssistanceData] = useState<Assistance[]>([]);
+
   const [allEventsData, setAllEventsData] = useState<Event[]>([]);
+
+  const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
+  const [ageState, setAgeState] = useState<CustomTooltipData[]>([]);
+  const [occupationState, setOccupationState] = useState<CustomTooltipData[]>([]);
+  const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
+  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>([]);
+  const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
+    {
+      value: "",
+      label: "Género",
+    },
+    {
+      value: "",
+      label: "Edad",
+    },
+    {
+      value: "",
+      label: "Edad",
+    },
+    {
+      value: "",
+      label: "Ocupación",
+    },
+    {
+      value: "",
+      label: "Cultivo",
+    },
+    {
+      value: "",
+      label: "Actividades GCF",
+    },
+  ]);
+
+  const tooltipOptions: Array<CustomTooltipData[]> = [
+    genderState,
+    ageState,
+    occupationState,
+    cropState,
+    gcfActivityState,
+  ];
+
+  const setTooltipOptions: Array<
+      React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
+  > = [
+    setGenderState,
+    setAgeState,
+    setOccupationState,
+    setCropState,
+    setGCFActivityState,
+  ];
+
+  const filterTypes = [
+    "gender",
+    "age",
+    "occupation",
+    "crop",
+    "gcfActivity",
+  ];
+
+  const placeHolders = [
+    "Género",
+    "Edad",
+    "Cultivo",
+    "Ocupación",
+    "Actividades GCF",
+  ];
 
   useEffect(() => {
     CalendarRepository.fetchEvents()
@@ -249,9 +328,11 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             ...event,
             city: event.city.toLowerCase(),
           }));
-          setCounts(MapController.updateCountAssistantsByGender(formattedEvents));
           setEvents(formattedEvents);
           setFilteredEvents(formattedEvents);
+
+          setCounts(MapController.updateCountAssistantsByGender(formattedEvents));
+
         })
         .catch(error => {
           console.error("Error fetching events:", error);
@@ -259,7 +340,37 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
     async function fetchData() {
       const dataset =  await AssistanceRepository.getAssistanceData();
+
+      const uniqueGender = EventsController.getUniqueValues(
+          dataset,
+          "sex_complete"
+      );
+      // const uniqueAge = EventController.getUniqueValues(
+      //     dataset,
+      //     "birth_date"
+      // );
+      const uniqueCrop = EventController.getUniqueValues(
+          dataset,
+          "pr_primary_crop"
+      );
+      const uniqueOccupation = EventController.getUniqueValues(
+          dataset,
+          "group_ocupations"
+      );
+      // const uniqueGCFActivities = EventsController.getUniqueValues(
+      //     dataset,
+      //     "gcf_activities",
+      //     true
+      // );
+
       setAllAssistanceData(dataset);
+      setTempAssistanceData(dataset);
+      setGenderState([...uniqueGender]);
+      // setAgeState([...uniqueAge]);
+      setCropState([...uniqueCrop]);
+      setOccupationState([...uniqueOccupation]);
+      // setGCFActivityState([...uniqueGCFActivities]);
+
       const eventsDataSet = await CalendarRepository.fetchCustomEvent();
       setAllEventsData(CalendarController.formatEvent(eventsDataSet));
       initializeTreemapData(CalendarController.formatEvent(eventsDataSet));
@@ -271,7 +382,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     if (allAssistanceData.length > 0) {
       proccesdata();
     }
-  }, [allAssistanceData]);
+  }, [tempAssistanceData]);
 
   function proccesdata() {
     let ageCount: { [key: string]: number } = {
@@ -468,6 +579,46 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   return (
     <div className={styles.div}>
+      <CustomTooltip
+          options={tooltipOptions}
+          values={tooltipValues}
+          onChange={(selectedValue, filterType) =>
+              handleTooltipChange(
+                  selectedValue,
+                  filterType,
+                  tempAssistanceData,
+                  setTooltipOptions,
+                  tooltipValues,
+                  setTooltipValues,
+                  filterFunctionsAssistants,
+                  getUniqueValuesFunctionsAssistants(),
+                  filterTypes
+              )
+          }
+          onClick={() =>
+              handleOnClick(
+                  tooltipValues,
+                  tempAssistanceData,
+                  setTempAssistanceData,
+                  filterFunctionsAssistants,
+                  filterTypes
+              )
+          }
+          onReset={() =>
+              handleReset(
+                  allAssistanceData,
+                  setTooltipOptions,
+                  setTooltipValues,
+                  setTempAssistanceData,
+                  getUniqueValuesFunctionsAssistants(),
+                  placeHolders
+              )
+          }
+          placeholders={placeHolders}
+          filterTypes={filterTypes}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => String(option.value)}
+      />
       <div className={styles.top_div}>
         {/* Card: Total asistentes */}
         <CardComponent

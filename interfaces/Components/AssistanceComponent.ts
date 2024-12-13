@@ -1,5 +1,6 @@
 export interface Assistance {
     main_occupation: string;
+    pr_primary_crop: string;
     organization_affiliation: null;
     birth_date: string;
     event_id: string;
