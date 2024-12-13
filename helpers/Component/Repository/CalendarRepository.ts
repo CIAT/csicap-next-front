@@ -1,17 +1,19 @@
 import { DataFormat, Event, EventFormat } from "@/interfaces";
 
 class CalendarRepository {
+    
     static async fetchEvents(): Promise<DataFormat> {
         const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
+       
         if(!url){
             return <DataFormat>{};
         }
-
-        const response = await fetch(url);
+        const response = await fetch(`/api/verify-token?shortName=${url}`);
+       
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }
-        return response.json();
+        return  await response.json();
     }
 
     static async fetchCalendarEvents(): Promise<DataFormat> {
@@ -19,25 +21,26 @@ class CalendarRepository {
         if(!url){
             return <DataFormat>{};
         }
-
-        const response = await fetch(url);
+        const response = await fetch(`/api/verify-token?shortName=${url}`);
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }
-        return response.json();
+        return await response.json();
     }
 
     static async fetchCustomEvent(): Promise<EventFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
+        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;    
         if(!url){
             return <EventFormat>{};
         }
 
-        const response = await fetch(url);
+        const response = await fetch(`/api/verify-token?shortName=${url}`);
+
+    
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }
-        return response.json();
+        return await response.json();
     }
 }
 
