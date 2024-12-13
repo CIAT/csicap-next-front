@@ -6,16 +6,47 @@ import CalendarRepository from "@/helpers/Component/Repository/CalendarRepositor
 import MapController from "@/helpers/Component/Controller/MapController";
 import { NestedDictionary } from "@/interfaces/Map/NestedDictionary";
 import Select from "react-select";
-import React, {FC, useEffect, useState} from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { DataFormat, EventsData } from "@/interfaces";
 import LoadingAnimation from "@/components/loadingAnimation";
 import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 import ReportsController from "@/helpers/Component/Controller/ReportsController";
-import { ReportNames } from "@/interfaces/Components/ReportsComponent";
-import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
+import {
+  ReportFormat,
+  ReportNames,
+} from "@/interfaces/Components/ReportsComponent";
+import { PageCustomProps } from "@/interfaces/Components/PageCustomProps";
+import { CustomTooltipData } from "@/interfaces/Components/CustomTooltip";
+import {
+  filterFunctionsEvents,
+  getUniqueValuesFunctionsEvents,
+} from "@/interfaces/Components/CustomTooltipHandler";
+import { EventFormat } from "@/interfaces/Components/Events";
+import {
+  handleOnClick,
+  handleReset,
+  handleTooltipChange,
+} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
+import EventsController from "@/helpers/Component/Controller/EventsController";
 
-const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
+const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
+  const [allData, setAllData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
+  const [tempEventData, setTempEventData] = useState<EventFormat[]>([]);
+  const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
+  const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>(
+    []
+  );
+  const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>(
+    []
+  );
+  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>(
+    []
+  );
   const styles = customStyles || require("./reports.module.css");
   const [events, setEvents] = useState<EventsData[]>([]);
   const [counts, setCounts] = useState<NestedDictionary>({});
@@ -27,31 +58,169 @@ const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
     label: string;
   } | null>(null);
 
-  useEffect(() => {
-    async function fetchReports() {
-      const dataset = await ReportsRepository.fetchEvents();
-      setAllEventData(ReportsController.formatHeaders(dataset));
-    }
+  const tooltipOptions: Array<CustomTooltipData[]> = [
+    componentState,
+    axisState,
+    institutionState,
+    cropState,
+    departmentState,
+    cityState,
+    gcfActivityState,
+  ];
+  const setTooltipOptions: Array<
+    React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
+  > = [
+    setComponentState,
+    setAxisState,
+    setInstitutionState,
+    setCropState,
+    setDepartmentState,
+    setCityState,
+    setGCFActivityState,
+  ];
 
-    CalendarRepository.fetchEvents()
-      .then((data: DataFormat) => {
-        const formattedEvents = CalendarController.formatEvents(data).map(
-          (event) => ({
-            ...event,
-            city: event.city.toLowerCase(),
-          })
+  const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
+    {
+      value: "",
+      label: "Componente",
+    },
+    {
+      value: "",
+      label: "Eje",
+    },
+    {
+      value: "",
+      label: "Instituciones",
+    },
+    {
+      value: "",
+      label: "Cultivo",
+    },
+    {
+      value: "",
+      label: "Departamento",
+    },
+    {
+      value: "",
+      label: "Municipio",
+    },
+    {
+      value: "",
+      label: "Actividades GCF",
+    },
+  ]);
+
+  const filterTypes = [
+    "component",
+    "axis",
+    "institution",
+    "crop",
+    "department",
+    "city",
+    "gcfActivity",
+  ];
+
+  const placeHolders = [
+    "Componente",
+    "Eje",
+    "Instituciones",
+    "Cultivo",
+    "Departamento",
+    "Municipio",
+    "Actividades GCF",
+  ];
+
+  useEffect(() => {
+    async function initializePage() {
+      // Fetch all reports initially
+      await fetchReports();
+
+      // Fetch event data
+      CalendarRepository.fetchEvents()
+        .then((data: DataFormat) => {
+          const formattedEvents = CalendarController.formatEvents(data).map(
+            (event) => ({
+              ...event,
+              city: event.city.toLowerCase(),
+            })
+          );
+
+          setCounts(MapController.updateCountAssistants(formattedEvents));
+          setEvents(formattedEvents);
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+        });
+
+      // Fetch and process custom event data
+      async function fetchAndProcessData() {
+        const dataset = await CalendarRepository.fetchCustomEvent();
+        const formattedEvents = CalendarController.formatEvent(dataset);
+
+        const uniqueComponents = EventsController.getUniqueValues(
+          formattedEvents,
+          "component",
+          true
+        );
+        const uniqueAxis = EventsController.getUniqueValues(
+          formattedEvents,
+          "eje",
+          true
+        );
+        const uniqueInstitutions = EventsController.getUniqueValues(
+          formattedEvents,
+          "institution",
+          true
+        );
+        const uniqueCrops = EventsController.getUniqueValues(
+          formattedEvents,
+          "crop",
+          true
+        );
+        const uniqueDepartments = EventsController.getUniqueValues(
+          formattedEvents,
+          "province"
+        );
+        const uniqueCities = EventsController.getUniqueValues(
+          formattedEvents,
+          "city"
+        );
+        const uniqueGCFActivities = EventsController.getUniqueValues(
+          formattedEvents,
+          "gcf_activities",
+          true
         );
 
-        setCounts(MapController.updateCountAssistants(formattedEvents));
-        setEvents(formattedEvents);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
+        setAllData(formattedEvents);
+        setTempEventData(formattedEvents);
+        setComponentState([...uniqueComponents]);
+        setAxisState([...uniqueAxis]);
+        setInstitutionState([...uniqueInstitutions]);
+        setCropState([...uniqueCrops]);
+        setDepartmentState([...uniqueDepartments]);
+        setCityState([...uniqueCities]);
+        setGCFActivityState([...uniqueGCFActivities]);
+      }
 
-    fetchReports();
+      fetchAndProcessData();
+    }
+
+    initializePage();
   }, []);
 
+  const fetchReports = async (filters?: { [key: string]: string | null }) => {
+    try {
+      const data = filters
+        ? await ReportsRepository.fetchFilteredReports(filters) // Fetch filtered reports
+        : await ReportsRepository.fetchEvents(); // Fetch all reports
+  
+      const formattedReports = ReportsController.formatHeaders(data); // Format the fetched data
+      setAllEventData(formattedReports); // Update the state for dropdown options
+    } catch (error) {
+      console.error("Error fetching reports:", error);
+    }
+  };
+  
   const fetchPdf = async (selectedReportId: string) => {
     try {
       const encodedReportId = encodeURIComponent(selectedReportId);
@@ -110,6 +279,33 @@ const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
     }
   };
 
+  const handleApplyFilters = async () => {
+
+    console.log("Applying filters...");
+    // Apply filters to the main data
+    handleOnClick(
+      tooltipValues,
+      allData,
+      setTempEventData,
+      filterFunctionsEvents,
+      filterTypes
+    );
+  
+    // Generate filters for the reports API
+    const filters = tooltipValues.reduce((acc, tooltip, index) => {
+      if (tooltip.value) {
+        acc[filterTypes[index]] = tooltip.value; // Map filter type to its selected value
+      }
+      return acc;
+    }, {} as { [key: string]: string });
+  
+    // Fetch filtered reports and update the dropdown
+    await fetchReports(filters);
+  
+    // Ensure the dropdown updates (derived from allEventData)
+    setSelectedReport(null); // Clear the current selection after applying filters
+  };
+  
   const handleReportSelection = (
     selectedOption: { value: string; label: string } | null
   ) => {
@@ -142,58 +338,119 @@ const ReportsPage: FC<PageCustomProps> = ({customStyles}) => {
 
   return (
     <div className={styles.reports}>
-      <div className={styles.first_div}>
-        <div className={styles.filter_div}>
-          <div style={{ width: "60%" }}>
-            <Select
-              options={reportOptions}
-              value={selectedReport}
-              onChange={handleReportSelection}
-              placeholder="Filtrar"
-              isSearchable
-            />
+      <CustomTooltip
+        options={tooltipOptions}
+        values={tooltipValues}
+        onChange={(selectedValue, filterType) =>
+          handleTooltipChange(
+            selectedValue,
+            filterType,
+            tempEventData,
+            setTooltipOptions,
+            tooltipValues,
+            setTooltipValues,
+            filterFunctionsEvents,
+            getUniqueValuesFunctionsEvents(),
+            filterTypes
+          )
+        }
+        onClick={handleApplyFilters}
+        onReset={() =>
+          handleReset(
+            allData,
+            setTooltipOptions,
+            setTooltipValues,
+            setTempEventData,
+            getUniqueValuesFunctionsEvents(),
+            placeHolders
+          )
+        }
+        placeholders={placeHolders}
+        filterTypes={filterTypes}
+        getOptionLabel={(option) => option.label}
+        getOptionValue={(option) => String(option.value)}
+      />
+      <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
+        <div className={styles.first_div}>
+          <div className={styles.filter_div}>
+            <div style={{ width: "60%" }}>
+              <Select
+                options={reportOptions}
+                value={selectedReport}
+                onChange={handleReportSelection}
+                placeholder="Elige un reporte"
+                isSearchable
+              />
+            </div>
+            <div className="gap-2 flex flex-row">
+              <Button
+                variant="contained"
+                onClick={downloadPdf}
+                disabled={!pdfUrl}
+              >
+                PDF
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() =>
+                  selectedReport && handleDownloadDocx(selectedReport.value)
+                }
+                disabled={!selectedReport}
+              >
+                Word
+              </Button>
+            </div>
           </div>
-          <div className="gap-2 flex flex-row">
-            <Button
-              variant="contained"
-              onClick={downloadPdf}
-              disabled={!pdfUrl}
-            >
-              PDF
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() =>
-                selectedReport && handleDownloadDocx(selectedReport.value)
-              }
-              disabled={!selectedReport}
-            >
-              Word
-            </Button>
+          <div className={styles.preview_div}>
+            {pdfUrl ? (
+              <iframe src={pdfUrl} className={styles.pdf} />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  alignContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <p style={{ textAlign: "center" }}>
+                  Porfavor, selecciona un reporte para visualizar
+                </p>
+                <div
+                  style={{
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <LoadingAnimation />
+                </div>
+              </div>
+            )}
           </div>
         </div>
-        <div className={styles.preview_div}>
-          {pdfUrl ? (
-            <iframe
-              src={pdfUrl}
-              className={styles.pdf}
+
+        <div className={styles.second_div}>
+          {events.length > 0 ? (
+            <MapComponent
+              data={counts}
+              polygons={CalendarController.extractProvincesAndCities(events)}
+              useQuintile={true}
             />
           ) : (
-            <p>Seleciona un Reporte</p>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <LoadingAnimation />
+            </div>
           )}
         </div>
-      </div>
-
-      <div className={styles.second_div}>
-        {events.length > 0 ? (
-          <MapComponent
-            data={counts}
-            polygons={CalendarController.extractProvincesAndCities(events)}
-            useQuintile={true}
-          />
-        ) : (
-          <LoadingAnimation />
-        )}
       </div>
     </div>
   );
