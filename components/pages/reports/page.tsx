@@ -219,7 +219,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       console.log("Raw fetched data:", data); // Debug the raw API response
 
       const formattedReports = ReportsController.formatHeaders(data); // Format the fetched data
-      
+
       setAllEventData(formattedReports); // Update the state for dropdown options
     } catch (error) {
       console.error("Error in fetchReports:", error);
@@ -393,10 +393,12 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
                 variant="contained"
                 onClick={downloadPdf}
                 disabled={!pdfUrl}
+                style={{ fontSize: "1vw" }}
               >
                 PDF
               </Button>
               <Button
+                style={{ fontSize: "1vw" }}
                 variant="contained"
                 onClick={() =>
                   selectedReport && handleDownloadDocx(selectedReport.value)

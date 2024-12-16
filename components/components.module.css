@@ -104,10 +104,10 @@
 
 @media (min-width: 2000px) {
   .card_header {
-    font-size: 1.5rem;
+    font-size: 1vw;
   }
   
   .chart_card_header {
-    font-size: 1.5rem;
+    font-size: 1vw;
   }
 }
