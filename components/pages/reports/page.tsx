@@ -209,18 +209,23 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   }, []);
 
   const fetchReports = async (filters?: { [key: string]: string | null }) => {
+    console.log("fetchReports called with filters:", filters); // Debug log
+
     try {
       const data = filters
-        ? await ReportsRepository.fetchFilteredReports(filters) // Fetch filtered reports
-        : await ReportsRepository.fetchEvents(); // Fetch all reports
-  
+        ? await ReportsRepository.fetchFilteredReports(filters)
+        : await ReportsRepository.fetchEvents();
+
+      console.log("Raw fetched data:", data); // Debug the raw API response
+
       const formattedReports = ReportsController.formatHeaders(data); // Format the fetched data
+      
       setAllEventData(formattedReports); // Update the state for dropdown options
     } catch (error) {
-      console.error("Error fetching reports:", error);
+      console.error("Error in fetchReports:", error);
     }
   };
-  
+
   const fetchPdf = async (selectedReportId: string) => {
     try {
       const encodedReportId = encodeURIComponent(selectedReportId);
@@ -280,7 +285,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   };
 
   const handleApplyFilters = async () => {
-
     console.log("Applying filters...");
     // Apply filters to the main data
     handleOnClick(
@@ -290,7 +294,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       filterFunctionsEvents,
       filterTypes
     );
-  
+
     // Generate filters for the reports API
     const filters = tooltipValues.reduce((acc, tooltip, index) => {
       if (tooltip.value) {
@@ -298,14 +302,14 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       }
       return acc;
     }, {} as { [key: string]: string });
-  
+
     // Fetch filtered reports and update the dropdown
     await fetchReports(filters);
-  
+
     // Ensure the dropdown updates (derived from allEventData)
     setSelectedReport(null); // Clear the current selection after applying filters
   };
-  
+
   const handleReportSelection = (
     selectedOption: { value: string; label: string } | null
   ) => {
@@ -331,6 +335,8 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       label: capitalizeFirstLetter(report.name),
       date: report.datesEnd, // Include date for debugging
     }));
+  console.log("eventData", allEventData);
+  console.log("reportOptions", reportOptions);
 
   function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

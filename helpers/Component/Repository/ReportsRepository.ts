@@ -11,6 +11,7 @@ class ReportsRepository {
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }
+
         return response.json();
     }
 
@@ -29,7 +30,6 @@ class ReportsRepository {
       if (!response.ok) {
         throw new Error("Error fetching event");
       }
-    
       return await response.json(); // Return the specific event data as JSON
     }
 
@@ -45,16 +45,13 @@ class ReportsRepository {
           .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
           .join("&");
   
-      const url = `${baseUrl}`; // Construct the full URL with filters
-      console.log(url);
+      const url = `${baseUrl}?${queryParams}`; // Construct the full URL with filters
   
-      const response = await fetch(url);
-      console.log(response);
+      const response = await fetch(`/api/verify-token?shortName=${url}`);
   
       if (!response.ok) {
           throw new Error("Error fetching filtered reports");
       }
-  
       return await response.json(); // Return the filtered reports data as JSON
   }
   
