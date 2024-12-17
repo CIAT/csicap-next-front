@@ -341,6 +341,20 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     async function fetchData() {
       const dataset =  await AssistanceRepository.getAssistanceData();
 
+      console.log(dataset)
+      console.log(EventsController.getUniqueValues(
+          dataset,
+          "sex_complete"
+      ))
+      console.log(EventController.getUniqueValues(
+          dataset,
+          "pr_primary_crop"
+      ))
+      console.log(EventController.getUniqueValues(
+          dataset,
+          "group_ocupations"
+      ))
+
       const uniqueGender = EventsController.getUniqueValues(
           dataset,
           "sex_complete"
@@ -379,9 +393,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }, []);
 
   useEffect(() => {
-    if (allAssistanceData.length > 0) {
-      proccesdata();
-    }
+    proccesdata();
   }, [tempAssistanceData]);
 
   function proccesdata() {
