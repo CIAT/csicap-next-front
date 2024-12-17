@@ -1,17 +1,13 @@
 "use client";
 
-import * as React from "react";
-
-// 1. import `NextUIProvider` component
 import { Link, NextUIProvider } from "@nextui-org/react";
 import styles from "./home.module.css";
 import { ChevronRight } from "lucide-react";
+import {useState} from "react";
 
 export default function Home() {
-  // State to track which card is expanded
-  const [expandedCard, setExpandedCard] = React.useState(null);
+  const [expandedCard, setExpandedCard] = useState(null);
 
-  // Function to toggle the expanded state of a specific card
   const toggleReadMore = (cardId: any) => {
     setExpandedCard(expandedCard === cardId ? null : cardId);
   };
@@ -22,12 +18,14 @@ export default function Home() {
       title: "Monitoreo",
       description: `El Monitoreo es un proceso continuo de recolección y análisis de información rutinaria sobre indicadores específicos, con el fin de evaluar el progreso de las actividades relacionadas a unas metas específicas.`,
       additionalText: `En esta sección podrás consultar información detallada sobre las actividades del proyecto CSICAP y su avance en tiempo real. Accede a un calendario interactivo que muestra las actividades distribuidas por municipio, cultivo y eje, con la posibilidad de aplicar filtros según tus necesidades. Además, encontrarás estadísticas de los eventos registrados, información sobre los asistentes y reportes consolidados por evento, lo que te permitirá realizar un seguimiento completo del progreso y los beneficiarios en diferentes niveles.`,
+      route: "/calendar",
     },
     {
       id: 2,
       title: "Evaluación",
       description: `La Evaluación determina la relevancia y pertinencia del proyecto por medio del logro de los objetivos que inicialmente se plantearon. De esta manera, se intenta establecer el grado de atribución y causalidad de las intervenciones.`,
       additionalText: `En esta sección podrás consultar la evolución de los indicadores clave del proyecto, que reflejan el impacto en áreas como la adopción de prácticas agroambientales, el fortalecimiento de capacidades, la mejora en la productividad de los cultivos, y la sostenibilidad económica y ambiental. A través de visualizaciones claras, podrás seguir el progreso de estos objetivos y el impacto en los beneficiarios, basados en la información recopilada durante el proyecto.`,
+      route: "/",
     },
   ];
 
@@ -39,7 +37,7 @@ export default function Home() {
             key={card.id}
             className={styles.cardDiv}
             style={{
-              height: expandedCard === card.id ? "50vh" : "40vh", // Taller height for expanded cards
+              height: expandedCard === card.id ? "50vh" : "40vh",
             }}
           >
             <div className={styles.card}>
@@ -83,7 +81,7 @@ export default function Home() {
                 <div className={styles.buttonDiv}>
                   <button
                     className={styles.button}
-                    onClick={() => (window.location.href = "/calendar")}
+                    onClick={() => (window.location.href = card.route)}
                   >
                     <ChevronRight size={90} color="#ffffff" />
                   </button>

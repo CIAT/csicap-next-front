@@ -41,15 +41,11 @@ class ReportsController {
 
   static formatHeaders(data: any): ReportNames[] {
     try {
-      console.log("Raw input data:", data); // Log raw input
-  
       // Validate input structure
       if (!data || typeof data !== "object" || !Array.isArray(data.data)) {
         console.error("Invalid data format in formatHeaders:", data); // Log error
         throw new TypeError("Invalid data format");
       }
-  
-      console.log("Valid input data structure:", data.data); // Log valid data
   
       // Map over the data to create formatted report headers
       return data.data.map((report: any, index: number) => {

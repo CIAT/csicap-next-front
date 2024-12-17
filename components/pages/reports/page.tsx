@@ -209,14 +209,10 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   }, []);
 
   const fetchReports = async (filters?: { [key: string]: string | null }) => {
-    console.log("fetchReports called with filters:", filters); // Debug log
-
     try {
       const data = filters
         ? await ReportsRepository.fetchFilteredReports(filters)
         : await ReportsRepository.fetchEvents();
-
-      console.log("Raw fetched data:", data); // Debug the raw API response
 
       const formattedReports = ReportsController.formatHeaders(data); // Format the fetched data
 

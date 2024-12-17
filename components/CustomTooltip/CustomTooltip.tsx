@@ -44,6 +44,10 @@ const CustomTooltip = <T,>({
               getOptionValue={getOptionValue}
               placeholder={placeholders[index]}
               isSearchable
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                menu: (provided) => ({ ...provided, zIndex: 9999 }),
+              }}
             />
           </div>
         ))}
