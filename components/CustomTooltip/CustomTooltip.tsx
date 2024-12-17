@@ -28,9 +28,9 @@ const CustomTooltip = <T,>({
 }: MultiSelectProps<T>) => {
   return (
     <div className={styles.container}>
-      <div style={{ display: "flex", flexDirection: "row", gap: "1vw" }}>
+      <div style={{ display: "flex", flexDirection: "row", gap: "1vw",width:"85%" }}>
         {options.map((selectOptions, index) => (
-          <div key={index} style={{}}>
+          <div key={index} style={{maxWidth:"15%", minWidth:"10%"}}>
             <Select
               options={selectOptions}
               value={values[index]}
@@ -48,7 +48,7 @@ const CustomTooltip = <T,>({
           </div>
         ))}
       </div>
-      <div>
+      <div style={{width:"15%"}}>
         <button onClick={onClick} className={styles.button}>
           Aplicar
         </button>

@@ -1,8 +1,11 @@
 .first_div {
     width: 50%;
-    padding-top: 20px;
-    padding-bottom: 20px;
     height: auto;
+    padding: 20px;
+    border: 3px solid #c79e40;
+    border-radius: 15px;
+    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .second_div{
@@ -24,12 +27,11 @@
     align-items: center;
     height: 10vh;
     width: 100%;
-    padding: 0 0 0 10px;
 }
 
 .reports {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     min-height: 100vh;
     max-height: fit-content;
 }

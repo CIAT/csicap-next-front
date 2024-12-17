@@ -11,6 +11,7 @@ class ReportsRepository {
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }
+
         return response.json();
     }
 
@@ -29,9 +30,31 @@ class ReportsRepository {
       if (!response.ok) {
         throw new Error("Error fetching event");
       }
-    
       return await response.json(); // Return the specific event data as JSON
     }
+
+    static async fetchFilteredReports(filters: { [key: string]: string | null }): Promise<ReportNamesFormat> {
+      const baseUrl = process.env.NEXT_PUBLIC_URL_GET_REPORTS; // Base URL for fetching reports
+      if (!baseUrl) {
+          return <ReportNamesFormat>{}; // Return an empty object if the URL is not defined
+      }
+  
+      // Construct the query string by iterating through the filters
+      const queryParams = Object.entries(filters)
+          .filter(([_, value]) => value) // Exclude null or undefined values
+          .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
+          .join("&");
+  
+      const url = `${baseUrl}?${queryParams}`; // Construct the full URL with filters
+  
+      const response = await fetch(`/api/verify-token?shortName=${url}`);
+  
+      if (!response.ok) {
+          throw new Error("Error fetching filtered reports");
+      }
+      return await response.json(); // Return the filtered reports data as JSON
+  }
+  
     
 }
 

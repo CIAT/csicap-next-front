@@ -36,13 +36,13 @@ export interface Report {
 }
 
 export interface ReportNames {
-  forEach(arg0: (item: { label: string; value: string; }) => void): unknown;
   name: string;
   is_reported: string;
   not_assistant: string;
   event_id: string;
   datesEnd: string;
 }
+
 
 export interface ReportNamesFormat {
   id: string;
