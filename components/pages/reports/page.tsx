@@ -281,7 +281,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   };
 
   const handleApplyFilters = async () => {
-    console.log("Applying filters...");
     // Apply filters to the main data
     handleOnClick(
       tooltipValues,
@@ -331,8 +330,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       label: capitalizeFirstLetter(report.name),
       date: report.datesEnd, // Include date for debugging
     }));
-  console.log("eventData", allEventData);
-  console.log("reportOptions", reportOptions);
 
   function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

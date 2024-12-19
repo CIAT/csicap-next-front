@@ -1,7 +1,6 @@
 "use client";
 
 import {NextPage} from "next";
-import styles from "./assistance.module.css";
 import styleTechnical from "./assistance.module.css";
 import CardComponent from "@/components/ui/card/Card";
 import { Chart as ReactChart } from "react-chartjs-2";
@@ -13,7 +12,6 @@ import {
   CategoryScale,
   BarElement,
   LinearScale,
-  Title,
 } from "chart.js";
 import {Doughnut} from "react-chartjs-2";
 import {TreemapController, TreemapElement} from "chartjs-chart-treemap";
@@ -24,7 +22,6 @@ import React, { useEffect, useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
 import { DataFormat, EventsData , Event} from "@/interfaces";
-import { parse } from "path";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
@@ -35,9 +32,7 @@ import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
   filterFunctionsAssistants,
-  filterFunctionsEvents,
   getUniqueValuesFunctionsAssistants,
-  getUniqueValuesFunctionsEvents
 } from "@/interfaces/Components/CustomTooltipHandler";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
@@ -271,10 +266,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Edad",
-    },
-    {
-      value: "",
       label: "Ocupación",
     },
     {
@@ -308,8 +299,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const filterTypes = [
     "gender",
     "age",
-    "occupation",
     "crop",
+    "occupation",
     "gcfActivity",
   ];
 
@@ -341,28 +332,11 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     async function fetchData() {
       const dataset =  await AssistanceRepository.getAssistanceData();
 
-      console.log(dataset)
-      console.log(EventsController.getUniqueValues(
-          dataset,
-          "sex_complete"
-      ))
-      console.log(EventController.getUniqueValues(
-          dataset,
-          "pr_primary_crop"
-      ))
-      console.log(EventController.getUniqueValues(
-          dataset,
-          "group_ocupations"
-      ))
-
       const uniqueGender = EventsController.getUniqueValues(
           dataset,
           "sex_complete"
       );
-      // const uniqueAge = EventController.getUniqueValues(
-      //     dataset,
-      //     "birth_date"
-      // );
+      const uniqueAge = EventsController.getAgeRanges(dataset, "age");
       const uniqueCrop = EventController.getUniqueValues(
           dataset,
           "pr_primary_crop"
@@ -371,19 +345,19 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           dataset,
           "group_ocupations"
       );
-      // const uniqueGCFActivities = EventsController.getUniqueValues(
-      //     dataset,
-      //     "gcf_activities",
-      //     true
-      // );
+      const uniqueGCFActivities = EventsController.getUniqueValues(
+          dataset,
+          "gcf_activities",
+          true
+      );
 
       setAllAssistanceData(dataset);
       setTempAssistanceData(dataset);
       setGenderState([...uniqueGender]);
-      // setAgeState([...uniqueAge]);
+      setAgeState([...uniqueAge]);
       setCropState([...uniqueCrop]);
       setOccupationState([...uniqueOccupation]);
-      // setGCFActivityState([...uniqueGCFActivities]);
+      setGCFActivityState([...uniqueGCFActivities]);
 
       const eventsDataSet = await CalendarRepository.fetchCustomEvent();
       setAllEventsData(CalendarController.formatEvent(eventsDataSet));
@@ -419,11 +393,11 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
     const currentYear = new Date().getFullYear(); // Current year
    
-    allAssistanceData.forEach((item) => {
+    tempAssistanceData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
       const occupation = item?.group_ocupations;
       const birthDate = item.birth_date ? new Date(item.birth_date) : null; // Parse the birth date
-      const age = birthDate ? currentYear - birthDate.getFullYear() : null; // Calculate age
+      const age = Number(item.age) || null; // Calculate age
 
       // Count gender
       if (gender === "hombre") {
@@ -446,7 +420,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       }
 
       // Count age
-      if (age !== null) {
+      if (age !== null && age !== 0) {
         if (age >= 20 && age <= 25) {
           ageCount["20-25"]++;
         } else if (age >= 26 && age <= 30) {

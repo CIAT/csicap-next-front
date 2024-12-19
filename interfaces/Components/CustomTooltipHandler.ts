@@ -25,14 +25,14 @@ export const getUniqueValuesFunctionsEvents = () => [
 export const getUniqueValuesFunctionsAssistants = () => [
     (events: Assistance[]) =>
         EventsController.getUniqueValues(events, "sex_complete"),
-    // (events: Assistance[]) =>
-    //     EventsController.getUniqueValues(events, "birth_date"),
+    (events: Assistance[]) =>
+        EventsController.getAgeRanges(events, "age"),
     (events: Assistance[]) =>
         EventsController.getUniqueValues(events, "pr_primary_crop"),
     (events: Assistance[]) =>
         EventsController.getUniqueValues(events, "group_ocupations"),
-    // (events: Assistance[]) =>
-    //     EventsController.getUniqueValues(events, "gcf_activities", true),
+    (events: Assistance[]) =>
+        EventsController.getUniqueValues(events, "gcf_activities", true),
 ];
 
 export const getUniqueValuesFunctionsProfessionals = () => [
@@ -109,13 +109,13 @@ export const filterFunctionsAssistants: Record<
     gender: (events, value) =>
         EventsController.filterEventsByValue(events, "sex_complete", value),
     age: (events, value) =>
-        EventsController.filterEventsByValue(events, "birth_date", value),
+        EventsController.filterEventsByAgeRange(events, "age", value),
     occupation: (events, value) =>
         EventsController.filterEventsByValue(events, "pr_primary_crop", value),
     crop: (events, value) =>
         EventsController.filterEventsByValue(events, "group_ocupations", value),
-    // gcfActivity: (events, value) =>
-    //     EventsController.filterEventsByValue(events, "gcf_activities", value, true),
+    gcfActivity: (events, value) =>
+        EventsController.filterEventsByValue(events, "gcf_activities", value, true),
 };
 
 export const filterFunctionsProfessionals: Record<

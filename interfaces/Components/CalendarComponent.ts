@@ -20,6 +20,7 @@ export interface EventsData {
     email: string;
     change_selection: string;
     not_assistant: string;
+    age: string;
 }
 
 export interface Event {
