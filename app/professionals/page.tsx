@@ -48,8 +48,8 @@ Chart.register(
   ArcElement,
   Legend,
   LinearScale,
-  CategoryScale, // Register the CategoryScale here
-  BarElement, // Register the BarElement for bar charts
+  CategoryScale,
+  BarElement,
   Title,
   TreemapController,
   TreemapElement
@@ -206,27 +206,27 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
       value: "",
       label: "Género"
     },
-    // {
-    //   value: "",
-    //   label: "Cultivo"
-    // },
-    // {
-    //   value: "",
-    //   label: "Departamento"
-    // },
-    // {
-    //   value: "",
-    //   label: "Municipio"
-    // },
+    {
+      value: "",
+      label: "Cultivo"
+    },
+    {
+      value: "",
+      label: "Departamento"
+    },
+    {
+      value: "",
+      label: "Municipio"
+    },
     {
       value: "",
       label: "Institución"
     },
   ]);
-  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, institutionState];
-  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setInstitutionState];
-  const filterTypes = ["educationLevel", "gender", "institution"];
-  const placeHolders = ["Nivel educativo", "Género", "Institución"];
+  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, departmentState, cityState, institutionState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setDepartmentState, setCityState, setInstitutionState];
+  const filterTypes = ["educationLevel", "gender", "crop", "department", "city", "institution"];
+  const placeHolders = ["Nivel educativo", "Género", "Cultivo", "Departamento", "Municipio", "Institución"];
 
   useEffect(() => {
     TechnicalRepository.fetchEvents()
@@ -235,18 +235,18 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
 
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
-        //const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
-        //const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "department_where_you_work");
-        //const uniqueCities = EventsController.getUniqueValues(formattedEvents, "municipalities_where_you_work", true);
+        const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
+        const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "department_where_you_work", true);
+        const uniqueCities = EventsController.getUniqueValues(formattedEvents, "municipalities_where_you_work", true);
         const uniqueInstitutions = EventsController.getUniqueValues(formattedEvents, "affiliated_guild_or_organization", true);
 
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
         setEducationalLevelState([...uniqueEducationalLevel]);
         setGenderState([...uniqueGender]);
-        //setCropState([...uniqueCrop]);
-        //setDepartmentState([...uniqueDepartments]);
-        //setCityState([...uniqueCities]);
+        setCropState([...uniqueCrop]);
+        setDepartmentState([...uniqueDepartments]);
+        setCityState([...uniqueCities]);
         setInstitutionState([...uniqueInstitutions]);
 
         setEvents(formattedEvents);
