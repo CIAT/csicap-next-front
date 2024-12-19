@@ -57,12 +57,11 @@
 
 .header_nav_item {
   position: relative;
-  margin-left: 0;
-  padding: 10px;
   margin-left: 40px;
-  text-align: center;
   border-bottom: 1px solid white;
   font-size: 1rem;
+  text-align: left;
+  padding: 15px;
 }
 
 /* Hamburger menu settings */
@@ -86,7 +85,7 @@
   border: none;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 0;
-  margin: 0;
+  margin-left: 50px;
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -152,12 +151,6 @@
     margin-left: 0;
   }
 
-  .header_nav_item {
-    padding: 10px;
-    border-bottom: 1px solid white;
-    color: white;
-  }
-
   .dropdownMenu {
     top: 100%;
     left: 0;
@@ -187,11 +180,6 @@
 
   .dropdownMenu {
     width: 100%;
-  }
-
-  .header_nav_item {
-    text-align: left;
-    padding: 15px;
   }
 
   .dropdownToggle {

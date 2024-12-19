@@ -206,27 +206,27 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
       value: "",
       label: "Género"
     },
-    {
-      value: "",
-      label: "Cultivo"
-    },
-    {
-      value: "",
-      label: "Departamento"
-    },
-    {
-      value: "",
-      label: "Municipio"
-    },
+    // {
+    //   value: "",
+    //   label: "Cultivo"
+    // },
+    // {
+    //   value: "",
+    //   label: "Departamento"
+    // },
+    // {
+    //   value: "",
+    //   label: "Municipio"
+    // },
     {
       value: "",
       label: "Institución"
     },
   ]);
-  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, departmentState, cityState, institutionState];
-  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setDepartmentState, setCityState, setInstitutionState];
-  const filterTypes = ["educationLevel", "gender", "crop", "department", "city", "institution"];
-  const placeHolders = ["Nivel educativo", "Género", "Cultivo", "Departamento", "Municipio", "Institución"];
+  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, institutionState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setInstitutionState];
+  const filterTypes = ["educationLevel", "gender", "institution"];
+  const placeHolders = ["Nivel educativo", "Género", "Institución"];
 
   useEffect(() => {
     TechnicalRepository.fetchEvents()
