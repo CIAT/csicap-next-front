@@ -266,9 +266,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     []
   );
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
-  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>(
-    []
-  );
   const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
     {
       value: "",
@@ -284,7 +281,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cultivo",
+      label: "Cadena productiva",
     },
     {
       value: "",
@@ -294,10 +291,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       value: "",
       label: "Municipio",
     },
-    {
-      value: "",
-      label: "Actividades GCF",
-    },
   ]);
   const tooltipOptions: Array<CustomTooltipData[]> = [
     componentState,
@@ -306,7 +299,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     cropState,
     departmentState,
     cityState,
-    gcfActivityState,
   ];
   const setTooltipOptions: Array<
     React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
@@ -317,7 +309,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     setCropState,
     setDepartmentState,
     setCityState,
-    setGCFActivityState,
   ];
   const filterTypes = [
     "component",
@@ -326,16 +317,14 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "crop",
     "department",
     "city",
-    "gcfActivity",
   ];
   const placeHolders = [
     "Componente",
     "Eje",
     "Instituciones",
-    "Cultivo",
+    "Cadena productiva",
     "Departamento",
     "Municipio",
-    "Actividades GCF",
   ];
 
   useEffect(() => {
@@ -353,10 +342,11 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         "eje",
         true
       );
-      const uniqueInstitutions = EventsController.getUniqueValues(
+      const uniqueInstitutions = EventsController.getInstitutionCategories(
         formattedEvents,
         "institution",
-        true
+          EventsController.predefinedInstitutions,
+          true
       );
       const uniqueCrops = EventsController.getUniqueValues(
         formattedEvents,
@@ -371,11 +361,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         formattedEvents,
         "city"
       );
-      const uniqueGCFActivities = EventsController.getUniqueValues(
-        formattedEvents,
-        "gcf_activities",
-        true
-      );
 
       setAllEventData(formattedEvents);
       setTempEventData(formattedEvents);
@@ -385,7 +370,6 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       setCropState([...uniqueCrops]);
       setDepartmentState([...uniqueDepartments]);
       setCityState([...uniqueCities]);
-      setGCFActivityState([...uniqueGCFActivities]);
 
       processChartData();
     }

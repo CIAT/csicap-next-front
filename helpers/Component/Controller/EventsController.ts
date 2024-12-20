@@ -10,26 +10,26 @@ class EventController {
         isArray: boolean = false
     ): CustomTooltipData[] {
         const uniqueValues = new Set<string>();
+
         events.forEach(event => {
             const value = event[key];
 
             if (isArray) {
                 const values = value as unknown as string[];
+
                 values?.forEach(val => {
-                    if(val === "nan"){
+                    if (val.trim() === "" || val.toLowerCase() === "nan") {
                         return;
                     }
 
-                    if(val === ""){
-                        return;
-                    }
-
-                    uniqueValues.add(val)
+                    uniqueValues.add(val);
                 });
                 return;
             }
 
-            uniqueValues.add(value as unknown as string);
+            if (value && (value as string).trim() !== "" && (value as string).toLowerCase() !== "nan") {
+                uniqueValues.add(value as unknown as string);
+            }
         });
 
         return this.sortLabels([...uniqueValues]).map(value => ({
@@ -134,12 +134,104 @@ class EventController {
         range: string
     ): T[] {
         if (!this.ageRanges[range as keyof typeof this.ageRanges]) return events;
-        console.log(events)
         return events.filter(event => {
             const age = event[key] as unknown as number | null;
             return this.ageRanges[range as keyof typeof this.ageRanges](age);
         });
     }
+
+    static predefinedInstitutions = new Set([
+        "CIMMYT",
+        "CIAT (Alianza Bioversity-CIAT)",
+        "AGROSAVIA",
+        "FEDEARROZ",
+        "FEDEPAPA",
+        "AUGURA",
+        "FEDEGAN",
+        "FEDEPANELA",
+        "CIPAV",
+        "CENICAFE",
+        "MADR",
+        "FENALCE",
+        "ASBAMA",
+        "CENICAÑA",
+        "FEDECAFE",
+    ]);
+
+    static predefinedInstitutionsProducers = new Set([
+        "CIMMYT",
+        "AGROSAVIA",
+        "FEDEARROZ",
+        "FEDEPAPA",
+        "AUGURA",
+        "FEDEGAN",
+        "FEDEPANELA",
+        "CIPAV",
+        "CENICAFE",
+        "FENALCE",
+        "ASBAMA",
+        "CENICAÑA",
+        "FEDECAFE",
+    ]);
+
+    static getInstitutionCategories<T>(
+        events: T[],
+        key: keyof T,
+        predefinedInstitutions: Set<String>,
+        isArray: boolean = false,
+    ): CustomTooltipData[] {
+        const categoryCounts: { [key: string]: number } = {};
+
+        events.forEach(event => {
+            const institutions = event[key];
+
+            const institutionList = isArray
+                ? (institutions as unknown as string[])
+                : [institutions as unknown as string];
+
+            institutionList.forEach(institution => {
+                const category = predefinedInstitutions.has(institution)
+                    ? institution
+                    : "Otras";
+
+                if (!categoryCounts[category]) {
+                    categoryCounts[category] = 0;
+                }
+                categoryCounts[category]++;
+            });
+        });
+
+        return this.sortLabels(Object.keys(categoryCounts))
+            .filter(category => categoryCounts[category] > 0)
+            .map(category => ({
+                value: category,
+                label: `${category}`,
+            }));
+    }
+
+
+    static filterEventsByInstitution<T>(
+        events: T[],
+        key: keyof T,
+        selectedCategory: string,
+        predefinedInstitutions: Set<String>,
+        isArray: boolean = false,
+    ): T[] {
+        return events.filter(event => {
+            const institutions = event[key];
+
+            const institutionList = isArray
+                ? (institutions as unknown as string[])
+                : [institutions as unknown as string];
+
+            return institutionList.some(institution =>
+                predefinedInstitutions.has(institution)
+                    ? institution === selectedCategory
+                    : selectedCategory === "Otras"
+            );
+        });
+    }
+
 }
 
 export default EventController;

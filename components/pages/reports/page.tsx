@@ -65,7 +65,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     cropState,
     departmentState,
     cityState,
-    gcfActivityState,
   ];
   const setTooltipOptions: Array<
     React.Dispatch<React.SetStateAction<CustomTooltipData[]>>
@@ -76,7 +75,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     setCropState,
     setDepartmentState,
     setCityState,
-    setGCFActivityState,
   ];
 
   const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
@@ -94,7 +92,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cultivo",
+      label: "Cadena productiva",
     },
     {
       value: "",
@@ -103,10 +101,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     {
       value: "",
       label: "Municipio",
-    },
-    {
-      value: "",
-      label: "Actividades GCF",
     },
   ]);
 
@@ -117,17 +111,15 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     "crop",
     "department",
     "city",
-    "gcfActivity",
   ];
 
   const placeHolders = [
     "Componente",
     "Eje",
     "Instituciones",
-    "Cultivo",
+    "Cadena productiva",
     "Departamento",
     "Municipio",
-    "Actividades GCF",
   ];
 
   useEffect(() => {
@@ -167,10 +159,11 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
           "eje",
           true
         );
-        const uniqueInstitutions = EventsController.getUniqueValues(
+        const uniqueInstitutions = EventsController.getInstitutionCategories(
           formattedEvents,
           "institution",
-          true
+            EventsController.predefinedInstitutions,
+            true
         );
         const uniqueCrops = EventsController.getUniqueValues(
           formattedEvents,
@@ -185,11 +178,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
           formattedEvents,
           "city"
         );
-        const uniqueGCFActivities = EventsController.getUniqueValues(
-          formattedEvents,
-          "gcf_activities",
-          true
-        );
 
         setAllData(formattedEvents);
         setTempEventData(formattedEvents);
@@ -199,7 +187,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
         setCropState([...uniqueCrops]);
         setDepartmentState([...uniqueDepartments]);
         setCityState([...uniqueCities]);
-        setGCFActivityState([...uniqueGCFActivities]);
       }
 
       fetchAndProcessData();

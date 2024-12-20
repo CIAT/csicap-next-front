@@ -75,7 +75,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cultivo",
+      label: "Cadena productiva",
     },
     {
       value: "",
@@ -116,7 +116,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "Componente",
     "Eje",
     "Institución",
-    "Cultivo",
+    "Cadena productiva",
     "Departamento",
     "Municipio",
   ];
@@ -146,10 +146,11 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
           "component",
           true
         );
-        const uniqueInstitutions = EventsController.getUniqueValues(
+        const uniqueInstitutions = EventsController.getInstitutionCategories(
           formattedEvents,
           "institution",
-          true
+            EventsController.predefinedInstitutions,
+            true
         );
         const uniqueCrops = EventsController.getUniqueValues(
           formattedEvents,

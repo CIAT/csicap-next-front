@@ -179,7 +179,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cultivo primario"
+      label: "Cadena productiva"
     },
     {
       value: "",
@@ -197,7 +197,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const tooltipOptions: Array<CustomTooltipData[]> = [genderState, propertyState, ethnicState, primaryCropState, guildState, departmentState, cityState];
   const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setGenderState, setPropertyState, setEthnicState, setPrimaryCropState, setGuildState, setDepartmentState, setCityState];
   const filterTypes = ["gender", "property", "ethnic", "primaryCrop", "guild", "department", "city"];
-  const placeHolders = ["Género", "Tipo de propiedad", "Etnia", "Cultivo primario", "Gremio", "Departamento", "Municipio"];
+  const placeHolders = ["Género", "Tipo de propiedad", "Etnia", "Cadena productiva", "Gremio", "Departamento", "Municipio"];
 
   useEffect(() => {
     ProducersRepository.fetchEvents()
@@ -208,7 +208,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueProperty = EventsController.getUniqueValues(formattedEvents, "type_property");
         const uniqueEthnic = EventsController.getUniqueValues(formattedEvents, "pr_ethnic_group");
         const uniquePrimaryCrop = EventsController.getUniqueValues(formattedEvents, "pr_primary_crop");
-        const uniqueGuild = EventsController.getUniqueValues(formattedEvents, "gremio");
+        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", EventsController.predefinedInstitutionsProducers);
         const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "pr_dpto");
         const uniqueCities = EventsController.getUniqueValues(formattedEvents, "pr_muni");
 

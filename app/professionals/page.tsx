@@ -238,7 +238,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
         const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "department_where_you_work", true);
         const uniqueCities = EventsController.getUniqueValues(formattedEvents, "municipalities_where_you_work", true);
-        const uniqueInstitutions = EventsController.getUniqueValues(formattedEvents, "affiliated_guild_or_organization", true);
+        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true);
 
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);

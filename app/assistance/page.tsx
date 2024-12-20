@@ -254,7 +254,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [ageState, setAgeState] = useState<CustomTooltipData[]>([]);
   const [occupationState, setOccupationState] = useState<CustomTooltipData[]>([]);
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
-  const [gcfActivityState, setGCFActivityState] = useState<CustomTooltipData[]>([]);
   const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
     {
       value: "",
@@ -266,24 +265,19 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
+      label: "Cadena productiva",
+    },
+    {
+      value: "",
       label: "Ocupación",
-    },
-    {
-      value: "",
-      label: "Cultivo",
-    },
-    {
-      value: "",
-      label: "Actividades GCF",
     },
   ]);
 
   const tooltipOptions: Array<CustomTooltipData[]> = [
     genderState,
     ageState,
-    occupationState,
     cropState,
-    gcfActivityState,
+    occupationState,
   ];
 
   const setTooltipOptions: Array<
@@ -291,9 +285,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   > = [
     setGenderState,
     setAgeState,
-    setOccupationState,
     setCropState,
-    setGCFActivityState,
+    setOccupationState,
   ];
 
   const filterTypes = [
@@ -301,15 +294,13 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "age",
     "crop",
     "occupation",
-    "gcfActivity",
   ];
 
   const placeHolders = [
     "Género",
     "Edad",
-    "Cultivo",
+    "Cadena productiva",
     "Ocupación",
-    "Actividades GCF",
   ];
 
   useEffect(() => {
@@ -345,11 +336,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           dataset,
           "group_ocupations"
       );
-      const uniqueGCFActivities = EventsController.getUniqueValues(
-          dataset,
-          "gcf_activities",
-          true
-      );
 
       setAllAssistanceData(dataset);
       setTempAssistanceData(dataset);
@@ -357,7 +343,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       setAgeState([...uniqueAge]);
       setCropState([...uniqueCrop]);
       setOccupationState([...uniqueOccupation]);
-      setGCFActivityState([...uniqueGCFActivities]);
 
       const eventsDataSet = await CalendarRepository.fetchCustomEvent();
       setAllEventsData(CalendarController.formatEvent(eventsDataSet));
@@ -367,10 +352,12 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }, []);
 
   useEffect(() => {
-    proccesdata();
+    processData();
   }, [tempAssistanceData]);
 
-  function proccesdata() {
+  function processData() {
+    initializeTreemapData(allEventsData);
+
     let ageCount: { [key: string]: number } = {
       "20-25": 0,
       "26-30": 0,
@@ -390,14 +377,11 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     let menCount = 0;
     let womenCount = 0;
     let otherCount = 0;
-
-    const currentYear = new Date().getFullYear(); // Current year
-   
+    console.log(tempAssistanceData)
     tempAssistanceData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
       const occupation = item?.group_ocupations;
-      const birthDate = item.birth_date ? new Date(item.birth_date) : null; // Parse the birth date
-      const age = Number(item.age) || null; // Calculate age
+      const age = Number(item.age) || null;
 
       // Count gender
       if (gender === "hombre") {
@@ -612,8 +596,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             styles={styleTechnical}
         >
           <label className={styles.top_card_label}>
-            {allAssistanceData.length > 0 ? (
-              allAssistanceData.length
+            {tempAssistanceData.length > 0 ? (
+                tempAssistanceData.length
             ) : (
               <LoadingAnimation />
             )}

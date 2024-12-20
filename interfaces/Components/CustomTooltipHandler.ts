@@ -11,15 +11,13 @@ export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "eje", true),
     (events: EventFormat[]) =>
-        EventsController.getUniqueValues(events, "institution", true),
+        EventsController.getInstitutionCategories(events, "institution", EventsController.predefinedInstitutions, true),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "crop", true),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "province"),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "city"),
-    (events: EventFormat[]) =>
-        EventsController.getUniqueValues(events, "gcf_activities", true),
 ];
 
 export const getUniqueValuesFunctionsAssistants = () => [
@@ -31,8 +29,6 @@ export const getUniqueValuesFunctionsAssistants = () => [
         EventsController.getUniqueValues(events, "pr_primary_crop"),
     (events: Assistance[]) =>
         EventsController.getUniqueValues(events, "group_ocupations"),
-    (events: Assistance[]) =>
-        EventsController.getUniqueValues(events, "gcf_activities", true),
 ];
 
 export const getUniqueValuesFunctionsProfessionals = () => [
@@ -47,7 +43,7 @@ export const getUniqueValuesFunctionsProfessionals = () => [
     (events: TechnicalBeneficiaries[]) =>
         EventsController.getUniqueValues(events, "municipalities_where_you_work", true),
     (events: TechnicalBeneficiaries[]) =>
-        EventsController.getUniqueValues(events, "affiliated_guild_or_organization", true),
+        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true),
 ];
 
 export const getUniqueValuesFunctionsCalendar = () => [
@@ -56,7 +52,7 @@ export const getUniqueValuesFunctionsCalendar = () => [
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "eje", true),
     (events: EventsData[]) =>
-        EventsController.getUniqueValues(events, "institution", true),
+        EventsController.getInstitutionCategories(events, "institution", EventsController.predefinedInstitutions, true),
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "crop", true),
     (events: EventsData[]) =>
@@ -75,7 +71,7 @@ export const getUniqueValuesFunctionsProducers = () => [
     (events: DataFormat[]) =>
         EventsController.getUniqueValues(events, "pr_primary_crop"),
     (events: DataFormat[]) =>
-        EventsController.getUniqueValues(events, "gremio"),
+        EventsController.getInstitutionCategories(events, "gremio", EventsController.predefinedInstitutionsProducers),
     (events: DataFormat[]) =>
         EventsController.getUniqueValues(events, "pr_dpto"),
     (events: DataFormat[]) =>
@@ -91,15 +87,13 @@ export const filterFunctionsEvents: Record<
     axis: (events, value) =>
         EventsController.filterEventsByValue(events, "eje", value, true),
     institution: (events, value) =>
-        EventsController.filterEventsByValue(events, "institution", value, true),
+        EventsController.filterEventsByInstitution(events, "institution", value, EventsController.predefinedInstitutions, true),
     crop: (events, value) =>
         EventsController.filterEventsByValue(events, "crop", value, true),
     department: (events, value) =>
         EventsController.filterEventsByValue(events, "province", value),
     city: (events, value) =>
         EventsController.filterEventsByValue(events, "city", value),
-    gcfActivity: (events, value) =>
-        EventsController.filterEventsByValue(events, "gcf_activities", value, true),
 };
 
 export const filterFunctionsAssistants: Record<
@@ -110,12 +104,10 @@ export const filterFunctionsAssistants: Record<
         EventsController.filterEventsByValue(events, "sex_complete", value),
     age: (events, value) =>
         EventsController.filterEventsByAgeRange(events, "age", value),
-    occupation: (events, value) =>
-        EventsController.filterEventsByValue(events, "pr_primary_crop", value),
     crop: (events, value) =>
+        EventsController.filterEventsByValue(events, "pr_primary_crop", value),
+    occupation: (events, value) =>
         EventsController.filterEventsByValue(events, "group_ocupations", value),
-    gcfActivity: (events, value) =>
-        EventsController.filterEventsByValue(events, "gcf_activities", value, true),
 };
 
 export const filterFunctionsProfessionals: Record<
@@ -133,25 +125,7 @@ export const filterFunctionsProfessionals: Record<
     city: (events, value) =>
         EventsController.filterEventsByValue(events, "municipalities_where_you_work", value, true),
     institution: (events, value) =>
-        EventsController.filterEventsByValue(events, "affiliated_guild_or_organization", value, true),
-};
-
-export const filterFunctionsCalendar: Record<
-    string,
-    (events: EventsData[], value: string) => EventsData[]
-> = {
-    component: (events, value) =>
-        EventsController.filterEventsByValue(events, "component", value, true),
-    axis: (events, value) =>
-        EventsController.filterEventsByValue(events, "eje", value, true),
-    institution: (events, value) =>
-        EventsController.filterEventsByValue(events, "institution", value, true),
-    crop: (events, value) =>
-        EventsController.filterEventsByValue(events, "crop", value, true),
-    department: (events, value) =>
-        EventsController.filterEventsByValue(events, "province", value),
-    city: (events, value) =>
-        EventsController.filterEventsByValue(events, "city", value),
+        EventsController.filterEventsByInstitution(events, "affiliated_guild_or_organization", value, EventsController.predefinedInstitutions, true),
 };
 
 export const filterFunctionsProducers: Record<
@@ -167,7 +141,7 @@ export const filterFunctionsProducers: Record<
     primaryCrop: (events, value) =>
         EventsController.filterEventsByValue(events, "pr_primary_crop", value),
     guild: (events, value) =>
-        EventsController.filterEventsByValue(events, "gremio", value),
+        EventsController.filterEventsByInstitution(events, "gremio", value, EventsController.predefinedInstitutionsProducers),
     department: (events, value) =>
         EventsController.filterEventsByValue(events, "pr_dpto", value),
     city: (events, value) =>
