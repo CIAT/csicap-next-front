@@ -128,6 +128,25 @@ export const filterFunctionsProfessionals: Record<
         EventsController.filterEventsByInstitution(events, "affiliated_guild_or_organization", value, EventsController.predefinedInstitutions, true),
 };
 
+export const filterFunctionsCalendar: Record<
+    string,
+    (events: EventsData[], value: string) => EventsData[]
+> = {
+    component: (events, value) =>
+        EventsController.filterEventsByValue(events, "component", value, true),
+    axis: (events, value) =>
+        EventsController.filterEventsByValue(events, "eje", value, true),
+    institution: (events, value) =>
+        EventsController.filterEventsByValue(events, "institution", value, true),
+    crop: (events, value) =>
+        EventsController.filterEventsByValue(events, "crop", value, true),
+    department: (events, value) =>
+        EventsController.filterEventsByValue(events, "province", value),
+    city: (events, value) =>
+        EventsController.filterEventsByValue(events, "city", value),
+};
+
+
 export const filterFunctionsProducers: Record<
     string,
     (events: DataFormat[], value: string) => DataFormat[]
