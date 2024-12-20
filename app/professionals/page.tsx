@@ -206,7 +206,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cultivo"
+      label: "Cadena productiva"
     },
     {
       value: "",
@@ -216,7 +216,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, institutionState];
   const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setInstitutionState];
   const filterTypes = ["educationLevel", "gender", "crop", "institution"];
-  const placeHolders = ["Nivel educativo", "Género", "Cultivo", "Institución"];
+  const placeHolders = ["Nivel educativo", "Género", "Cadena productiva", "Institución"];
 
   useEffect(() => {
     TechnicalRepository.fetchEvents()
