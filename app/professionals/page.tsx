@@ -192,8 +192,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [educationalLevelState, setEducationalLevelState] = useState<CustomTooltipData[]>([]);
   const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
-  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
-  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
   const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
   const [tooltipValues, setTooltipValues] = useState<
       Array<CustomTooltipData>
@@ -212,21 +210,13 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Departamento"
-    },
-    {
-      value: "",
-      label: "Municipio"
-    },
-    {
-      value: "",
       label: "Institución"
     },
   ]);
-  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, departmentState, cityState, institutionState];
-  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setDepartmentState, setCityState, setInstitutionState];
-  const filterTypes = ["educationLevel", "gender", "crop", "department", "city", "institution"];
-  const placeHolders = ["Nivel educativo", "Género", "Cultivo", "Departamento", "Municipio", "Institución"];
+  const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, institutionState];
+  const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setInstitutionState];
+  const filterTypes = ["educationLevel", "gender", "crop", "institution"];
+  const placeHolders = ["Nivel educativo", "Género", "Cultivo", "Institución"];
 
   useEffect(() => {
     TechnicalRepository.fetchEvents()
@@ -236,8 +226,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
-        const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "department_where_you_work", true);
-        const uniqueCities = EventsController.getUniqueValues(formattedEvents, "municipalities_where_you_work", true);
         const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true);
 
         setEvents(formattedEvents);
@@ -245,8 +233,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         setEducationalLevelState([...uniqueEducationalLevel]);
         setGenderState([...uniqueGender]);
         setCropState([...uniqueCrop]);
-        setDepartmentState([...uniqueDepartments]);
-        setCityState([...uniqueCities]);
         setInstitutionState([...uniqueInstitutions]);
 
         setEvents(formattedEvents);

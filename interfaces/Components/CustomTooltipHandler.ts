@@ -39,10 +39,6 @@ export const getUniqueValuesFunctionsProfessionals = () => [
     (events: TechnicalBeneficiaries[]) =>
         EventsController.getUniqueValues(events, "crops_worked_last_12_months", true),
     (events: TechnicalBeneficiaries[]) =>
-        EventsController.getUniqueValues(events, "department_where_you_work", true),
-    (events: TechnicalBeneficiaries[]) =>
-        EventsController.getUniqueValues(events, "municipalities_where_you_work", true),
-    (events: TechnicalBeneficiaries[]) =>
         EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true),
 ];
 
@@ -120,10 +116,6 @@ export const filterFunctionsProfessionals: Record<
         EventsController.filterEventsByValue(events, "gender_at_birth", value),
     crop: (events, value) =>
         EventsController.filterEventsByValue(events, "crops_worked_last_12_months", value, true),
-    department: (events, value) =>
-        EventsController.filterEventsByValue(events, "department_where_you_work", value, true),
-    city: (events, value) =>
-        EventsController.filterEventsByValue(events, "municipalities_where_you_work", value, true),
     institution: (events, value) =>
         EventsController.filterEventsByInstitution(events, "affiliated_guild_or_organization", value, EventsController.predefinedInstitutions, true),
 };
