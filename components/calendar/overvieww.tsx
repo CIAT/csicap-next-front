@@ -9,10 +9,10 @@ const OverviewCard = () => {
             <div className="flex items-center">
                 <Chip
                     style={{
-                        backgroundColor: "#80C41C", // Custom background color
-                        color: "#fff", // Text color
-                        fontSize: " 0.6vw", // Font size
-                        padding: "0px", // Padding
+                        backgroundColor: "#80C41C",
+                        color: "#fff",
+                        fontSize: "0.7vw",
+                        padding: "0px",
                     }}
                 >
                     Eventos Finalizados
@@ -21,10 +21,10 @@ const OverviewCard = () => {
             <div className="flex items-center">
                 <Chip
                     style={{
-                        backgroundColor: "#FECF00", // Custom background color
-                        color: "#000", // Darker text color for contrast
-                        padding: "0px", // Padding
-                        fontSize: " 0.6vw", // Font size
+                        backgroundColor: "#FECF00",
+                        color: "#000",
+                        padding: "0px",
+                        fontSize: "0.7vw",
                     }}
                 >
                     Eventos Programados
@@ -33,10 +33,10 @@ const OverviewCard = () => {
             <div className="flex items-center">
                 <Chip
                     style={{
-                        backgroundColor: "#c84e42", // Custom background color
-                        color: "#fff", // Text color
-                        padding: "0px", // Padding
-                        fontSize: " 0.6vw", // Font size
+                        backgroundColor: "#c84e42",
+                        color: "#fff",
+                        padding: "0px",
+                        fontSize: "0.7vw",
                     }}
                 >
                     Eventos sin Cerrar
@@ -45,10 +45,10 @@ const OverviewCard = () => {
             <div className="flex items-center">
                 <Chip
                     style={{
-                        backgroundColor: "#b9b9b9", // Custom background color
-                        fontSize: " 0.8rem", // Font size
-                        padding: "0px", // Padding
-                        color: "#fff", // Text color
+                        backgroundColor: "#b9b9b9",
+                        color: "#fff",
+                        fontSize: "0.7vw",
+                        padding: "0px",
                     }}
                 >
                     Eventos cancelados
