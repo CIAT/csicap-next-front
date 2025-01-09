@@ -26,7 +26,6 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({ chartId, chartData, map
         }
 
         if (value === "data" && chartData) {
-            console.log(chartData);
             downloadDataAsExcel(chartData);
         }
     };
