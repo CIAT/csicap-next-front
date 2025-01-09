@@ -420,7 +420,6 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
                   <label className={styles.other_card_label}>{totalProducersData}</label>
                 </div>
-
             ) : (
                 <LoadingAnimation/>
             )}
@@ -428,6 +427,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           {/* Doughnut: Género */}
           <CardComponent
               id={doughnutProducersGenreId}
+              data={sex}
               title="Género"
               styles={styleBeneficiaries}
           >
@@ -447,6 +447,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           {/* Doughnut: Tipo de propiedad */}
           <CardComponent
               id={doughnutProducersPropertyTypeId}
+              data={typeOfHousing}
               title="Tipo de propiedad"
               styles={styleBeneficiaries}
           >
@@ -466,6 +467,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           {/* Doughnut: Etnia */}
           <CardComponent
               id={doughnutProducersEthnicity}
+              data={etnia}
               title="Etnia"
               styles={styleBeneficiaries}
           >
@@ -489,6 +491,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 <div className={styles.header_container}>
                   <ExportDropdown
                       chartId={treemapChartProducersCountId}
+                      chartData={data}
                   />
                 </div>
               }>

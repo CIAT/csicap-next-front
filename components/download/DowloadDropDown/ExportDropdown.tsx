@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { EllipsisVertical } from "lucide-react";
 import styles from "./ExportDropdown.module.css"; // Estilos personalizados
-import { downloadChart } from "@/helpers/Component/download/DownloadChart";
+import {downloadChart, downloadDataAsExcel} from "@/helpers/Component/download/DownloadChart";
 import MapController from "@/helpers/Component/Controller/MapController";
 
 interface ExportDropdownProps {
     chartId?: string;
-    chartData?: string[];
+    chartData?: any;
     mapImageName?: string;
 }
 
@@ -26,7 +26,8 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({ chartId, chartData, map
         }
 
         if (value === "data" && chartData) {
-            console.log("Descargar datos");
+            console.log(chartData);
+            downloadDataAsExcel(chartData);
         }
     };
 

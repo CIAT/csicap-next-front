@@ -713,7 +713,10 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             title="Número de eventos"
             header={
               <div className={styles.header_container}>
-                <ExportDropdown chartId={treemapChartTotalEventsId} />
+                <ExportDropdown
+                    chartId={treemapChartTotalEventsId}
+                    chartData={treemapChartData}
+                />
               </div>
             }
           >
@@ -731,7 +734,11 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         </div>
 
         <div className={styles.card_container}>
-          <CardComponent title="Total Eventos" id={doughnutChartTotalEventsId}>
+          <CardComponent
+              title="Total Eventos"
+              id={doughnutChartTotalEventsId}
+              data={eventsTotal}
+          >
             <div className="w-full h-full">
               {tempEventData.length > 0 ? (
                 <Doughnut
@@ -747,6 +754,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
           <CardComponent
             title="Ejes por evento"
             id={doughnutChartAxesByEventId}
+            data={ejesChartData}
           >
             <div className="w-full h-full">
               {tempEventData.length > 0 ? (
@@ -763,6 +771,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
           <CardComponent
             title="Tipo de invitados por evento"
             id={doughnutChartGuestByEventId}
+            data={guestTypesChartData}
           >
             <div className="w-full h-full">
               {tempEventData.length > 0 ? (
@@ -779,6 +788,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
           <CardComponent
             title="Instituciones organizadoras"
             id={barChartInstitutionsId}
+            data={institutionsChartData}
           >
             <div className="w-full h-full">
               {tempEventData.length > 0 ? (

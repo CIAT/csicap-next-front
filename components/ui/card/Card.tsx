@@ -14,7 +14,7 @@ interface CardProps {
     title: string;
     children: ReactNode;
     id?: string;
-    data?: string[];
+    data?: any;
     mapImageName?: string;
 }
 

@@ -505,6 +505,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
             {/* Card: Género */}
             <CardComponent
                 id={doughnutChartProfessionalGenreId}
+                data={gender}
                 title="Género"
                 styles={styleTechnical}
             >
@@ -524,6 +525,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
             {/* Card: Nivel Educativo */}
             <CardComponent
                 id={doughnutChartProfessionalOccupationId}
+                data={educationalLevel}
                 title="Nivel educativo"
                 styles={styleTechnical}
             >
@@ -543,6 +545,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
             {/* Card: Etnia */}
             <CardComponent
                 id={doughnutProducersEthnicity}
+                data={etnia}
                 title="Etnia"
                 styles={styleTechnical}
             >
@@ -569,6 +572,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   <div className={styles.header_container}>
                     <ExportDropdown
                         chartId={treemapChartProfessionalCountId}
+                        chartData={treeMap}
                     />
                   </div>
                 }>

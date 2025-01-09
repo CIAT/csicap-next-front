@@ -12,21 +12,23 @@ import React from "react";
 interface CardComponentProps {
   title: string;
   id?: string;
-  data?: string[];
+  data?: any;
+  mapImageName?: string;
   children: React.ReactNode;
 }
 
-const CardComponent: NextPage<CardComponentProps> = ({title, id, data, children = null}) =>{
+const CardComponent: NextPage<CardComponentProps> = ({title, id, data, children = null, mapImageName}) =>{
     return(
         <div className={styles.card}>
         <Card className="w-full h-full">
           <CardHeader className={styles.card_header}>
               <div className={styles.header}>
                   <p className="text-black font-serif">{title}</p>
-                  {(id || data) && (
+                  {(id || data || mapImageName) && (
                       <ExportDropdown
                           chartId={id}
                           chartData={data}
+                          mapImageName={mapImageName}
                       />
                   )}
               </div>

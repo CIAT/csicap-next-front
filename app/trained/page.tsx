@@ -602,6 +602,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         {/* Card: Género */}
         <CardComponent
             id={doughnutChartAssistantsGenreId}
+            data={genderChartData}
             title="Género"
             styles={styleTechnical}
         >
@@ -619,6 +620,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         {/* Card: Edad */}
         <CardComponent
             id={doughnutChartAssistantsAgeId}
+            data={ageChartData}
             title="Edad"
             styles={styleTechnical}
         >
@@ -636,6 +638,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         {/* Card: Ocupacion */}
         <CardComponent
             id={doughnutChartAssistantsOccupationId}
+            data={occupationChartData}
             title="Ocupación"
             styles={styleTechnical}
         >
@@ -674,6 +677,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                 </FormControl>
                 <ExportDropdown
                     chartId={treemapChartAssistantsCountId}
+                    chartData={treeData}
                 />
               </div>
             }
