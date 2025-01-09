@@ -1,11 +1,11 @@
-import {Assistance} from "@/interfaces/Components/AssistanceComponent";
+import {Trained} from "@/interfaces/Components/AssistanceComponent";
 
 class AssistanceRepository {
-    static async getAssistanceData(): Promise<Assistance[]> {
+    static async getAssistanceData(): Promise<Trained[]> {
         const url = process.env.NEXT_PUBLIC_URL_GET_ASSISTANCE;
 
         if (!url) {
-            return <Assistance[]>{};
+            return <Trained[]>{};
         }
     
         try {
@@ -17,7 +17,7 @@ class AssistanceRepository {
     
             return await response.json();
         } catch (error) {
-            return <Assistance[]>{}; 
+            return <Trained[]>{};
         }
     }
     

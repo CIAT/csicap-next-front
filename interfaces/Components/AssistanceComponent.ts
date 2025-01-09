@@ -1,4 +1,4 @@
-export interface Assistance {
+export interface Trained {
     main_occupation: string;
     pr_primary_crop: string;
     organization_affiliation: null;

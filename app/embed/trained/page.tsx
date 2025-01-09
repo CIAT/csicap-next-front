@@ -1,6 +1,6 @@
-import AssistancePage from "@/app/assistance/page";
+import AssistancePage from "@/app/trained/page";
 import {NextPage} from "next";
-import embedStyles from "./assistance.module.css";
+import embedStyles from "./trained.module.css";
 
 const EmbedAssistance:NextPage = () => {
   return(

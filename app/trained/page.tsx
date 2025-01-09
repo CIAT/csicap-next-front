@@ -1,7 +1,7 @@
 "use client";
 
 import {NextPage} from "next";
-import styleTechnical from "./assistance.module.css";
+import styleTechnical from "./trained.module.css";
 import CardComponent from "@/components/ui/card/Card";
 import { Chart as ReactChart } from "react-chartjs-2";
 import {
@@ -25,14 +25,14 @@ import { DataFormat, EventsData , Event} from "@/interfaces";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-import {Assistance} from "@/interfaces/Components/AssistanceComponent";
+import {Trained} from "@/interfaces/Components/AssistanceComponent";
 import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepository";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
-  filterFunctionsAssistants,
-  getUniqueValuesFunctionsAssistants,
+  filterFunctionsTrained,
+  getUniqueValuesFunctionsTrained,
 } from "@/interfaces/Components/CustomTooltipHandler";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
@@ -202,7 +202,7 @@ const countCity = (events: Event[]) => {
   return cityCount;
 };
 
-const countInstitutions = (assists: Assistance[]) => {
+const countInstitutions = (assists: Trained[]) => {
   const institutionCount: { [key: string]: number } = {};
   let nullInstitutionCount = 0;
   assists.forEach((assist) => {
@@ -221,7 +221,7 @@ const countInstitutions = (assists: Assistance[]) => {
 };
 
 const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
-  const styles = customStyles || require("./assistance.module.css");
+  const styles = customStyles || require("./trained.module.css");
 
   const doughnutChartAssistantsGenreId: string = "doughnut_chart_assistants_genre";
   const doughnutChartAssistantsAgeId: string = "doughnut_chart_assistants_age";
@@ -245,8 +245,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     { name: string; value: number }[]
   >([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
-  const [allAssistanceData, setAllAssistanceData] = useState<Assistance[]>([]);
-  const [tempAssistanceData, setTempAssistanceData] = useState<Assistance[]>([]);
+  const [allTrainedData, setAllTrainedData] = useState<Trained[]>([]);
+  const [tempTrainedData, setTempTrainedData] = useState<Trained[]>([]);
 
   const [allEventsData, setAllEventsData] = useState<Event[]>([]);
 
@@ -337,8 +337,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           "group_ocupations"
       );
 
-      setAllAssistanceData(dataset);
-      setTempAssistanceData(dataset);
+      setAllTrainedData(dataset);
+      setTempTrainedData(dataset);
       setGenderState([...uniqueGender]);
       setAgeState([...uniqueAge]);
       setCropState([...uniqueCrop]);
@@ -353,7 +353,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     processData();
-  }, [tempAssistanceData]);
+  }, [tempTrainedData]);
 
   function processData() {
     initializeTreemapData(allEventsData);
@@ -368,17 +368,17 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     };
 
     let occupationCount: { [key: string]: number } = {
-      "Técnico/Profesional": 0,
       "Productor(a) Agropecuario(a)": 0,
+      "Técnico/Profesional": 0,
       "Investigador(a)": 0,
-      Otro: 0,
+      "Otro": 0,
     };
 
     let menCount = 0;
     let womenCount = 0;
     let otherCount = 0;
-    console.log(tempAssistanceData)
-    tempAssistanceData.forEach((item) => {
+    console.log(tempTrainedData)
+    tempTrainedData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
       const occupation = item?.group_ocupations;
       const age = Number(item.age) || null;
@@ -393,12 +393,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       }
 
       // Count occupation
-      if (occupation === "Técnico/Profesional") {
-        occupationCount["Técnico/Profesional"]++;
-      } else if (occupation === "Productor(a) Agropecuario(a)") {
-        occupationCount["Productor(a) Agropecuario(a)"]++;
-      } else if (occupation === "Investigador(a)") {
-        occupationCount["Investigador(a)"]++;
+      if(occupation in occupationCount){
+        occupationCount[occupation]++;
       } else {
         occupationCount["Otro"]++;
       }
@@ -436,7 +432,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setTreemapData(mappedData);
   };
   
-  const processTreemapData = (filter: string, data: Event[], data2: Assistance[]) => {
+  const processTreemapData = (filter: string, data: Event[], data2: Trained[]) => {
     let filterData: { [key: string]: number } = {};
 
     switch (filter) {
@@ -467,7 +463,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
     setSelectedFilter(newFilter);
-    processTreemapData(newFilter, allEventsData, allAssistanceData); // Use the stored event data
+    processTreemapData(newFilter, allEventsData, allTrainedData); // Use the stored event data
   };
 
   const occupationBackgroundColors = Object.keys(occupationStats).map(
@@ -556,31 +552,31 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
               handleTooltipChange(
                   selectedValue,
                   filterType,
-                  tempAssistanceData,
+                  tempTrainedData,
                   setTooltipOptions,
                   tooltipValues,
                   setTooltipValues,
-                  filterFunctionsAssistants,
-                  getUniqueValuesFunctionsAssistants(),
+                  filterFunctionsTrained,
+                  getUniqueValuesFunctionsTrained(),
                   filterTypes
               )
           }
           onClick={() =>
               handleOnClick(
                   tooltipValues,
-                  tempAssistanceData,
-                  setTempAssistanceData,
-                  filterFunctionsAssistants,
+                  tempTrainedData,
+                  setTempTrainedData,
+                  filterFunctionsTrained,
                   filterTypes
               )
           }
           onReset={() =>
               handleReset(
-                  allAssistanceData,
+                  allTrainedData,
                   setTooltipOptions,
                   setTooltipValues,
-                  setTempAssistanceData,
-                  getUniqueValuesFunctionsAssistants(),
+                  setTempTrainedData,
+                  getUniqueValuesFunctionsTrained(),
                   placeHolders
               )
           }
@@ -590,14 +586,14 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           getOptionValue={(option) => String(option.value)}
       />
       <div className={styles.top_div}>
-        {/* Card: Total asistentes */}
+        {/* Card: Total capacitados */}
         <CardComponent
-            title="Total asistentes"
+            title="Total capacitados"
             styles={styleTechnical}
         >
           <label className={styles.top_card_label}>
-            {tempAssistanceData.length > 0 ? (
-                tempAssistanceData.length
+            {tempTrainedData.length > 0 ? (
+                tempTrainedData.length
             ) : (
               <LoadingAnimation />
             )}
@@ -610,7 +606,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             title="Género"
             styles={styleTechnical}
         >
-          {allAssistanceData.length > 0 ? (
+          {allTrainedData.length > 0 ? (
             <Doughnut
                 id={doughnutChartAssistantsGenreId}
                 data={genderChartData}
@@ -627,7 +623,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             title="Edad"
             styles={styleTechnical}
         >
-          {allAssistanceData.length > 0 ? (
+          {allTrainedData.length > 0 ? (
             <Doughnut
                 id={doughnutChartAssistantsAgeId}
                 data={ageChartData}
@@ -644,7 +640,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             title="Ocupación"
             styles={styleTechnical}
         >
-          {allAssistanceData.length > 0 ? (
+          {allTrainedData.length > 0 ? (
             <Doughnut
                 id={doughnutChartAssistantsOccupationId}
                 data={occupationChartData}
@@ -659,7 +655,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       <div className={styles.bottom_div}>
         <div className={styles.width}>
           <ChartCardComponent
-            title="Número de asistentes"
+            title="Número de capacitados"
             header={
               <div className={styles.header_container}>
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
@@ -696,7 +692,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
         <div className={styles.width}>
           <ChartCardComponent
-              title="Asistentes por municipio"
+              title="Capacitados por municipio"
               header={<></>}
           >
             <div className="w-full h-full">

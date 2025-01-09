@@ -82,12 +82,12 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
           {!isHomePage && (
             <li
               className={styles.header_nav_item}
-              onMouseEnter={() => handleMouseEnter("monitoreo")}
+              onMouseEnter={() => handleMouseEnter("Seguimiento de eventos")}
               onMouseLeave={handleMouseLeave}
-              onClick={() => handleDropdown("monitoreo")}
+              onClick={() => handleDropdown("Seguimiento de eventos")}
             >
-              Monitoreo
-              {activeDropdown === "monitoreo" && (
+              Seguimiento de eventos
+              {activeDropdown === "Seguimiento de eventos" && (
                 <ul className={styles.dropdownMenu}>
                   <li>
                     <Link href={getLink("/calendar")} onClick={closeMenu}>
@@ -100,8 +100,8 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                     </Link>
                   </li>
                   <li>
-                    <Link href={getLink("/assistance")} onClick={closeMenu}>
-                      Asistentes
+                    <Link href={getLink("/trained")} onClick={closeMenu}>
+                      Capacitados
                     </Link>
                   </li>
                   <li>
