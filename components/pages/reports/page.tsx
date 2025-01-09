@@ -137,7 +137,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
             })
           );
 
-          setCounts(MapController.updateCountAssistants(formattedEvents));
+          setCounts(MapController.updateCountTrained(formattedEvents));
           setEvents(formattedEvents);
         })
         .catch((error) => {

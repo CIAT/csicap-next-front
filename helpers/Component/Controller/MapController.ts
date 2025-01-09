@@ -50,7 +50,7 @@ class MapController {
             const cityName = this.removeAccents(feature.properties.mpio_cnmbr);
 
             if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
-                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes');
+                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Capacitados');
                 return;
             }
 
@@ -65,7 +65,7 @@ class MapController {
             if (data[key] && typeof data[key] === 'object') {
                 for (const subKey in data[key]) {
                     const valueString = data[key][subKey];
-                    if (valueString.includes("Asistentes")) {
+                    if (valueString.includes("Capacitados")) {
                         const value = this.extractCount(valueString, valueKey);
                         if (value > 0) {
                             values.push(value);
@@ -264,9 +264,9 @@ class MapController {
         if (counts && counts[provinceName] && counts[provinceName][cityName]) {
             const content = counts[provinceName][cityName];
 
-            const currentTotal = this.extractCount(content, 'Asistentes');
+            const currentTotal = this.extractCount(content, 'Capacitados');
 
-            const hasAssistants = content.includes('Asistentes');
+            const hasAssistants = content.includes('Capacitados');
 
             if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
                 tooltipHtmlContent += `<br><strong>${content}</strong>`;
@@ -524,11 +524,11 @@ class MapController {
             }
 
             if (!genderCounts[province][city]) {
-                genderCounts[province][city] = `Asistentes: 0<br>Mujeres: 0<br>Hombres: 0<br>Otros: 0`;
+                genderCounts[province][city] = `Capacitados: 0<br>Mujeres: 0<br>Hombres: 0<br>Otros: 0`;
             }
 
             const existingCounts = genderCounts[province][city];
-            const currentTotal = this.extractCount(existingCounts, 'Asistentes');
+            const currentTotal = this.extractCount(existingCounts, 'Capacitados');
             const currentFemale = this.extractCount(existingCounts, 'Mujeres');
             const currentMale = this.extractCount(existingCounts, 'Hombres');
             const currentOther = this.extractCount(existingCounts, 'Otros');
@@ -538,7 +538,7 @@ class MapController {
             const newMale = currentMale + maleCount;
             const newOther = currentOther + otherCount;
 
-            genderCounts[province][city] = `Asistentes: ${newTotal}<br>Mujeres: ${newFemale}<br>Hombres: ${newMale}<br>Otros: ${newOther}`;
+            genderCounts[province][city] = `Capacitados: ${newTotal}<br>Mujeres: ${newFemale}<br>Hombres: ${newMale}<br>Otros: ${newOther}`;
         });
 
         return genderCounts;
@@ -550,32 +550,32 @@ class MapController {
         return match ? Number(match[1]) : 0;
     }
 
-    static updateCountAssistants(events: {
+    static updateCountTrained(events: {
         participant_count: string;
         city: string;
         province: string;
     }[]): NestedDictionary {
-        const assistanceCounts: NestedDictionary = {};
+        const trainedCounts: NestedDictionary = {};
 
         events.forEach(event => {
             const province = this.removeAccents(event.province);
             const city = this.removeAccents(event.city);
 
-            if (!assistanceCounts[province]) {
-                assistanceCounts[province] = {};
+            if (!trainedCounts[province]) {
+                trainedCounts[province] = {};
             }
 
             // Convertir participant_count a número
             const participantCount = parseInt(event.participant_count, 10) || 0;
 
-            if (assistanceCounts[province][city]) {
-                const currentCount = parseInt(assistanceCounts[province][city].replace(/\D/g, ''), 10) || 0;
-                assistanceCounts[province][city] = `Asistentes: ${currentCount + participantCount}`;
+            if (trainedCounts[province][city]) {
+                const currentCount = parseInt(trainedCounts[province][city].replace(/\D/g, ''), 10) || 0;
+                trainedCounts[province][city] = `Capacitados: ${currentCount + participantCount}`;
             } else {
-                assistanceCounts[province][city] = `Asistentes: ${participantCount}`;
+                trainedCounts[province][city] = `Capacitados: ${participantCount}`;
             }
         });
-        return assistanceCounts;
+        return trainedCounts;
     }
 }
 
