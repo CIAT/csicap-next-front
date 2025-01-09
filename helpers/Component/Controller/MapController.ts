@@ -7,6 +7,20 @@ import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 class MapController {
     static selectedCity: string | null = null;
     static selectedProvince: string | null = null;
+    static mapReference: string;
+
+    static setMapReference(mapReference: string) {
+        this.mapReference = mapReference;
+    }
+
+    static downloadMapAsImage(fileName?: string): void {
+        const link = document.createElement("a");
+        link.href = this.mapReference;
+        link.download = (fileName != null ? fileName : "mapImage.png");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
     static removeAccents(input: string): string {
         if(!input){

@@ -377,7 +377,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     let menCount = 0;
     let womenCount = 0;
     let otherCount = 0;
-    console.log(tempTrainedData)
     tempTrainedData.forEach((item) => {
       const gender = item.sex_complete?.toLowerCase();
       const occupation = item?.group_ocupations;
@@ -693,12 +692,17 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         <div className={styles.width}>
           <ChartCardComponent
               title="Capacitados por municipio"
-              header={<></>}
+              header={
+                <div className={styles.header_container}>
+                  <ExportDropdown
+                      mapImageName={"capacitados_map.png"}/>
+                </div>
+              }
           >
             <div className="w-full h-full">
               <MapComponent
-                polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
-                data={counts}
+                  polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
+                  data={counts}
               />
             </div>
           </ChartCardComponent>

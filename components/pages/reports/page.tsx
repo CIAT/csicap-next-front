@@ -426,6 +426,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
               data={counts}
               polygons={CalendarController.extractProvincesAndCities(events)}
               useQuintile={true}
+              quintileType={"Capacitados"}
             />
           ) : (
             <div

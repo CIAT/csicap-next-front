@@ -586,7 +586,15 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
               </div>
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
-                <CardComponent title="Profesionales por municipio" styles={styleTechnical}>
+                <ChartCardComponent
+                    title="Profesionales por municipio"
+                    header={
+                      <div className={styles.header_container}>
+                        <ExportDropdown
+                            mapImageName={"profesionales_map.png"}/>
+                      </div>
+                    }
+                >
                   {treemapData.length > 0 && filteredEvents && counts ? (
                       <div className="w-full h-full">
                         <MapComponent
@@ -597,7 +605,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   ) : (
                       <LoadingAnimation/>
                   )}
-                </CardComponent>
+                </ChartCardComponent>
               </div>
             </div>
           </div>

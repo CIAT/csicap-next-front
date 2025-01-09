@@ -2,21 +2,27 @@ import React, { useState, useRef, useEffect } from "react";
 import { EllipsisVertical } from "lucide-react";
 import styles from "./ExportDropdown.module.css"; // Estilos personalizados
 import { downloadChart } from "@/helpers/Component/download/DownloadChart";
+import MapController from "@/helpers/Component/Controller/MapController";
 
 interface ExportDropdownProps {
     chartId?: string;
     chartData?: string[];
+    mapImageName?: string;
 }
 
-const ExportDropdown: React.FC<ExportDropdownProps> = ({ chartId, chartData }) => {
+const ExportDropdown: React.FC<ExportDropdownProps> = ({ chartId, chartData, mapImageName }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const handleFilterChange = (value: string) => {
-        setIsOpen(false); // Cerrar el menú al seleccionar una opción
+        setIsOpen(false);
 
         if (value === "image" && chartId) {
             downloadChart(chartId);
+        }
+
+        if (value === "map" && mapImageName) {
+            MapController.downloadMapAsImage(mapImageName);
         }
 
         if (value === "data" && chartData) {
@@ -61,6 +67,14 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({ chartId, chartData }) =
                             onClick={() => handleFilterChange("image")}
                         >
                             Descargar gráfica
+                        </li>
+                    )}
+                    {mapImageName && (
+                        <li
+                            className={styles.menuItem}
+                            onClick={() => handleFilterChange("map")}
+                        >
+                            Descargar mapa
                         </li>
                     )}
                     {chartData && (

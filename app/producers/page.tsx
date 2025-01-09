@@ -373,160 +373,161 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   return (
     <div className={styles.producers}>
-      <Tabs aria-label="Options">
-        {/* Tab Productores */}
-        <Tab key="registrados" title="Productores">
-          <CustomTooltip
-              options={tooltipOptions}
-              values={tooltipValues}
-              onChange={(selectedValue, filterType) =>
-                  handleTooltipChange(
-                      selectedValue,
-                      filterType,
-                      filteredEvents,
-                      setTooltipOptions,
-                      tooltipValues,
-                      setTooltipValues,
-                      filterFunctionsProducers,
-                      getUniqueValuesFunctionsProducers(),
-                      filterTypes,
-                  )}
-              onClick={() =>
-                  handleOnClick(
-                      tooltipValues,
-                      filteredEvents,
-                      setFilteredEvents,
-                      filterFunctionsProducers,
-                      filterTypes
-                  )}
-              onReset={() =>
-                  handleReset(
-                      events,
-                      setTooltipOptions,
-                      setTooltipValues,
-                      setFilteredEvents,
-                      getUniqueValuesFunctionsProducers(),
-                      placeHolders
-                  )}
-              placeholders={placeHolders}
-              filterTypes={filterTypes}
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => String(option.value)}
-          />
-          <div className="w-full h-full flex flex-wrap">
-            {/* Card superior */}
-            <div className={styles.top_div}>
-              <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>
-                {treemapData.length > 0 ? (
-                    <div className={styles.top_div_division}>
-                    <label className={styles.top_card_label}>{totalData}</label>
-                    <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
-                    <label className={styles.other_card_label}>{totalProducersData}</label>
-                  </div>
-                  
-                ) : (
-                    <LoadingAnimation/>
-                )}
-              </CardComponent>
-              {/* Doughnut: Género */}
-              <CardComponent
-                  id={doughnutProducersGenreId}
-                  title="Género"
-                  styles={styleBeneficiaries}
-              >
-                {treemapData.length > 0 ? (
-                    <div className={styles.doughnut_chart}>
-                      <Doughnut
-                          id={doughnutProducersGenreId}
-                          data={sex}
-                          options={config}
-                      />
-                    </div>
-                ) : (
-                    <LoadingAnimation/>
-                )}
-              </CardComponent>
+      <CustomTooltip
+          options={tooltipOptions}
+          values={tooltipValues}
+          onChange={(selectedValue, filterType) =>
+              handleTooltipChange(
+                  selectedValue,
+                  filterType,
+                  filteredEvents,
+                  setTooltipOptions,
+                  tooltipValues,
+                  setTooltipValues,
+                  filterFunctionsProducers,
+                  getUniqueValuesFunctionsProducers(),
+                  filterTypes,
+              )}
+          onClick={() =>
+              handleOnClick(
+                  tooltipValues,
+                  filteredEvents,
+                  setFilteredEvents,
+                  filterFunctionsProducers,
+                  filterTypes
+              )}
+          onReset={() =>
+              handleReset(
+                  events,
+                  setTooltipOptions,
+                  setTooltipValues,
+                  setFilteredEvents,
+                  getUniqueValuesFunctionsProducers(),
+                  placeHolders
+              )}
+          placeholders={placeHolders}
+          filterTypes={filterTypes}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => String(option.value)}
+      />
+      <div className="w-full h-full flex flex-wrap">
+        {/* Card superior */}
+        <div className={styles.top_div}>
+          <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>
+            {treemapData.length > 0 ? (
+                <div className={styles.top_div_division}>
+                  <label className={styles.top_card_label}>{totalData}</label>
+                  <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
+                  <label className={styles.other_card_label}>{totalProducersData}</label>
+                </div>
 
-              {/* Doughnut: Tipo de propiedad */}
-              <CardComponent
-                  id={doughnutProducersPropertyTypeId}
-                  title="Tipo de propiedad"
-                  styles={styleBeneficiaries}
-              >
-                {treemapData.length > 0 ? (
-                    <div className={styles.doughnut_chart}>
-                      <Doughnut
-                          id={doughnutProducersPropertyTypeId}
-                          data={typeOfHousing}
-                          options={config}
-                      />
-                    </div>
-                ) : (
-                    <LoadingAnimation/>
-                )}
-              </CardComponent>
+            ) : (
+                <LoadingAnimation/>
+            )}
+          </CardComponent>
+          {/* Doughnut: Género */}
+          <CardComponent
+              id={doughnutProducersGenreId}
+              title="Género"
+              styles={styleBeneficiaries}
+          >
+            {treemapData.length > 0 ? (
+                <div className={styles.doughnut_chart}>
+                  <Doughnut
+                      id={doughnutProducersGenreId}
+                      data={sex}
+                      options={config}
+                  />
+                </div>
+            ) : (
+                <LoadingAnimation/>
+            )}
+          </CardComponent>
 
-              {/* Doughnut: Etnia */}
-              <CardComponent
-                  id={doughnutProducersEthnicity}
-                  title="Etnia"
-                  styles={styleBeneficiaries}
-              >
+          {/* Doughnut: Tipo de propiedad */}
+          <CardComponent
+              id={doughnutProducersPropertyTypeId}
+              title="Tipo de propiedad"
+              styles={styleBeneficiaries}
+          >
+            {treemapData.length > 0 ? (
+                <div className={styles.doughnut_chart}>
+                  <Doughnut
+                      id={doughnutProducersPropertyTypeId}
+                      data={typeOfHousing}
+                      options={config}
+                  />
+                </div>
+            ) : (
+                <LoadingAnimation/>
+            )}
+          </CardComponent>
+
+          {/* Doughnut: Etnia */}
+          <CardComponent
+              id={doughnutProducersEthnicity}
+              title="Etnia"
+              styles={styleBeneficiaries}
+          >
+            {treemapData.length > 0 ? (
+                <div className={styles.doughnut_chart}>
+                  <Doughnut
+                      id={doughnutProducersEthnicity}
+                      data={etnia}
+                      options={config}
+                  />
+                </div>
+            ) : (
+                <LoadingAnimation/>
+            )}
+          </CardComponent>
+        </div>
+        <div className={styles.bottom_div}>
+          <div className={styles.flex_container}>
+            <div className={styles.width}>
+              <ChartCardComponent title="Número de productores" header={
+                <div className={styles.header_container}>
+                  <ExportDropdown
+                      chartId={treemapChartProducersCountId}
+                  />
+                </div>
+              }>
                 {treemapData.length > 0 ? (
-                    <div className={styles.doughnut_chart}>
-                      <Doughnut
-                          id={doughnutProducersEthnicity}
-                          data={etnia}
-                          options={config}
-                      />
-                    </div>
+                    <ReactChart
+                        id={treemapChartProducersCountId}
+                        type="treemap"
+                        data={data}
+                        options={options}
+                    />
                 ) : (
                     <LoadingAnimation/>
                 )}
-              </CardComponent>
+              </ChartCardComponent>
             </div>
-            <div className={styles.bottom_div}>
-              <div className={styles.flex_container}>
-                <div className={styles.width}>
-                  <ChartCardComponent title="Número de productores" header={
+            <div className={styles.width}>
+              <ChartCardComponent
+                  title="Productores por municipio"
+                  header={
                     <div className={styles.header_container}>
                       <ExportDropdown
-                          chartId={treemapChartProducersCountId}
-                      />
+                          mapImageName={"productores_map.png"}/>
                     </div>
-                  }>
-                    {treemapData.length > 0 ? (
-                        <ReactChart
-                            id={treemapChartProducersCountId}
-                            type="treemap"
-                            data={data}
-                            options={options}
-                        />
-                    ) : (
-                        <LoadingAnimation/>
-                    )}
-                  </ChartCardComponent>
-                </div>
-                <div className={styles.width}>
-                  <CardComponent
-                      title="Productores por municipio"
-                      styles={styleBeneficiaries}>
-                    <div className="w-full h-full">
-                      {treemapData.length > 0 ? (
-                          <MapComponent
+                  }
+              >
+                <div className="w-full h-full">
+                  {treemapData.length > 0 ? (
+                      <MapComponent
                           polygons={ProducersController.extractProvincesAndCities(filteredEvents)}
                           data={counts}/>
-                      ) : (
-                          <LoadingAnimation/>
-                        )}
-                    </div>
-                  </CardComponent>
+                  ) : (
+                      <LoadingAnimation/>
+                  )}
                 </div>
-              </div>
+              </ChartCardComponent>
             </div>
           </div>
-        </Tab>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 };

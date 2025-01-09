@@ -7,6 +7,7 @@ import {
 import React, {ReactNode} from "react";
 import styles from "@/components/components.module.css";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import {isMap} from "node:util/types";
 
 interface CardProps {
     styles: { [key: string]: string };
@@ -14,19 +15,21 @@ interface CardProps {
     children: ReactNode;
     id?: string;
     data?: string[];
+    mapImageName?: string;
 }
 
-const CardComponent: React.FC<CardProps> = ({ styles, title, children, id, data }) => {
+const CardComponent: React.FC<CardProps> = ({ styles, title, children, id, data, mapImageName }) => {
     return (
         <div className={styles.card}>
             <Card className={styles.card_container}>
                 <CardHeader className={styles.card_header}>
                     <div className={styles.header}>
                         <p className={`${styles.text_black}`}>{title}</p>
-                        {(id || data) && (
+                        {(id || data || mapImageName) && (
                             <ExportDropdown
                                 chartId={id}
                                 chartData={data}
+                                mapImageName={mapImageName}
                             />
                         )}
                     </div>

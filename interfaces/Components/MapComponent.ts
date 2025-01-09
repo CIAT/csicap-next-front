@@ -6,5 +6,6 @@ export interface MapComponentProps {
     data: NestedDictionary;
     polygons: string[][] | string[];
     useQuintile?: boolean;
+    quintileType?: string;
     filterData?: (newState: sectionStateData) => void;
 }

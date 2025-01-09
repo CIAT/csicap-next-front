@@ -32,6 +32,7 @@ import {
   filterFunctionsCalendar,
   getUniqueValuesFunctionsCalendar,
 } from "@/interfaces/Components/CustomTooltipHandler";
+import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 
 const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   const styles = customStyles || require("./calendar.module.css");
@@ -320,10 +321,18 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
               </div>
             </div>
             <div className={styles.card_container2}>
-              <ChartCardComponent title="Eventos por municipio" header={<></>}>
+              <ChartCardComponent
+                  title="Eventos por municipio"
+                  header={
+                    <div className={styles.header_container}>
+                      <ExportDropdown
+                          mapImageName={"calendario_map.png"}
+                      />
+                    </div>
+                  }>
                 <MapComponent
-                  data={counts}
-                  polygons={CalendarController.extractProvincesAndCities(
+                    data={counts}
+                    polygons={CalendarController.extractProvincesAndCities(
                     tempEventData
                   )}
                 />

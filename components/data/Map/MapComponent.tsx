@@ -6,11 +6,12 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
 import {mapBoxAccessToken} from "@/config";
+import {map} from "leaflet";
 
-const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false , quintileType= ""}) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);  // Track if the map and style are fully loaded
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [quintileSteps, setQuintileSteps] = useState<number[]>([]);
 
   useEffect(() => {
@@ -50,10 +51,17 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
       MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, filterData);
 
       if (useQuintile) {
-        const quintiles = MapController.calculateQuintiles(data, "Asistentes");
+        const quintiles = MapController.calculateQuintiles(data, quintileType);
         setQuintileSteps(quintiles);
         MapController.changeFillColor(mapRef.current, quintiles);
       }
+
+      mapRef.current.on("idle", () => {
+        if(!mapRef.current) return;
+
+        const content = mapRef.current.getCanvas().toDataURL();
+        MapController.setMapReference(content);
+      });
     }
   }, [mapLoaded, polygons, data]);
 
@@ -62,7 +70,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
         <div id={(id || "map")} ref={mapContainerRef} className={style["mapContainer"]}></div>
         {useQuintile && (
             <div className={style["legend"]}>
-              <h4>Asistentes por municipio</h4>
+              <h4>{quintileType} por municipio</h4>
               {quintileSteps.map((step, index) => (
                   <div key={index} className={style["legendItem"]}>
                     <span className={style["legendColor"]} style={{ backgroundColor: colors[index] }}></span>
