@@ -46,7 +46,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
   }, [mapLoaded, polygons, data]);
 
   useEffect(() => {
-    // Only run the logic if the map is fully loaded
     if (mapLoaded && mapRef.current) {
       MapController.cleanMap(mapRef.current);
       MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, quintileType, filterData);

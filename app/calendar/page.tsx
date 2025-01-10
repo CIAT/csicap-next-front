@@ -249,7 +249,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             <div className={styles.card_container}>
               <div className={styles.overview}>
                 <CardComponent
-                  title="Visión General"
+                  title="Estado"
                   header={<></>}
                   style={cardStyle}
                 >

@@ -11,11 +11,11 @@ const OverviewCard = () => {
                     style={{
                         backgroundColor: "#80C41C",
                         color: "#fff",
-                        fontSize: "0.7vw",
+                        fontSize: "1vw",
                         padding: "0px",
                     }}
                 >
-                    Eventos Finalizados
+                    Finalizados
                 </Chip>
             </div>
             <div className="flex items-center">
@@ -24,10 +24,10 @@ const OverviewCard = () => {
                         backgroundColor: "#FECF00",
                         color: "#000",
                         padding: "0px",
-                        fontSize: "0.7vw",
+                        fontSize: "1vw",
                     }}
                 >
-                    Eventos Programados
+                    Programados
                 </Chip>
             </div>
             <div className="flex items-center">
@@ -36,10 +36,10 @@ const OverviewCard = () => {
                         backgroundColor: "#c84e42",
                         color: "#fff",
                         padding: "0px",
-                        fontSize: "0.7vw",
+                        fontSize: "1vw",
                     }}
                 >
-                    Eventos sin Cerrar
+                    Sin Cerrar
                 </Chip>
             </div>
             <div className="flex items-center">
@@ -47,11 +47,11 @@ const OverviewCard = () => {
                     style={{
                         backgroundColor: "#b9b9b9",
                         color: "#fff",
-                        fontSize: "0.7vw",
+                        fontSize: "1vw",
                         padding: "0px",
                     }}
                 >
-                    Eventos cancelados
+                    Cancelados
                 </Chip>
             </div>
         </div>

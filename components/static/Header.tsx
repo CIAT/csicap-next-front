@@ -91,12 +91,12 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                 <ul className={styles.dropdownMenu}>
                   <li>
                     <Link href={getLink("/calendar")} onClick={closeMenu}>
-                      Calendario
+                      Programa
                     </Link>
                   </li>
                   <li>
                     <Link href={getLink("/events")} onClick={closeMenu}>
-                      Eventos
+                      Resumen
                     </Link>
                   </li>
                   <li>
