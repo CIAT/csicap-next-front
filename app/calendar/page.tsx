@@ -332,9 +332,9 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                   }>
                 <MapComponent
                     data={counts}
-                    polygons={CalendarController.extractProvincesAndCities(
-                    tempEventData
-                  )}
+                    polygons={CalendarController.extractProvincesAndCities(tempEventData)}
+                    useQuintile={true}
+                    quintileType={"Eventos"}
                 />
               </ChartCardComponent>
             </div>

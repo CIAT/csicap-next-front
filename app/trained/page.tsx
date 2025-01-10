@@ -707,6 +707,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
               <MapComponent
                   polygons={CalendarController.extractProvincesAndCities(filteredEvents)}
                   data={counts}
+                  useQuintile={true}
+                  quintileType={"Capacitados"}
               />
             </div>
           </ChartCardComponent>

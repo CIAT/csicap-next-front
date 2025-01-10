@@ -58,13 +58,13 @@ class MapController {
     }
 
 
-    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary) {
+    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary, quintileType: string) {
         polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
             const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
             const cityName = this.removeAccents(feature.properties.mpio_cnmbr);
 
             if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
-                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Capacitados');
+                feature.properties.value = this.extractCount(counts[provinceName][cityName], quintileType);
                 return;
             }
 
@@ -75,13 +75,14 @@ class MapController {
     static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
         const values: number[] = [];
 
+        // Extraer valores numéricos
         for (const key in data) {
             if (data[key] && typeof data[key] === 'object') {
                 for (const subKey in data[key]) {
                     const valueString = data[key][subKey];
-                    if (valueString.includes("Capacitados")) {
+                    if (valueString.includes(valueKey)) {
                         const value = this.extractCount(valueString, valueKey);
-                        if (value > 0) {
+                        if (!isNaN(value) && value > 0) {
                             values.push(value);
                         }
                     }
@@ -94,13 +95,14 @@ class MapController {
             return [0, 0, 0, 0, 0];
         }
 
-        // Calcular los quintiles
+        // Ordenar los valores
         values.sort((a, b) => a - b);
-        const quintiles: number[] = [];
 
-        for (let i = 1; i <= 5; i++) {
-            const index = Math.floor((i * values.length) / 5) - 1;
-            quintiles.push(values[Math.min(index, values.length - 1)]);
+        // Calcular quintiles
+        const quintiles: number[] = [];
+        for (let i = 0; i <= 4; i++) {
+            const index = Math.round((i * (values.length - 1)) / 4);
+            quintiles.push(values[index]);
         }
 
         return quintiles;
@@ -111,14 +113,15 @@ class MapController {
         polygons: string[][] | string[],
         counts: NestedDictionary,
         useQuintile?: boolean,
+        quintileType?: string,
         filterEvents?: (newState: sectionStateData) => void,
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
 
-        if(useQuintile) {
-            this.updateMapValues(polygonsFeatures, counts);
+        if(useQuintile && quintileType) {
+            this.updateMapValues(polygonsFeatures, counts, quintileType);
         }
 
         if (polygonsFeatures.length > 0) {
@@ -334,7 +337,7 @@ class MapController {
         filterEvents(filterObject);
         MapController.selectedCity = clickedCity;
         MapController.selectedProvince = clickedProvince;
-        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, undefined, filterEvents);
+        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, undefined, "", filterEvents);
     }
 
     // Método para limpiar el mapa si no hay polígonos encontrados

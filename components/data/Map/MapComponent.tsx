@@ -34,7 +34,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
 
         map.on("load", () => {
           setMapLoaded(true); // Set map as loaded once the style and map are fully ready
-          MapController.highlightPolygons(map, polygons, data, useQuintile, filterData);
+          MapController.highlightPolygons(map, polygons, data, useQuintile, quintileType, filterData);
         });
 
         mapRef.current = map;
@@ -48,7 +48,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
   useEffect(() => {
     // Only run the logic if the map is fully loaded
     if (mapLoaded && mapRef.current) {
-      MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, filterData);
+      MapController.cleanMap(mapRef.current);
+      MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, quintileType, filterData);
 
       if (useQuintile) {
         const quintiles = MapController.calculateQuintiles(data, quintileType);

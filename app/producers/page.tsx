@@ -521,7 +521,10 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   {treemapData.length > 0 ? (
                       <MapComponent
                           polygons={ProducersController.extractProvincesAndCities(filteredEvents)}
-                          data={counts}/>
+                          data={counts}
+                          useQuintile={true}
+                          quintileType={"Productores"}
+                      />
                   ) : (
                       <LoadingAnimation/>
                   )}

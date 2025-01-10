@@ -604,6 +604,8 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                         <MapComponent
                             polygons={ProfessionalController.extractMunicipalitiesCode(filteredEvents)}
                             data={counts}
+                            useQuintile={true}
+                            quintileType={"Profesionales"}
                         />
                       </div>
                   ) : (
