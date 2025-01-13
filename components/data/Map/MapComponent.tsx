@@ -53,7 +53,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
         const quintiles = MapController.calculateQuartile(data, quintileType);
         setQuintileSteps(quintiles);
         MapController.changeFillColor(mapRef.current, quintiles);
-        console.log(quintiles)
       }
 
       mapRef.current.on("idle", () => {
