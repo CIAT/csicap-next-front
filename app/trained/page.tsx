@@ -540,8 +540,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
   };
 
-
-
   return (
     <div className={styles.div}>
       <CustomTooltip

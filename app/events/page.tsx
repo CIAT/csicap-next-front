@@ -35,6 +35,7 @@ import {
   handleReset,
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import styleTechnical from "@/app/trained/trained.module.css";
 
 Chart.register(
   Tooltip,
@@ -707,28 +708,45 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => String(option.value)}
       />
-      <div style={{display:"flex", flexDirection:"row", height:"100vh"}}>
-        <div className={styles.div}>
+      <div className={styles.container}>
+        <div className={styles.side_card}>
+          <CardComponent
+              title="Total eventos"
+              style={styles.card}
+          >
+            <label className={styles.side_card_label}>
+              {eventStatusData.
+              reduce((accumulateValue, currentValue) =>
+                  accumulateValue + currentValue, 0) > 0 ? (
+                  eventStatusData.
+                  reduce((accumulateValue, currentValue) =>
+                      accumulateValue + currentValue, 0)
+              ) : (
+                  <LoadingAnimation />
+              )}
+            </label>
+          </CardComponent>
           <ChartCardComponent
-            title="Número de eventos"
-            header={
-              <div className={styles.header_container}>
-                <ExportDropdown
-                    chartId={treemapChartTotalEventsId}
-                    chartData={treemapChartData}
-                />
-              </div>
-            }
+              title="Eventos por cultivo"
+              style={styles.card_tree}
+              header={
+                <div className={styles.header_container}>
+                  <ExportDropdown
+                      chartId={treemapChartTotalEventsId}
+                      chartData={treemapChartData}
+                  />
+                </div>
+              }
           >
             {treemapData.length > 0 ? (
-              <ReactChart
-                id={treemapChartTotalEventsId}
-                type="treemap"
-                data={treemapChartData}
-                options={options}
-              />
+                <ReactChart
+                    id={treemapChartTotalEventsId}
+                    type="treemap"
+                    data={treemapChartData}
+                    options={options}
+                />
             ) : (
-              <LoadingAnimation />
+                <LoadingAnimation/>
             )}
           </ChartCardComponent>
         </div>
@@ -741,20 +759,20 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
           >
             <div className="w-full h-full">
               {tempEventData.length > 0 ? (
-                <Doughnut
-                  id={doughnutChartTotalEventsId}
-                  data={eventsTotal}
-                  options={config2}
-                />
+                  <Doughnut
+                      id={doughnutChartTotalEventsId}
+                      data={eventsTotal}
+                      options={config2}
+                  />
               ) : (
-                <LoadingAnimation />
+                  <LoadingAnimation/>
               )}
             </div>
           </CardComponent>
           <CardComponent
-            title="Ejes por evento"
-            id={doughnutChartAxesByEventId}
-            data={ejesChartData}
+              title="Ejes por evento"
+              id={doughnutChartAxesByEventId}
+              data={ejesChartData}
           >
             <div className="w-full h-full">
               {tempEventData.length > 0 ? (
