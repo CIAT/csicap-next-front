@@ -3,6 +3,7 @@ import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
+import {colors as staticColors} from "@/interfaces/Map/colors";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -40,18 +41,31 @@ class MapController {
     }
 
     static applyFillColor(map: mapboxgl.Map, steps: Number[]) {
+        const colors = staticColors;
+
+        // Ajustar los extremos para evitar duplicados, manteniendo el valor más a la derecha
+        const adjustedSteps = steps.map((step, index, arr) => {
+            if (index < arr.length - 1 && step === arr[index + 1]) {
+                // Ajustar el valor más a la derecha, es decir, el siguiente valor duplicado
+                return Number(step) - 0.001 * (arr.length - index); // Sumar un valor pequeño, con mayor ajuste para los índices más a la derecha
+            }
+            return step; // Mantener el valor original
+        });
+
+        // Crear la propiedad de color
         const fillColor: DataDrivenPropertyValueSpecification<string> = [
             'case',
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                '#FDCE2B', steps[1],
-                '#F9AF4B', steps[2],
-                '#7FC32E', steps[3],
-                '#02BFB3'
+                colors[0], adjustedSteps[1],  // Primer valor
+                colors[1], adjustedSteps[3],  // Segundo valor
+                colors[2], adjustedSteps[5],  // Tercer valor
+                colors[3]
             ]
         ];
 
+        // Aplicar los colores al mapa
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
         map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
@@ -71,9 +85,8 @@ class MapController {
     }
 
     static calculateQuartile(data: NestedDictionary, valueKey: string): number[] {
-        let values: number[] = [];
+        const values: number[] = [];
 
-        // Extraer valores numéricos
         for (const key in data) {
             if (data[key] && typeof data[key] === 'object') {
                 for (const subKey in data[key]) {
@@ -88,22 +101,26 @@ class MapController {
             }
         }
 
-        // Si no hay valores, retornar cuartiles como ceros
+        // Si no hay valores, retornar extremos como ceros
         if (values.length === 0) {
-            return [0, 0, 0, 0];
+            return Array(8).fill(0);
         }
 
         // Ordenar los valores
         values.sort((a, b) => a - b);
 
-        // Calcular cuartiles
-        const quartiles: number[] = [];
-        for (let i = 0; i <= 3; i++) {
-            const index = Math.round((i * (values.length - 1)) / 3);
-            quartiles.push(values[index]);
+        // Calcular extremos de cada cuartil
+        const quartileExtremes: number[] = [];
+        const quartileSize = Math.floor(values.length / 4);
+
+        for (let i = 0; i < 4; i++) {
+            const start = i * quartileSize;
+            const end = i === 3 ? values.length : (i + 1) * quartileSize;
+            quartileExtremes.push(values[start]);
+            quartileExtremes.push(values[end - 1]);
         }
 
-        return quartiles;
+        return quartileExtremes;
     }
 
     static highlightPolygons(

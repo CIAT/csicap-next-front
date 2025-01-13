@@ -66,16 +66,26 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
 
   return (
       <>
-        <div id={(id || "map")} ref={mapContainerRef} className={style["mapContainer"]}></div>
+        <div id={id || "map"} ref={mapContainerRef} className={style["mapContainer"]}></div>
         {useQuintile && (
             <div className={style["legend"]}>
               <h4>{quintileType} por municipio</h4>
-              {quintileSteps.map((step, index) => (
-                  <div key={index} className={style["legendItem"]}>
-                    <span className={style["legendColor"]} style={{ backgroundColor: colors[index] }}></span>
-                    <span>{`De ${step} a ${quintileSteps[index + 1] || "más"}`}</span>
-                  </div>
-              ))}
+              {quintileSteps.map((_, index) => {
+                if (index % 2 !== 0) return null;
+
+                const start = quintileSteps[index];
+                const end = quintileSteps[index + 1];
+
+                return (
+                    <div key={index} className={style["legendItem"]}>
+              <span
+                  className={style["legendColor"]}
+                  style={{ backgroundColor: colors[index / 2] }}
+              ></span>
+                      <span>{`De ${start} a ${end}`}</span>
+                    </div>
+                );
+              })}
             </div>
         )}
       </>
