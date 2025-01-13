@@ -6,7 +6,6 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
 import {mapBoxAccessToken} from "@/config";
-import {map} from "leaflet";
 
 const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false , quintileType= ""}) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -51,9 +50,10 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
       MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, quintileType, filterData);
 
       if (useQuintile) {
-        const quintiles = MapController.calculateQuintiles(data, quintileType);
+        const quintiles = MapController.calculateQuartile(data, quintileType);
         setQuintileSteps(quintiles);
         MapController.changeFillColor(mapRef.current, quintiles);
+        console.log(quintiles)
       }
 
       mapRef.current.on("idle", () => {

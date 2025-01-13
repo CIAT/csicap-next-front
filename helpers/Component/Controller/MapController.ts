@@ -45,18 +45,16 @@ class MapController {
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                '#B6D7E0', steps[1],
-                '#6DABBE', steps[2],
-                '#6DABBE', steps[3],
-                '#569AAF', steps[4],
-                '#407A8D'
+                '#FDCE2B', steps[1],
+                '#F9AF4B', steps[2],
+                '#7FC32E', steps[3],
+                '#02BFB3'
             ]
         ];
 
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
         map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
-
 
     static updateMapValues(polygonsFeatures: any, counts: NestedDictionary, quintileType: string) {
         polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
@@ -72,8 +70,8 @@ class MapController {
         });
     }
 
-    static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
-        const values: number[] = [];
+    static calculateQuartile(data: NestedDictionary, valueKey: string): number[] {
+        let values: number[] = [];
 
         // Extraer valores numéricos
         for (const key in data) {
@@ -90,22 +88,22 @@ class MapController {
             }
         }
 
-        // Si no hay valores, retornar quintiles como ceros
+        // Si no hay valores, retornar cuartiles como ceros
         if (values.length === 0) {
-            return [0, 0, 0, 0, 0];
+            return [0, 0, 0, 0];
         }
 
         // Ordenar los valores
         values.sort((a, b) => a - b);
 
-        // Calcular quintiles
-        const quintiles: number[] = [];
-        for (let i = 0; i <= 4; i++) {
-            const index = Math.round((i * (values.length - 1)) / 4);
-            quintiles.push(values[index]);
+        // Calcular cuartiles
+        const quartiles: number[] = [];
+        for (let i = 0; i <= 3; i++) {
+            const index = Math.round((i * (values.length - 1)) / 3);
+            quartiles.push(values[index]);
         }
 
-        return quintiles;
+        return quartiles;
     }
 
     static highlightPolygons(

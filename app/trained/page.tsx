@@ -209,13 +209,13 @@ const countInstitutions = (assists: Trained[]) => {
       const institution = assist.organization_affiliation;
       if (institution) {
         institutionCount[institution] = (institutionCount[institution] || 0) + 1;
-      }else if (institution === null || institution === "N/A") {
+      }else if (institution === null || institution === "No disponible") {
         nullInstitutionCount++;
       }
   });
 
   if (nullInstitutionCount > 0) {
-    institutionCount["N/A"] = nullInstitutionCount;
+    institutionCount["No disponible"] = nullInstitutionCount;
   }
   return institutionCount;
 };
@@ -364,7 +364,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       "31-40": 0,
       "41-50": 0,
       "51+": 0,
-      "N/N": 0,
+      "No disponible": 0,
     };
 
     let occupationCount: { [key: string]: number } = {
@@ -412,7 +412,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           ageCount["51+"]++;
         }
       } else {
-        ageCount["N/N"]++;
+        ageCount["No disponible"]++;
       }
     });
 
@@ -495,7 +495,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           wrap: true,
           formatter: (ctx: any) => {
             const data = ctx.raw;
-            const label = data.g ? shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g : "N/A";
+            const label = data.g ? shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g : "No disponible";
             return `${label}: ${data.v}`;
           },
         },
@@ -505,7 +505,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   
 
   const ageChartData = {
-    labels: ["20-25", "26-30", "31-40", "41-50", "51+", "N/N"],
+    labels: ["20-25", "26-30", "31-40", "41-50", "51+", "No disponible"],
     datasets: [
       {
         label: "Distribución de Edad",

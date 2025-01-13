@@ -331,8 +331,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                     </div>
                   }>
                 <MapComponent
-                    data={counts}
                     polygons={CalendarController.extractProvincesAndCities(tempEventData)}
+                    data={counts}
                     useQuintile={true}
                     quintileType={"Eventos"}
                 />
