@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     const url = new URL(request.url);
-    const shortName = url.searchParams.get('shortName'); 
+    const shortName = url.searchParams.get('shortName');
 
     if (!shortName) return NextResponse.json({ error: 'shortName is required' }, { status: 400 });
     const res = await fetch(shortName, {

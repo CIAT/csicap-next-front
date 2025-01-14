@@ -5,9 +5,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
-import {mapBoxAccessToken} from "@/config";
+import { mapBoxAccessToken } from "@/config";
 
-const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false , quintileType= ""}) => {
+const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false, quintileType = "" }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -23,16 +23,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
           accessToken: mapBoxAccessToken,
           style: "mapbox://styles/ciatkm/ckhgfstwq018818o06dqero91",
           center: [-74.297333, 4.570868],
-          zoom: 5
+          zoom: 5,
         });
 
-        // disable map rotation using right click + drag
         map.dragRotate.disable();
-        // disable map rotation using touch rotation gesture
         map.touchZoomRotate.disableRotation();
 
         map.on("load", () => {
-          setMapLoaded(true); // Set map as loaded once the style and map are fully ready
+          setMapLoaded(true);
           MapController.highlightPolygons(map, polygons, data, useQuintile, quintileType, filterData);
         });
 
@@ -56,7 +54,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
       }
 
       mapRef.current.on("idle", () => {
-        if(!mapRef.current) return;
+        if (!mapRef.current) return;
 
         const content = mapRef.current.getCanvas().toDataURL();
         MapController.setMapReference(content);
@@ -70,22 +68,43 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
         {useQuintile && (
             <div className={style["legend"]}>
               <h4>{quintileType} por municipio</h4>
-              {quintileSteps.map((_, index) => {
-                if (index % 2 !== 0) return null;
-
-                const start = quintileSteps[index];
-                const end = quintileSteps[index + 1];
-
-                return (
-                    <div key={index} className={style["legendItem"]}>
-              <span
-                  className={style["legendColor"]}
-                  style={{ backgroundColor: colors[index / 2] }}
-              ></span>
-                      <span>{`De ${start} a ${end}`}</span>
+              {quintileType === "Eventos" ? (
+                  <>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[0] }}></span>
+                      <span>1</span>
                     </div>
-                );
-              })}
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[1] }}></span>
+                      <span>2</span>
+                    </div>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[2] }}></span>
+                      <span>De 3 a 10</span>
+                    </div>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[3] }}></span>
+                      <span>Más de 10</span>
+                    </div>
+                  </>
+              ) : (
+                  quintileSteps.map((_, index) => {
+                    if (index % 2 !== 0) return null;
+
+                    const start = quintileSteps[index];
+                    const end = quintileSteps[index + 1];
+
+                    return (
+                        <div key={index} className={style["legendItem"]}>
+                  <span
+                      className={style["legendColor"]}
+                      style={{ backgroundColor: colors[index / 2] }}
+                  ></span>
+                          <span>{`De ${start} a ${end}`}</span>
+                        </div>
+                    );
+                  })
+              )}
             </div>
         )}
       </>
