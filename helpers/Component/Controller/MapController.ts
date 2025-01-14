@@ -67,7 +67,6 @@ class MapController {
 
         // Aplicar los colores al mapa
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
-        map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
 
     static updateMapValues(polygonsFeatures: any, counts: NestedDictionary, quintileType: string) {
@@ -202,7 +201,7 @@ class MapController {
                 source: "highlightPolygons",
                 layout: {},
                 paint: {
-                    "line-color": "#0E6E8C",
+                    "line-color": "#D2D8D8",
                     "line-width": 1
                 }
             });
