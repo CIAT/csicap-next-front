@@ -1,19 +1,14 @@
 "use client";
 
-import MapComponent from "@/components/data/Map/MapComponent";
 import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import CalendarRepository from "@/helpers/Component/Repository/CalendarRepository";
-import MapController from "@/helpers/Component/Controller/MapController";
-import { NestedDictionary } from "@/interfaces/Map/NestedDictionary";
 import Select from "react-select";
 import React, { FC, useEffect, useState } from "react";
 import { Button } from "@mui/material";
-import { DataFormat, EventsData } from "@/interfaces";
 import LoadingAnimation from "@/components/loadingAnimation";
 import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository";
 import ReportsController from "@/helpers/Component/Controller/ReportsController";
 import {
-  ReportFormat,
   ReportNames,
 } from "@/interfaces/Components/ReportsComponent";
 import { PageCustomProps } from "@/interfaces/Components/PageCustomProps";
@@ -32,7 +27,7 @@ import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 
 const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
-  const [allData, setAllData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
+  const [allData, setAllData] = useState<EventFormat[]>([]);
   const [tempEventData, setTempEventData] = useState<EventFormat[]>([]);
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
@@ -48,8 +43,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     []
   );
   const styles = customStyles || require("./reports.module.css");
-  const [events, setEvents] = useState<EventsData[]>([]);
-  const [counts, setCounts] = useState<NestedDictionary>({});
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
   const [allEventData, setAllEventData] = useState<ReportNames[]>([]); // Store all event data once fetched
@@ -127,23 +120,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       // Fetch all reports initially
       await fetchReports();
 
-      // Fetch event data
-      CalendarRepository.fetchEvents()
-        .then((data: DataFormat) => {
-          const formattedEvents = CalendarController.formatEvents(data).map(
-            (event) => ({
-              ...event,
-              city: event.city.toLowerCase(),
-            })
-          );
-
-          setCounts(MapController.updateCountTrained(formattedEvents));
-          setEvents(formattedEvents);
-        })
-        .catch((error) => {
-          console.error("Error fetching events:", error);
-        });
-
       // Fetch and process custom event data
       async function fetchAndProcessData() {
         const dataset = await CalendarRepository.fetchCustomEvent();
@@ -201,9 +177,9 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
         ? await ReportsRepository.fetchFilteredReports(filters)
         : await ReportsRepository.fetchEvents();
 
-      const formattedReports = ReportsController.formatHeaders(data); // Format the fetched data
+      const formattedReports = ReportsController.formatHeaders(data);
 
-      setAllEventData(formattedReports); // Update the state for dropdown options
+      setAllEventData(formattedReports);
     } catch (error) {
       console.error("Error in fetchReports:", error);
     }
@@ -280,7 +256,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     // Generate filters for the reports API
     const filters = tooltipValues.reduce((acc, tooltip, index) => {
       if (tooltip.value) {
-        acc[filterTypes[index]] = tooltip.value; // Map filter type to its selected value
+        acc[filterTypes[index]] = tooltip.value;
       }
       return acc;
     }, {} as { [key: string]: string });
@@ -289,7 +265,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     await fetchReports(filters);
 
     // Ensure the dropdown updates (derived from allEventData)
-    setSelectedReport(null); // Clear the current selection after applying filters
+    setSelectedReport(null);
   };
 
   const handleReportSelection = (
@@ -311,11 +287,11 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     )
     .sort(
       (a, b) => new Date(b.datesEnd).getTime() - new Date(a.datesEnd).getTime()
-    ) // Sort by descending date
+    )
     .map((report) => ({
       value: report.event_id,
       label: capitalizeFirstLetter(report.name),
-      date: report.datesEnd, // Include date for debugging
+      date: report.datesEnd,
     }));
 
   function capitalizeFirstLetter(str: string) {
@@ -404,7 +380,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
                 }}
               >
                 <p style={{ textAlign: "center" }}>
-                  Porfavor, selecciona un reporte para visualizar
+                  Por favor, selecciona un reporte para visualizar
                 </p>
                 <div
                   style={{
@@ -418,27 +394,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
               </div>
             )}
           </div>
-        </div>
-
-        <div className={styles.second_div}>
-          {events.length > 0 ? (
-            <MapComponent
-              data={counts}
-              polygons={CalendarController.extractProvincesAndCities(events)}
-              useQuintile={true}
-              quintileType={"Capacitados"}
-            />
-          ) : (
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <LoadingAnimation />
-            </div>
-          )}
         </div>
       </div>
     </div>
