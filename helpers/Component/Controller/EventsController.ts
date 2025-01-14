@@ -82,15 +82,13 @@ class EventController {
     }
 
     static ageRanges: Record<
-        "20-25" | "26-30" | "31-40" | "41-50" | "51+" | "N/N",
+        "18-28" | "28-59" | "60+" | "No disponible",
         (age: number | null) => boolean
     > = {
-        "20-25": (age: number | null) => age !== null && age >= 20 && age <= 25,
-        "26-30": (age: number | null) => age !== null && age >= 26 && age <= 30,
-        "31-40": (age: number | null) => age !== null && age >= 31 && age <= 40,
-        "41-50": (age: number | null) => age !== null && age >= 41 && age <= 50,
-        "51+": (age: number | null) => age !== null && age > 50,
-        "N/N": (age: number | null) => age === null || age === 0,
+        "18-28": (age: number | null) => age !== null && age >= 18 && age < 28,
+        "28-59": (age: number | null) => age !== null && age >= 28 && age <= 59,
+        "60+": (age: number | null) => age !== null && age >= 60 ,
+        "No disponible": (age: number | null) => age === null || age === 0,
     };
 
     /**
@@ -98,12 +96,10 @@ class EventController {
      */
     static getAgeRanges<T>(events: T[], key: keyof T): CustomTooltipData[] {
         const ageCount: { [key: string]: number } = {
-            "20-25": 0,
-            "26-30": 0,
-            "31-40": 0,
-            "41-50": 0,
-            "51+": 0,
-            "N/N": 0,
+            "18-28": 0,
+            "28-59": 0,
+            "60+": 0,
+            "No disponible": 0,
         };
 
         events.forEach(event => {

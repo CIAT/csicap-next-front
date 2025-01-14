@@ -359,11 +359,9 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     initializeTreemapData(allEventsData);
 
     let ageCount: { [key: string]: number } = {
-      "20-25": 0,
-      "26-30": 0,
-      "31-40": 0,
-      "41-50": 0,
-      "51+": 0,
+      "18-28": 0,
+      "28-59": 0,
+      "60+": 0,
       "No disponible": 0,
     };
 
@@ -400,16 +398,12 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
       // Count age
       if (age !== null && age !== 0) {
-        if (age >= 20 && age <= 25) {
-          ageCount["20-25"]++;
-        } else if (age >= 26 && age <= 30) {
-          ageCount["26-30"]++;
-        } else if (age >= 31 && age <= 40) {
-          ageCount["31-40"]++;
-        } else if (age >= 41 && age <= 50) {
-          ageCount["41-50"]++;
-        } else if (age > 50) {
-          ageCount["51+"]++;
+        if (age >= 18 && age < 28) {
+          ageCount["18-28"]++;
+        } else if (age >= 28 && age <= 59) {
+          ageCount["28-59"]++;
+        } else if (age >= 60) {
+          ageCount["60+"]++;
         }
       } else {
         ageCount["No disponible"]++;
@@ -505,7 +499,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   
 
   const ageChartData = {
-    labels: ["20-25", "26-30", "31-40", "41-50", "51+", "No disponible"],
+    labels: ["18-27", "28-59", "60+", "No disponible"],
     datasets: [
       {
         label: "Distribución de Edad",
