@@ -112,7 +112,7 @@ class MapController {
 
         // Calcular extremos de cada cuartil
         const quartileExtremes: number[] = [];
-        const quartileSize = Math.floor(values.length / 4);
+        const quartileSize = Math.ceil(values.length / 4);
 
         for (let i = 0; i < 4; i++) {
             const start = i * quartileSize;
