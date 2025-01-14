@@ -398,9 +398,9 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
       // Count age
       if (age !== null && age !== 0) {
-        if (age >= 18 && age < 28) {
+        if (age >= 18 && age <= 28) {
           ageCount["18-28"]++;
-        } else if (age >= 28 && age <= 59) {
+        } else if (age > 28 && age <= 59) {
           ageCount["28-59"]++;
         } else if (age >= 60) {
           ageCount["60+"]++;

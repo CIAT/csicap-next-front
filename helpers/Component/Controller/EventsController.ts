@@ -125,8 +125,8 @@ class EventController {
         "18-28" | "28-59" | "60+" | "No disponible",
         (age: number | null) => boolean
     > = {
-        "18-28": (age: number | null) => age !== null && age >= 18 && age < 28,
-        "28-59": (age: number | null) => age !== null && age >= 28 && age <= 59,
+        "18-28": (age: number | null) => age !== null && age >= 18 && age <= 28,
+        "28-59": (age: number | null) => age !== null && age > 28 && age <= 59,
         "60+": (age: number | null) => age !== null && age >= 60 ,
         "No disponible": (age: number | null) => age === null || age === 0,
     };
