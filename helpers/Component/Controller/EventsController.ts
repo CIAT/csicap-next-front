@@ -1,6 +1,46 @@
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
+import {EventsData} from "@/interfaces";
+import {parseISO} from "date-fns";
 
 class EventController {
+    static getEventsByFormState<T extends EventsData>(
+        events: T[],
+        filterType: string,
+    ): T[] {
+        if(filterType === "") return events;
+
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        return events.filter((event) => {
+            const eventEndDate = event.datesEnd
+                ? parseISO(String(event.datesEnd))
+                : null;
+
+            if (filterType === "Cancelados") {
+                return event.change_selection === "EL EVENTO HA SIDO CANCELADO";
+            }
+
+            if (filterType === "Sin Cerrar") {
+                return (
+                    (eventEndDate &&
+                        event.form_state === "1" &&
+                        eventEndDate < currentDate) ||
+                    event.not_assistant === "1"
+                );
+            }
+
+            if (filterType === "Finalizados") {
+                return event.form_state === "0";
+            }
+
+            if (filterType === "Programados") {
+                return eventEndDate && eventEndDate >= currentDate;
+            }
+
+            return false;
+        });
+    }
+
     /**
      * Obtiene valores únicos de una propiedad de un conjunto de eventos.
      */

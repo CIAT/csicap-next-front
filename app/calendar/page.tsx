@@ -33,6 +33,7 @@ import {
   getUniqueValuesFunctionsCalendar,
 } from "@/interfaces/Components/CustomTooltipHandler";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import EventController from "@/helpers/Component/Controller/EventsController";
 
 const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   const styles = customStyles || require("./calendar.module.css");
@@ -87,6 +88,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       label: "Municipio",
     },
   ]);
+  const [formState, setFormState] = useState<string>("");
+
   const tooltipOptions: Array<CustomTooltipData[]> = [
     componentState,
     axisState,
@@ -187,19 +190,10 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   }, []);
 
   useEffect(() => {
-    setSectionState(sectionState);
-  }, [sectionState]);
-
-  const resetFilters = () => {
-    setSectionState({
-      axe: "",
-      crop: "",
-      city: "",
-    });
-    MapController.resetSelectedProvinceAndCity();
-    setTempEventData(events);
-    setFiltersApplied(false);
-  };
+    setTempEventData(
+        EventController.getEventsByFormState(events, formState)
+    );
+  }, [formState]);
 
   return (
     <div className={styles.container}>
@@ -253,7 +247,10 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                   header={<></>}
                   style={cardStyle}
                 >
-                  <OverviewCard></OverviewCard>
+                  <OverviewCard
+                      formState={formState}
+                      setStatus={setFormState}
+                  />
                 </CardComponent>
               </div>
               <div className={styles.sub_card_container}>
