@@ -30,7 +30,7 @@ class EventController {
             }
 
             if (filterType === "Finalizados") {
-                return event.form_state === "0";
+                return event.form_state === "0" && event.not_assistant === "0";
             }
 
             if (filterType === "Programados") {

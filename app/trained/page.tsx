@@ -456,7 +456,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const handleFilterChange = (event: SelectChangeEvent) => {
     const newFilter = event.target.value;
     setSelectedFilter(newFilter);
-    processTreemapData(newFilter, allEventsData, allTrainedData); // Use the stored event data
+    processTreemapData(newFilter, allEventsData, allTrainedData);
   };
 
   const occupationBackgroundColors = Object.keys(occupationStats).map(
@@ -483,7 +483,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         borderWidth: 0,
         labels: {
           display: true,
-          align: "center" as const, // Asegúrate de que el valor sea uno de los permitidos
+          align: "center" as const,
           position: "top" as const,
           color: "white",
           wrap: true,

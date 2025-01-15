@@ -292,7 +292,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                         ) {
                           backgroundColor = "#c84e42";
                           borderColor = "#c84e42";
-                        } else if (event.form_state === "0") {
+                        } else if (event.form_state === "0" && event.not_assistant === "0") {
                           // Eventos que están completamente finalizados (form_state = 0)
                           backgroundColor = "#80C41C";
                           borderColor = "#80C41C";
