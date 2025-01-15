@@ -366,8 +366,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     };
 
     let occupationCount: { [key: string]: number } = {
-      "Productor(a) Agropecuario(a)": 0,
-      "Técnico/Profesional": 0,
+      "Productor(a) agropecuario(a)": 0,
+      "Técnicos/Profesionales": 0,
       "Investigador(a)": 0,
       "Otro": 0,
     };
@@ -499,7 +499,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   
 
   const ageChartData = {
-    labels: ["18-27", "28-59", "60+", "No disponible"],
+    labels: ["18-28", "29-59", "60+", "No disponible"],
     datasets: [
       {
         label: "Distribución de Edad",
