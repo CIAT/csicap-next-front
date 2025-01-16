@@ -1,14 +1,14 @@
 export const impactPageContent = {
   "Resultados esperados": [
-      "M4.0 Reducción de las emisiones derivadas del uso de la tierra, la reforestación, la reducción de la deforestación y mediante la gestión sostenible de los bosques y la conservación y el aumento de las reservas forestales de carbono.",
-      "A1.0 Aumento de la resiliencia y mejora de los medios de subsistencia de las personas, comunidades y regiones más vulnerables",
-      "A2.0 Aumento de la resiliencia de la salud y el bienestar y de la seguridad alimentaria e hídrica",
+      "Reducción de las emisiones derivadas del uso de la tierra, la reforestación, la reducción de la deforestación y mediante la gestión sostenible de los bosques y la conservación y el aumento de las reservas forestales de carbono.",
+      "Aumento de la resiliencia y mejora de los medios de subsistencia de las personas, comunidades y regiones más vulnerables",
+      "Aumento de la resiliencia de la salud y el bienestar y de la seguridad alimentaria e hídrica",
       "Co-beneficio social, medioambiental y económico"
   ],
   "Indicador": [
-      "M4.1 Toneladas equivalentes de dióxido de carbono (t CO2 eq) reducidas o evitadas (incluido el aumento de las eliminaciones) - bosques y uso de la tierra",
-      "A1.2 Número de hombres y mujeres que se benefician de la adopción de opciones de subsistencia diversificadas y resistentes al clima (incluyendo pesca, agricultura, turismo, etc.)",
-      "A2.2 Número de hogares con seguridad alimentaria (en zonas/periodos con riesgo de impacto del cambio climático)",
+      "Toneladas equivalentes de dióxido de carbono (t CO2 eq) reducidas o evitadas (incluido el aumento de las eliminaciones) - bosques y uso de la tierra",
+      "Número de hombres y mujeres que se benefician de la adopción de opciones de subsistencia diversificadas y resistentes al clima (incluyendo pesca, agricultura, turismo, etc.)",
+      "Número de hogares con seguridad alimentaria (en zonas/periodos con riesgo de impacto del cambio climático)",
       "Índice/indicador de co-beneficio social, medioambiental y económico a nivel de impacto\n\nPorcentaje de aumento de los ingresos familiares procedentes de actividades agrícolas"
   ],
   "Línea base": [
@@ -33,16 +33,16 @@ export const impactPageContent = {
 
 export const outcomesPageContent = {
   "Resultados esperados": [
-      "M9.0 Mejora de la gestión de la tierra o de las zonas forestales que contribuyen a la reducción de emisiones",
-      "A6.0 Mayor generación y uso de información climática en la toma de decisiones",
-      "A7.0 Fortalecimiento de la capacidad de adaptación y reducción de la exposición a los riesgos climáticos",
-      "A8.0 Mayor concienciación sobre las amenazas climáticas y los procesos de reducción de riesgos"
+      "Mejora de la gestión de la tierra o de las zonas forestales que contribuyen a la reducción de emisiones",
+      "Mayor generación y uso de información climática en la toma de decisiones",
+      "Fortalecimiento de la capacidad de adaptación y reducción de la exposición a los riesgos climáticos",
+      "Mayor concienciación sobre las amenazas climáticas y los procesos de reducción de riesgos"
   ],
   "Indicador": [
-      "M9.1 Hectáreas de tierra o bosques bajo una gestión mejorada y eficaz que contribuya a reducir las emisiones de CO2",
-      "A6.1 Utilización de productos/servicios de información climática en la toma de decisiones en sectores sensibles al clima",
-      "A7.1 Utilización por parte de los hogares, las comunidades, las empresas y los servicios del sector público vulnerables de herramientas, estrategias y actividades respaldadas por el Fondo para responder al cambio y la variabilidad climáticos.",
-      "A8.1 Número de hombres y mujeres concienciados sobre las amenazas climáticas y las respuestas apropiadas.",
+      "Hectáreas de tierra o bosques bajo una gestión mejorada y eficaz que contribuya a reducir las emisiones de CO2",
+      "Utilización de productos/servicios de información climática en la toma de decisiones en sectores sensibles al clima",
+      "Utilización por parte de los hogares, las comunidades, las empresas y los servicios del sector público vulnerables de herramientas, estrategias y actividades respaldadas por el Fondo para responder al cambio y la variabilidad climáticos.",
+      "Número de hombres y mujeres concienciados sobre las amenazas climáticas y las respuestas apropiadas.",
       "Número de tecnologías y soluciones innovadoras transferidas o autorizadas para apoyar el desarrollo con bajas emisiones y resistente al clima como resultado del apoyo del FVC"
   ],
   "Línea base": [
@@ -70,15 +70,15 @@ export const outcomesPageContent = {
 
 export const performancePageContent = {
   "Resultados esperados": [
-      "1.1 Sistema de extensión agrícola reforzado y modernizado con énfasis en la adaptación y la mitigación",
-      "1.1 Sistema de extensión agrícola reforzado y modernizado con énfasis en la adaptación y la mitigación",
-      "1.2 Servicios agroclimáticos existentes y/o reforzados ",
-      "2.1 Fortalecimiento del banco de germoplasma, desarrollo de nuevas variedades resistentes al clima y distribución masiva de sus semillas",
-      "2.2 Uso más eficiente de los recursos hídricos, restauración de las propiedades del suelo y mejora de las prácticas de mitigación de GEI por parte de agricultores y gremios mediante la adopción de nuevas prácticas y tecnologías climáticamente inteligentes.",
-      "3.1 Mejores modelos empresariales que proporcionen a los agricultores beneficios razonables y mejores prácticas de mitigación de GEI",
-      "3.1 Mejores modelos empresariales que proporcionen a los agricultores beneficios razonables y mejores prácticas de mitigación de GEI",
-      "3.2. Servicios modernizados de asistencia técnica y extensión agrícola con estrategias multi-herramienta, diferenciadas y adaptadas a contextos ambientales, sociales, de género y productivos específicos a nivel nacional.",
-      "3.2. Servicios modernizados de asistencia técnica y extensión agrícola con estrategias multi-herramienta, diferenciadas y adaptadas a contextos ambientales, sociales, de género y productivos específicos a nivel nacional."
+      "Sistema de extensión agrícola reforzado y modernizado con énfasis en la adaptación y la mitigación",
+      "Sistema de extensión agrícola reforzado y modernizado con énfasis en la adaptación y la mitigación",
+      "Servicios agroclimáticos existentes y/o reforzados ",
+      "Fortalecimiento del banco de germoplasma, desarrollo de nuevas variedades resistentes al clima y distribución masiva de sus semillas",
+      "Uso más eficiente de los recursos hídricos, restauración de las propiedades del suelo y mejora de las prácticas de mitigación de GEI por parte de agricultores y gremios mediante la adopción de nuevas prácticas y tecnologías climáticamente inteligentes.",
+      "Mejores modelos empresariales que proporcionen a los agricultores beneficios razonables y mejores prácticas de mitigación de GEI",
+      "Mejores modelos empresariales que proporcionen a los agricultores beneficios razonables y mejores prácticas de mitigación de GEI",
+      "Servicios modernizados de asistencia técnica y extensión agrícola con estrategias multi-herramienta, diferenciadas y adaptadas a contextos ambientales, sociales, de género y productivos específicos a nivel nacional.",
+      "Servicios modernizados de asistencia técnica y extensión agrícola con estrategias multi-herramienta, diferenciadas y adaptadas a contextos ambientales, sociales, de género y productivos específicos a nivel nacional."
   ],
   "Indicador": [
       "Porcentaje de agricultores/técnicos que perciben que sus conocimientos han mejorado como resultado de un sistema de extensión agrícola reforzado y modernizado, diferenciado por género.",

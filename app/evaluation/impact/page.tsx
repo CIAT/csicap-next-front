@@ -2,7 +2,7 @@
 
 import {NextPage} from "next";
 import {TableComponent} from "@/components/table/TableComponent";
-import {impactPageContent} from "@/helpers/content/impactPage";
+import {impactPageContent} from "@/helpers/content/IndicatorsContent";
 import styles from "../evaluation.module.css";
 
 const ImpactPage: NextPage = ({}) => {
