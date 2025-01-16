@@ -1,0 +1,26 @@
+.container {
+    margin: 20px;
+    border-radius: 40px;
+    border: 1px solid #C5C5C5;
+    box-shadow:
+            0 24px 24px -12px rgba(14, 63, 126, 0.0392157),
+            0 12px 12px -6px rgba(14, 63, 126, 0.0392157),
+            0 6px 6px -3px rgba(42, 51, 70, 0.0392157),
+            0 3px 3px -1.5px rgba(42, 51, 70, 0.0392157),
+            0 1px 1px -0.5px rgba(42, 51, 69, 0.0392157),
+            0 0 0 1px rgba(14, 63, 126, 0.0392157);
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.title_page {
+    padding: 10px;
+    margin: 10px;
+    font-size: 4vh;
+    font-weight: 700;
+}
+
+.table {
+    height: 75vh;
+    border-radius: 0 0 40px 40px;
+}

@@ -1,6 +1,6 @@
 import {NextPage} from "next";
-import CalendarPage from "@/app/calendar/page";
 import embedStyles from "./calendar.module.css";
+import CalendarPage from "@/app/monitoring/calendar/page";
 
 const EmbedCalendar:NextPage = () => {
   return(

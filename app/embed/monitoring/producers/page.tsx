@@ -1,5 +1,5 @@
 import {NextPage} from "next";
-import ProducersPage from "@/app/producers/page";
+import ProducersPage from "@/app/monitoring/producers/page";
 import embedStyles from "./producers.module.css";
 
 const EmbedProducers:NextPage = () => {
