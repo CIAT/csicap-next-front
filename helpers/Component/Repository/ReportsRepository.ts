@@ -47,15 +47,13 @@ class ReportsRepository {
   
       const url = `${baseUrl}?${queryParams}`; // Construct the full URL with filters
   
-      const response = await fetch(`/api/verify-token?shortName=${url}`);
+      const response = await fetch(`/api/verify-token?shortName=${encodeURIComponent(url)}`);
   
       if (!response.ok) {
           throw new Error("Error fetching filtered reports");
       }
       return await response.json(); // Return the filtered reports data as JSON
   }
-  
-    
 }
 
 
