@@ -1,4 +1,4 @@
-import AssistancePage from "@/app/trained/page";
+import AssistancePage from "@/app/monitoring/trained/page";
 import {NextPage} from "next";
 import embedStyles from "./trained.module.css";
 

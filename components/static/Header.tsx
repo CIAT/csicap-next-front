@@ -17,6 +17,8 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
   // Determine the current pathname
   const pathname = usePathname();
   const isHomePage = pathname === "/"; // Check if the current page is the home page
+  const isMonitoringPage = pathname.includes("monitoring"); // Check if the URL contains 'monitoring'
+  const isEvaluationPage = pathname.includes("evaluation"); // Check if the URL contains 'evaluation'
 
   // Detect if the device is mobile
   useEffect(() => {
@@ -62,86 +64,116 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
   const getLink = (path: string) => (showHeader ? path : `/embed${path}`);
 
   return (
-    <header className={styles.headerStyle}>
-      {showHeader && (
-        <div className={styles.logoStyle}>
-          <Link href="/" className="h-full w-full">
-            <img src="/logo.png" alt="alliance-logo" />
-          </Link>
+      <header className={styles.headerStyle}>
+        {showHeader && (
+            <div className={styles.logoStyle}>
+              <Link href="/" className="h-full w-full">
+                <img src="/logo.png" alt="alliance-logo" />
+              </Link>
+            </div>
+        )}
+        <div className={styles.hamburger} onClick={toggleMenu}>
+          <img src="/menu.png" alt="menu" />
+          <span className={styles.hamburgerIcon}></span>
         </div>
-      )}
-      <div className={styles.hamburger} onClick={toggleMenu}>
-        <img src="/menu.png" alt="menu" />
-        <span className={styles.hamburgerIcon}></span>
-      </div>
-      <nav
-        className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}
-      >
-        <ul>
-          {/* Conditionally render Monitoreo only if not on the home page */}
-          {!isHomePage && (
-            <li
-              className={styles.header_nav_item}
-              onMouseEnter={() => handleMouseEnter("Seguimiento de eventos")}
-              onMouseLeave={handleMouseLeave}
-              onClick={() => handleDropdown("Seguimiento de eventos")}
-            >
-              Seguimiento de eventos
-              {activeDropdown === "Seguimiento de eventos" && (
-                <ul className={styles.dropdownMenu}>
-                  <li>
-                    <Link href={getLink("/calendar")} onClick={closeMenu}>
-                      Programa
-                    </Link>
+        <nav
+            className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}
+        >
+          <ul>
+            {/* Render 'Seguimiento de eventos' and 'Registro' only if the URL contains 'monitoring' */}
+            {isMonitoringPage && (
+                <>
+                  <li
+                      className={styles.header_nav_item}
+                      onMouseEnter={() => handleMouseEnter("Seguimiento de eventos")}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleDropdown("Seguimiento de eventos")}
+                  >
+                    Seguimiento de eventos
+                    {activeDropdown === "Seguimiento de eventos" && (
+                        <ul className={styles.dropdownMenu}>
+                          <li>
+                            <Link href={getLink("/monitoring/calendar")} onClick={closeMenu}>
+                              Programa
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href={getLink("/monitoring/events")} onClick={closeMenu}>
+                              Resumen
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href={getLink("/monitoring/trained")} onClick={closeMenu}>
+                              Capacitados
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href={getLink("/monitoring/reports")} onClick={closeMenu}>
+                              Reportes
+                            </Link>
+                          </li>
+                        </ul>
+                    )}
                   </li>
-                  <li>
-                    <Link href={getLink("/events")} onClick={closeMenu}>
-                      Resumen
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={getLink("/trained")} onClick={closeMenu}>
-                      Capacitados
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={getLink("/reports")} onClick={closeMenu}>
-                      Reportes
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-          )}
 
-          {/* Conditionally render Registro only if not on the home page */}
-          {!isHomePage && (
-            <li
-              className={styles.header_nav_item}
-              onMouseEnter={() => handleMouseEnter("registro")}
-              onMouseLeave={handleMouseLeave}
-              onClick={() => handleDropdown("registro")}
-            >
-              Registro de beneficiarios
-              {activeDropdown === "registro" && (
-                <ul className={styles.dropdownMenu}>
-                  <li>
-                    <Link href={getLink("/producers")} onClick={closeMenu}>
-                      Productores
-                    </Link>
+                  <li
+                      className={styles.header_nav_item}
+                      onMouseEnter={() => handleMouseEnter("registro")}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleDropdown("registro")}
+                  >
+                    Registro de beneficiarios
+                    {activeDropdown === "registro" && (
+                        <ul className={styles.dropdownMenu}>
+                          <li>
+                            <Link href={getLink("/monitoring/producers")} onClick={closeMenu}>
+                              Productores
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href={getLink("/monitoring/professionals")} onClick={closeMenu}>
+                              Profesionales
+                            </Link>
+                          </li>
+                        </ul>
+                    )}
                   </li>
-                  <li>
-                    <Link href={getLink("/professionals")} onClick={closeMenu}>
-                      Profesionales
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-          )}
-        </ul>
-      </nav>
-    </header>
+                </>
+            )}
+
+            {/* Render 'Indicadores' only if the URL contains 'evaluation' */}
+            {isEvaluationPage && (
+                <li
+                    className={styles.header_nav_item}
+                    onMouseEnter={() => handleMouseEnter("Indicadores")}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleDropdown("Indicadores")}
+                >
+                  Indicadores
+                  {activeDropdown === "Indicadores" && (
+                      <ul className={styles.dropdownMenu}>
+                        <li>
+                          <Link href={getLink("/evaluation/impact")} onClick={closeMenu}>
+                            Impacto
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href={getLink("/evaluation/outcomes")} onClick={closeMenu}>
+                            Resultados
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href={getLink("/evaluation/performance")} onClick={closeMenu}>
+                            Ejecución
+                          </Link>
+                        </li>
+                      </ul>
+                  )}
+                </li>
+            )}
+          </ul>
+        </nav>
+      </header>
   );
 };
 

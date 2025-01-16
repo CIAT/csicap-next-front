@@ -35,7 +35,7 @@ import {
   handleReset,
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
-import styleTechnical from "@/app/trained/trained.module.css";
+import styleTechnical from "@/app/monitoring/trained/trained.module.css";
 
 Chart.register(
   Tooltip,
