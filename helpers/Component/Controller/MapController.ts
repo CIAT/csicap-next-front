@@ -463,10 +463,6 @@ class MapController {
         const number = polygons[0] as string;
         const isNumber = !Number.isNaN(Number(number));
 
-        if(isNumber && number.length === 2){
-            return this.getPolygonsByDepartmentCode(polygons as string[]);
-        }
-
         if(isNumber){
             return this.getPolygonsByCode(polygons as string[]);
         }
@@ -506,7 +502,7 @@ class MapController {
 
     static getPolygonsByDepartmentCode(polygons: string[]) {
         return polygons.map(code => {
-            return colombiaGeoJSONByCities.features.filter((feature: any) =>
+            return colombiaGeoJSONByCities.features.find((feature: any) =>
                 feature.properties.dpto_ccdgo === code);
         }).filter(feature => feature !== undefined);
     }

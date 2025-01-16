@@ -23,8 +23,8 @@ class ProfessionalController {
         const uniqueCodes = new Set<string>();
 
         events.forEach(event => {
-            if (event && Array.isArray(event.department_code)) {
-                event.department_code.forEach(code => {
+            if (event && Array.isArray(event.department_where_you_work)) {
+                event.department_where_you_work.forEach(code => {
                     if (code && code.trim() !== '') {
                         uniqueCodes.add(code);
                     }
