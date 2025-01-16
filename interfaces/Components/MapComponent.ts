@@ -3,7 +3,7 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 
 export interface MapComponentProps {
     id?: string;
-    data: NestedDictionary;
+    data: NestedDictionary | Record<string, string>;
     polygons: string[][] | string[];
     useQuintile?: boolean;
     quintileType?: string;

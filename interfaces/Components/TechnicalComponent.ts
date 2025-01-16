@@ -1,5 +1,5 @@
 export interface FormattedBeneficiary extends TechnicalBeneficiaries {
-    province: string;
+    province: string[];
     city: string[];
     crop: string;
     academicLevel: string;
@@ -10,7 +10,8 @@ export interface TechnicalBeneficiaries {
     highest_educational_level: string;
     ethnic_affiliation: string;
     affiliated_guild_or_organization: string[]; // Cambiado a string
-    department_where_you_work: string;
+    department_where_you_work: string[];
+    department_code: string[];
     current_position_in_guild: string;
     municipalities_where_you_work: string[]; // Cambiado a string
     gender_at_birth: string;

@@ -180,7 +180,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [treemapTitle, setTreemapTitle] = useState("Número de profesionales");
-  const [counts, setCounts] = useState<NestedDictionary>({});
+  const [counts, setCounts] = useState<Record<string, string>>({});
 
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
@@ -423,7 +423,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   }, [filteredEvents]);
 
   const processChartData = () => {
-    setCounts(MapController.updateCountEventsByCityCodes(filteredEvents));
+    setCounts(MapController.updateCountProfessionalsByProvince(filteredEvents));
 
     initializeTreemapData(filteredEvents);
 
@@ -591,7 +591,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
                 <ChartCardComponent
-                    title="Profesionales por municipio"
+                    title="Profesionales por departamento"
                     header={
                       <div className={styles.header_container}>
                         <ExportDropdown
@@ -602,7 +602,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   {treemapData.length > 0 && filteredEvents && counts ? (
                       <div className="w-full h-full">
                         <MapComponent
-                            polygons={ProfessionalController.extractMunicipalitiesCode(filteredEvents)}
+                            polygons={ProfessionalController.extractProvincesCode(filteredEvents)}
                             data={counts}
                             useQuintile={true}
                             quintileType={"Profesionales"}

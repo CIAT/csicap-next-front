@@ -69,7 +69,16 @@ class MapController {
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
     }
 
-    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary, quintileType: string) {
+    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary | Record<string, string>, quintileType: string) {
+        if(this.isNestedDictionary(counts)){
+            this.updateMapValuesForNestedDictionary(polygonsFeatures, counts, quintileType);
+            return;
+        }
+
+        this.updateMapValuesForDictionary(polygonsFeatures, counts, quintileType);
+    }
+
+    static updateMapValuesForNestedDictionary(polygonsFeatures: any, counts: NestedDictionary, quintileType: string){
         polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
             const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
             const cityName = this.removeAccents(feature.properties.mpio_cnmbr);
@@ -83,24 +92,34 @@ class MapController {
         });
     }
 
-    static calculateQuartile(data: NestedDictionary, valueKey: string): number[] {
+    static updateMapValuesForDictionary(polygonsFeatures: any, counts: Record<string, string>, quintileType: string) {
+        polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; }; }) => {
+            const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
+
+            if (provinceName && counts[provinceName]) {
+                feature.properties.value = this.extractCount(counts[provinceName], quintileType);
+                return;
+            }
+
+            feature.properties.value = 0;
+        });
+    }
+
+    static isNestedDictionary(obj: unknown): obj is NestedDictionary {
+        if (typeof obj !== 'object' || obj === null) return false;
+
+        // Verificar que cada valor sea un objeto con claves string y valores string
+        return Object.values(obj).every(value =>
+            typeof value === 'object' &&
+            value !== null &&
+            Object.values(value).every(innerValue => typeof innerValue === 'string')
+        );
+    }
+
+    static calculateQuartile(data: NestedDictionary | Record<string, string>, valueKey: string): number[] {
         if (valueKey === "Eventos") return [1, 2, 2, 3, 3, 10, 10, 33];
 
-        const values: number[] = [];
-
-        for (const key in data) {
-            if (data[key] && typeof data[key] === 'object') {
-                for (const subKey in data[key]) {
-                    const valueString = data[key][subKey];
-                    if (valueString.includes(valueKey)) {
-                        const value = this.extractCount(valueString, valueKey);
-                        if (!isNaN(value) && value > 0) {
-                            values.push(value);
-                        }
-                    }
-                }
-            }
-        }
+        const values: number[] = this.getValuesForQuartile(data, valueKey);
 
         // Si no hay valores, retornar extremos como ceros
         if (values.length === 0) {
@@ -124,10 +143,42 @@ class MapController {
         return quartileExtremes;
     }
 
+    static getValuesForQuartile(data: NestedDictionary | Record<string, string>, valueKey: string): number[] {
+        const values: number[] = [];
+        if (this.isNestedDictionary(data)) {
+            for (const key in data) {
+                if (data[key] && typeof data[key] === 'object') {
+                    for (const subKey in data[key]) {
+                        const valueString = data[key][subKey];
+                        if (valueString.includes(valueKey)) {
+                            const value = this.extractCount(valueString, valueKey);
+                            if (!isNaN(value) && value > 0) {
+                                values.push(value);
+                            }
+                        }
+                    }
+                }
+            }
+            return values;
+        }
+
+        for (const key in data) {
+            const valueString = data[key];
+            if (valueString.includes(valueKey)) {
+                const value = this.extractCount(valueString, valueKey);
+                if (!isNaN(value) && value > 0) {
+                    values.push(value);
+                }
+            }
+        }
+
+        return values;
+    }
+
     static highlightPolygons(
         map: mapboxgl.Map,
         polygons: string[][] | string[],
-        counts: NestedDictionary,
+        counts: NestedDictionary | Record<string, string>,
         useQuintile?: boolean,
         quintileType?: string,
         filterEvents?: (newState: sectionStateData) => void,
@@ -215,7 +266,7 @@ class MapController {
         map: mapboxgl.Map,
         hoveredStateId: number | string | null,
         tooltip: HTMLDivElement,
-        counts: NestedDictionary,
+        counts: NestedDictionary | Record<string, string>,
         filterEvents?: (newState: sectionStateData) => void
     ) {
         map.on('mousemove', 'highlightPolygons-fill', (e) => {
@@ -236,7 +287,7 @@ class MapController {
     }
 
     // Método para manejar el movimiento del ratón sobre el mapa
-    static handleMouseMove(e: any, map: mapboxgl.Map, tooltip: HTMLDivElement, hoveredStateId: number | string | null, counts: NestedDictionary) {
+    static handleMouseMove(e: any, map: mapboxgl.Map, tooltip: HTMLDivElement, hoveredStateId: number | string | null, counts: NestedDictionary | Record<string, string>) {
         tooltip.style.display = 'none';
 
         if (e.features && e.features[0].properties && e.features.length > 0) {
@@ -285,7 +336,11 @@ class MapController {
     }
 
     // Método para actualizar el contenido del tooltip
-    static updateTooltipContent(e: any, tooltip: HTMLDivElement, counts: NestedDictionary) {
+    static updateTooltipContent(
+        e: any,
+        tooltip: HTMLDivElement,
+        counts: NestedDictionary | Record<string, string>
+    ) {
         let provinceName = String(e.features[0].properties.dpto_cnmbr);
         let cityName = String(e.features[0].properties.mpio_cnmbr);
 
@@ -294,22 +349,34 @@ class MapController {
         provinceName = this.removeAccents(provinceName);
         cityName = this.removeAccents(cityName);
 
-        if (counts && counts[provinceName] && counts[provinceName][cityName]) {
-            const content = counts[provinceName][cityName];
+        const isNestedDictionary = this.isNestedDictionary(counts);
 
-            const currentTotal = this.extractCount(content, 'Capacitados');
+        if (isNestedDictionary) {
+            if (counts[provinceName] && counts[provinceName][cityName]) {
+                const content = counts[provinceName][cityName];
+                const currentTotal = this.extractCount(content, 'Capacitados');
+                const hasAssistants = content.includes('Capacitados');
 
-            const hasAssistants = content.includes('Capacitados');
+                if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
+                    tooltipHtmlContent += `<br><strong>${content}</strong>`;
+                }
+            }
+        }
 
-            if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
-                tooltipHtmlContent += `<br><strong>${content}</strong>`;
+        if(!isNestedDictionary){
+            if (counts[provinceName]) {
+                const content = counts[provinceName] as string;
+                const currentTotal = this.extractCount(content, 'Capacitados');
+                const hasAssistants = content.includes('Capacitados');
+
+                if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
+                    tooltipHtmlContent += `<br><strong>${content}</strong>`;
+                }
             }
         }
 
         tooltip.innerHTML = tooltipHtmlContent;
     }
-
-
 
     // Método para manejar la salida del ratón del mapa
     static handleMouseLeave(map: mapboxgl.Map, hoveredStateId: number | string | null, tooltip: HTMLDivElement) {
@@ -326,7 +393,7 @@ class MapController {
     }
 
     // Método para manejar el clic sobre los polígonos
-    static handlePolygonClick(e: any, map: mapboxgl.Map, counts: NestedDictionary, filterEvents?: (newState: sectionStateData) => void) {
+    static handlePolygonClick(e: any, map: mapboxgl.Map, counts: NestedDictionary | Record<string, string>, filterEvents?: (newState: sectionStateData) => void) {
         if (!filterEvents) {
             return;
         }
@@ -393,9 +460,21 @@ class MapController {
     }
 
     static getPolygons(polygons: string[][] | string[]) {
-        if (typeof polygons[0] === 'string'){
+        const number = polygons[0] as string;
+        const isNumber = !Number.isNaN(Number(number));
+
+        if(isNumber && number.length === 2){
+            return this.getPolygonsByDepartmentCode(polygons as string[]);
+        }
+
+        if(isNumber){
             return this.getPolygonsByCode(polygons as string[]);
         }
+
+        if (typeof polygons[0] === 'string'){
+            return this.getPolygonsByDepartment(polygons as string[]);
+        }
+
         return this.getPolygonsByName(polygons as string[][])
     }
 
@@ -410,10 +489,25 @@ class MapController {
         }).filter(feature => feature !== undefined);
     }
 
+    static getPolygonsByDepartment(departments: string[]) {
+        return departments.flatMap(department => {
+            return colombiaGeoJSONByCities.features.filter((feature: any) =>
+                MapController.removeAccents(feature.properties.dpto_cnmbr) === MapController.removeAccents(department)
+            );
+        });
+    }
+
     static getPolygonsByCode(polygons: string[]) {
         return polygons.map(code => {
             return colombiaGeoJSONByCities.features.find((feature: any) =>
                 feature.properties.mpio_cdpmp === code);
+        }).filter(feature => feature !== undefined);
+    }
+
+    static getPolygonsByDepartmentCode(polygons: string[]) {
+        return polygons.map(code => {
+            return colombiaGeoJSONByCities.features.filter((feature: any) =>
+                feature.properties.dpto_ccdgo === code);
         }).filter(feature => feature !== undefined);
     }
 
@@ -508,6 +602,26 @@ class MapController {
             cityEventCounts[province][city] = 'Eventos: 1';
         });
         return cityEventCounts;
+    }
+
+    static updateCountProfessionalsByProvince(events: { department_where_you_work: string[] }[]): Record<string, string> {
+        const provinceProfessionalsCounts: Record<string, string> = {};
+
+        events.forEach(event => {
+            event.department_where_you_work.forEach(department => {
+                const province: string = this.removeAccents(department);
+
+                if (provinceProfessionalsCounts[province]) {
+                    const currentCount = parseInt(provinceProfessionalsCounts[province].replace(/\D/g, ''), 10);
+                    provinceProfessionalsCounts[province] = `Profesionales: ${currentCount + 1}`;
+                    return;
+                }
+
+                provinceProfessionalsCounts[province] = 'Profesionales: 1';
+            });
+        });
+
+        return provinceProfessionalsCounts;
     }
 
     static updateCountBeneficiariesByCity(events: {

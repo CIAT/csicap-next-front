@@ -10,18 +10,29 @@ class ProfessionalController {
     static formatEvents(data: DataItem[]): FormattedBeneficiary[] {
         return data.map((item: DataItem) => ({
             ...item.data, // Extraer los datos de la propiedad `data`
-            province: item.data.department_where_you_work, // No es un array, tomarlo directamente
-            city: item.data.municipalities_where_you_work, // No es un array, tomarlo directamente
-            crop: item.data.crops_worked_last_12_months, // No es un array, tomarlo directamente
-            academicLevel: item.data.highest_educational_level, // Nivel académico
-            institution: item.data.affiliated_guild_or_organization, // Organización o institución
-            age_tc: item.data.age_tc // Edad
+            province: item.data.department_where_you_work,
+            city: item.data.municipalities_where_you_work,
+            crop: item.data.crops_worked_last_12_months,
+            academicLevel: item.data.highest_educational_level,
+            institution: item.data.affiliated_guild_or_organization,
+            age_tc: item.data.age_tc
         }));
     }
 
-    static extractProvinces(events: FormattedBeneficiary[]): string[] {
-        const provinces = events.map(event => event.province);
-        return Array.from(new Set(provinces));
+    static extractProvincesCode(events: TechnicalBeneficiaries[]): string[] {
+        const uniqueCodes = new Set<string>();
+
+        events.forEach(event => {
+            if (event && Array.isArray(event.department_code)) {
+                event.department_code.forEach(code => {
+                    if (code && code.trim() !== '') {
+                        uniqueCodes.add(code);
+                    }
+                });
+            }
+        });
+
+        return Array.from(new Set(uniqueCodes));
     }
 
     static extractMunicipalitiesCode(events: TechnicalBeneficiaries[]): string[] {
