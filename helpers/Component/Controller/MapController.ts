@@ -344,12 +344,15 @@ class MapController {
         let provinceName = String(e.features[0].properties.dpto_cnmbr);
         let cityName = String(e.features[0].properties.mpio_cnmbr);
 
-        let tooltipHtmlContent = `<strong>${provinceName}: ${cityName}</strong>`;
-
         provinceName = this.removeAccents(provinceName);
         cityName = this.removeAccents(cityName);
 
         const isNestedDictionary = this.isNestedDictionary(counts);
+
+        // Define tooltip content based on whether `counts` is a NestedDictionary
+        let tooltipHtmlContent = isNestedDictionary
+            ? `<strong>${provinceName}: ${cityName}</strong>`
+            : `<strong>${provinceName}</strong>`;
 
         if (isNestedDictionary) {
             if (counts[provinceName] && counts[provinceName][cityName]) {
@@ -361,9 +364,7 @@ class MapController {
                     tooltipHtmlContent += `<br><strong>${content}</strong>`;
                 }
             }
-        }
-
-        if(!isNestedDictionary){
+        } else {
             if (counts[provinceName]) {
                 const content = counts[provinceName] as string;
                 const currentTotal = this.extractCount(content, 'Capacitados');
