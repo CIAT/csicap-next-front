@@ -102,9 +102,15 @@ const config = {
         title: function () {
           return "";
         },
-        label: function (tooltipItem: any) {
-          const index = tooltipItem.dataIndex;
-          return `${tooltipItem.label}: ${tooltipItem.raw}`;
+        formatter: (ctx: any) => {
+          const data = ctx.raw;
+          const total = ctx.dataset.tree.reduce((sum: number, node: any) => sum + node.value, 0);
+          const percentage = ((data.v / total) * 100).toFixed(2);
+          const label =
+              shortenedLabels.find((label) =>
+                  label.startsWith(data.g.slice(0, 1))
+              ) || data.g;
+          return `${label}: ${data.v} (${percentage}%)`;
         },
       },
     },

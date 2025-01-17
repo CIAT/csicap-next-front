@@ -9,6 +9,7 @@ export interface FormattedBeneficiary extends TechnicalBeneficiaries {
 export interface TechnicalBeneficiaries {
     highest_educational_level: string;
     ethnic_affiliation: string;
+    ethnic_affiliation_group: string;
     affiliated_guild_or_organization: string[]; // Cambiado a string
     department_where_you_work: string[];
     department_code: string[];

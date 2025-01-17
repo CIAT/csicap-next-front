@@ -420,23 +420,23 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         key: "value",
         groups: ["name"],
         backgroundColor: (ctx: { dataIndex: number }) => {
-          return colors[ctx.dataIndex % colors.length]; // Reuse colors array
+          return colors[ctx.dataIndex % colors.length];
         },
         borderColor: "rgba(0,0,0,0.1)",
         spacing: 1,
         borderWidth: 0,
         labels: {
           display: true,
-          align: "center" as const, // Asegúrate de que el valor sea uno de los permitidos
+          align: "center" as const,
           position: "top" as const,
           color: "white",
           wrap: true,
           formatter: (ctx: any) => {
             const data = ctx.raw;
             const label =
-              shortenedLabels.find((label) =>
-                label.startsWith(data.g.slice(0, 1))
-              ) || data.g;
+                shortenedLabels.find((label) =>
+                    label.startsWith(data.g.slice(0, 1))
+                ) || data.g;
             return `${label}: ${data.v}`;
           },
         },
@@ -550,8 +550,13 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             return "";
           },
           label: function (tooltipItem: any) {
-            const index = tooltipItem.dataIndex;
-            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Show the label from the data
+            const rawValue = tooltipItem.raw;
+            const total = tooltipItem.dataset.data.reduce(
+                (acc: number, val: number) => acc + val,
+                0
+            );
+            const percentage = ((rawValue / total) * 100).toFixed(2);
+            return `${tooltipItem.label}: ${rawValue} (${percentage}%)`;
           },
         },
       },
@@ -571,13 +576,14 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
           title: function () {
             return "";
           },
-          label: function (tooltipItem: any) {
+          label: (tooltipItem: any) => {
             const data = tooltipItem.raw;
-            const label =
-              shortenedLabels.find((label) =>
-                label.startsWith(data.g.slice(0, 1))
-              ) || data.g;
-            return `${label}: ${data.v}`;
+            const total = tooltipItem.dataset.tree.reduce(
+                (sum: number, node: any) => sum + node.value,
+                0
+            );
+            const percentage = ((data.v / total) * 100).toFixed(2);
+            return `${data.g}: ${data.v} (${percentage}%)`;
           },
         },
       },
@@ -616,8 +622,13 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             return "";
           },
           label: function (tooltipItem: any) {
-            const index = tooltipItem.dataIndex;
-            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+            const rawValue = tooltipItem.raw;
+            const total = tooltipItem.dataset.data.reduce(
+                (acc: number, val: number) => acc + val,
+                0
+            );
+            const percentage = ((rawValue / total) * 100).toFixed(2);
+            return `${tooltipItem.label}: ${rawValue} (${percentage}%)`;
           },
         },
       },

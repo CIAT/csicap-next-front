@@ -313,8 +313,13 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
             return "";
           },
           label: function (tooltipItem: any) {
-            const index = tooltipItem.dataIndex;
-            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+            const rawValue = tooltipItem.raw;
+            const total = tooltipItem.dataset.data.reduce(
+                (acc: number, val: number) => acc + val,
+                0
+            );
+            const percentage = ((rawValue / total) * 100).toFixed(2);
+            return `${tooltipItem.label}: ${rawValue} (${percentage}%)`;
           },
         },
       },
@@ -334,9 +339,14 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           title: function () {
             return "";
           },
-          label: (context: any) => {
-            const data = context.dataset.tree[context.dataIndex];
-            return `${data.name}: ${data.value}`;
+          label: (tooltipItem: any) => {
+            const data = tooltipItem.raw;
+            const total = tooltipItem.dataset.tree.reduce(
+                (sum: number, node: any) => sum + node.value,
+                0
+            );
+            const percentage = ((data.v / total) * 100).toFixed(2);
+            return `${data.g}: ${data.v} (${percentage}%)`;
           },
         },
       },
