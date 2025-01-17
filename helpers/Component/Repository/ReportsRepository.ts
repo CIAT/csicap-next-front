@@ -50,6 +50,7 @@ class ReportsRepository {
       const response = await fetch(`/api/verify-token?shortName=${encodeURIComponent(url)}`);
   
       if (!response.ok) {
+          alert("No hay reportes para los filtros seleccionados.");
           throw new Error("Error fetching filtered reports");
       }
       return await response.json(); // Return the filtered reports data as JSON

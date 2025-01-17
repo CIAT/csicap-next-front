@@ -268,6 +268,20 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     setSelectedReport(null);
   };
 
+  const handleResetFilters = async () => {
+    handleReset(
+        allData,
+        setTooltipOptions,
+        setTooltipValues,
+        setTempEventData,
+        getUniqueValuesFunctionsEvents(),
+        placeHolders
+    )
+
+    await fetchReports();
+    setSelectedReport(null);
+  }
+
   const handleReportSelection = (
     selectedOption: { value: string; label: string } | null
   ) => {
@@ -294,8 +308,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       date: report.datesEnd,
     }));
 
-  console.log(allData)
-
   function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
@@ -319,16 +331,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
           )
         }
         onClick={handleApplyFilters}
-        onReset={() =>
-          handleReset(
-            allData,
-            setTooltipOptions,
-            setTooltipValues,
-            setTempEventData,
-            getUniqueValuesFunctionsEvents(),
-            placeHolders
-          )
-        }
+        onReset={handleResetFilters}
         placeholders={placeHolders}
         filterTypes={filterTypes}
         getOptionLabel={(option) => option.label}
