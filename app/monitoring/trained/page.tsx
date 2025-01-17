@@ -102,15 +102,15 @@ const config = {
         title: function () {
           return "";
         },
-        formatter: (ctx: any) => {
-          const data = ctx.raw;
-          const total = ctx.dataset.tree.reduce((sum: number, node: any) => sum + node.value, 0);
-          const percentage = ((data.v / total) * 100).toFixed(2);
-          const label =
-              shortenedLabels.find((label) =>
-                  label.startsWith(data.g.slice(0, 1))
-              ) || data.g;
-          return `${label}: ${data.v} (${percentage}%)`;
+        label: function (tooltipItem: any) {
+          const index = tooltipItem.dataIndex; // Índice del dato actual
+          const rawValue = tooltipItem.raw; // Valor numérico del dato actual
+          const total = tooltipItem.dataset.data.reduce(
+              (acc: number, val: number) => acc + val,
+              0
+          ); // Suma total de los valores
+          const percentage = ((rawValue / total) * 100).toFixed(2); // Calcula el porcentaje
+          return `${tooltipItem.label}: ${rawValue} (${percentage}%)`; // Devuelve el texto del tooltip
         },
       },
     },
@@ -130,10 +130,14 @@ const options = {
         title: function () {
           return "";
         },
-        label: function (tooltipItem: any) {
+        label: (tooltipItem: any) => {
           const data = tooltipItem.raw;
-          const label = shortenedLabels.find((label) => label.startsWith(data.g.slice(0, 1))) || data.g;
-          return `${label}: ${data.v}`;
+          const total = tooltipItem.dataset.tree.reduce(
+              (sum: number, node: any) => sum + node.value,
+              0
+          ); // Calcula el total de todos los valores
+          const percentage = ((data.v / total) * 100).toFixed(2); // Calcula el porcentaje
+          return `${data.g}: ${data.v} (${percentage}%)`; // Retorna la etiqueta con valor y porcentaje
         },
       },
     },
