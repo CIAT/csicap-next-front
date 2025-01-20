@@ -377,7 +377,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
     let occupationCount: { [key: string]: number } = {
       "Productor(a) agropecuario(a)": 0,
-      "Técnicos/Profesionales": 0,
+      "Técnicos/profesionales": 0,
       "Investigador(a)": 0,
       "Otro": 0,
     };

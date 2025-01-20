@@ -47,7 +47,7 @@ class MapController {
         const adjustedSteps = steps.map((step, index, arr) => {
             if (index < arr.length - 1 && step === arr[index + 1]) {
                 // Ajustar el valor más a la derecha, es decir, el siguiente valor duplicado
-                return Number(step) - 0.001 * (arr.length - index); // Sumar un valor pequeño, con mayor ajuste para los índices más a la derecha
+                return Number(step) - 0.0001 * (arr.length - index); // Sumar un valor pequeño, con mayor ajuste para los índices más a la derecha
             }
             return step; // Mantener el valor original
         });
@@ -58,9 +58,9 @@ class MapController {
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                colors[0], adjustedSteps[1],  // Primer valor
-                colors[1], adjustedSteps[3],  // Segundo valor
-                colors[2], adjustedSteps[5],  // Tercer valor
+                colors[0], adjustedSteps[1],
+                colors[1], adjustedSteps[3],
+                colors[2], adjustedSteps[5],
                 colors[3]
             ]
         ];
