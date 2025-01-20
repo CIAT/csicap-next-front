@@ -69,7 +69,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
             <div className={style["legend"]}>
               {quintileType === "Profesionales" ? (<h4>{quintileType} por departamento</h4>) : (
                   <h4>{quintileType} por municipio</h4>)}
-              {quintileType === "Eventos" ? (
+              {(quintileType === "Eventos" || quintileType === "Familias registradas") ? (
                   <>
                     <div className={style["legendItem"]}>
                       <span className={style["legendColor"]} style={{ backgroundColor: colors[0] }}></span>

@@ -423,7 +423,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
       <div className="w-full h-full flex flex-wrap">
         {/* Card superior */}
         <div className={styles.top_div}>
-          <CardComponent styles={styleBeneficiaries} title={"Total productores registrados"}>
+          <CardComponent styles={styleBeneficiaries} title={"Total familias registradas registrados"}>
             {treemapData.length > 0 ? (
                 <div className={styles.top_div_division}>
                   <label className={styles.top_card_label}>{totalData}</label>
@@ -497,7 +497,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         <div className={styles.bottom_div}>
           <div className={styles.flex_container}>
             <div className={styles.width}>
-              <ChartCardComponent title="Número de productores" header={
+              <ChartCardComponent title="Número de familias registradas" header={
                 <div className={styles.header_container}>
                   <ExportDropdown
                       chartId={treemapChartProducersCountId}
@@ -519,7 +519,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
             </div>
             <div className={styles.width}>
               <ChartCardComponent
-                  title="Productores por municipio"
+                  title="Familias registradas por municipio"
                   header={
                     <div className={styles.header_container}>
                       <ExportDropdown
@@ -533,7 +533,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                           polygons={ProducersController.extractProvincesAndCities(filteredEvents)}
                           data={counts}
                           useQuintile={true}
-                          quintileType={"Productores"}
+                          quintileType={"Familias registradas"}
                       />
                   ) : (
                       <LoadingAnimation/>

@@ -118,6 +118,7 @@ class MapController {
 
     static calculateQuartile(data: NestedDictionary | Record<string, string>, valueKey: string): number[] {
         if (valueKey === "Eventos") return [1, 2, 2, 3, 3, 10, 10, 33];
+        if (valueKey === "Familias registradas") return [1, 2, 2, 3, 3, 10, 10, 320];
 
         const values: number[] = this.getValuesForQuartile(data, valueKey);
 
@@ -637,11 +638,11 @@ class MapController {
 
             if (cityBeneficiariesCounts[province][city]) {
                 const currentCount = parseInt(cityBeneficiariesCounts[province][city].replace(/\D/g, ''), 10);
-                cityBeneficiariesCounts[province][city] = `Productores: ${currentCount + 1}`;
+                cityBeneficiariesCounts[province][city] = `Familias registradas: ${currentCount + 1}`;
                 return;
             }
 
-            cityBeneficiariesCounts[province][city] = 'Productores: 1';
+            cityBeneficiariesCounts[province][city] = 'Familias registradas: 1';
         });
         return cityBeneficiariesCounts;
     }

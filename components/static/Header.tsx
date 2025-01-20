@@ -127,7 +127,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                         <ul className={styles.dropdownMenu}>
                           <li>
                             <Link href={getLink("/monitoring/producers")} onClick={closeMenu}>
-                              Productores
+                              Familias registradas
                             </Link>
                           </li>
                           <li>
