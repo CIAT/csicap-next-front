@@ -67,7 +67,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
         <div id={id || "map"} ref={mapContainerRef} className={style["mapContainer"]}></div>
         {useQuintile && (
             <div className={style["legend"]}>
-              <h4>{quintileType} por municipio</h4>
+              {quintileType === "Profesionales" ? (<h4>{quintileType} por departamento</h4>) : (
+                  <h4>{quintileType} por municipio</h4>)}
               {quintileType === "Eventos" ? (
                   <>
                     <div className={style["legendItem"]}>
