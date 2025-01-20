@@ -21,7 +21,6 @@ class EventController {
             }
 
             if (filterType === "Sin Cerrar") {
-                console.log("entras")
                 return (
                     event.change_selection !== "EL EVENTO HA SIDO CANCELADO" && (
                         (eventEndDate &&
