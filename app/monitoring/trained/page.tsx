@@ -533,7 +533,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   };
 
   const genderChartData = {
-    labels: ["Hombre", "Mujer", "Otro"],
+    labels: ["Hombre", "Mujer", "No disponible"],
     datasets: [
       {
         label: "Distribución de Género",
