@@ -21,11 +21,13 @@ class EventController {
             }
 
             if (filterType === "Sin Cerrar") {
+                console.log("entras")
                 return (
-                    (eventEndDate &&
-                        event.form_state === "1" &&
-                        eventEndDate < currentDate) ||
-                    event.not_assistant === "1"
+                    event.change_selection !== "EL EVENTO HA SIDO CANCELADO" && (
+                        (eventEndDate &&
+                            event.form_state === "1" &&
+                            eventEndDate < currentDate) ||
+                        event.not_assistant === "1")
                 );
             }
 
