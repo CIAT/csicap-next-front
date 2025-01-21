@@ -69,8 +69,8 @@ class CalendarController {
         return Array.from(new Set(cities));
     }
 
-    static extractProvincesAndCities(events: { province: string, city: string}[]): string[][]{
-        const provincesAndCities = events.map(event => [event.province, event.city]);
+    static extractProvincesAndCities(trained: { province: string, city: string}[]): string[][]{
+        const provincesAndCities = trained.map(event => [event.province, event.city]);
         return Array.from(new Set(provincesAndCities));
     }
 

@@ -4,6 +4,7 @@ import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 import {colors as staticColors} from "@/interfaces/Map/colors";
+import {Trained} from "@/interfaces/Components/AssistanceComponent";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -509,44 +510,41 @@ class MapController {
         }).filter(feature => feature !== undefined);
     }
 
-    static updateCountEventsByCityCodes(events: { municipalities_code: string[] }[]): NestedDictionary {
-        const cityCodeProfessionalCounts: NestedDictionary = {};
+    static updateCountTrainedByCityCodes(trainedPeople: Trained[]): NestedDictionary {
+        const cityCodeTrainedCounts: NestedDictionary = {};
 
         // Verificar si events es un arreglo
-        if (!Array.isArray(events)) {
+        if (!Array.isArray(trainedPeople)) {
             throw new Error('El parámetro events debe ser un arreglo');
         }
 
-        events.forEach(event => {
+        trainedPeople.forEach(trained => {
             // Verificar que event y municipalities_code no sean nulos o indefinidos
-            if (event && Array.isArray(event.municipalities_code)) {
-                event.municipalities_code.forEach(cityCode => {
-                    // Aquí asumimos que cityCode es un string y no es necesario convertirlo
-                    const cityData = this.getPolygonsByCodeCityAndProvince([cityCode])[0];
+            // Aquí asumimos que cityCode es un string y no es necesario convertirlo
+            const cityData = this.getPolygonsByCodeCityAndProvince([trained.muni_res_complete])[0];
 
-                    if (cityData) {
-                        const provinceName = this.removeAccents(cityData.provinceName);
-                        const cityName = this.removeAccents(cityData.cityName);
+            if (cityData) {
+                const provinceName = this.removeAccents(cityData.provinceName);
+                const cityName = this.removeAccents(cityData.cityName);
 
-                        // Inicializar la provincia si no existe
-                        if (!cityCodeProfessionalCounts[provinceName]) {
-                            cityCodeProfessionalCounts[provinceName] = {};
-                        }
+                // Inicializar la provincia si no existe
+                if (!cityCodeTrainedCounts[provinceName]) {
+                    cityCodeTrainedCounts[provinceName] = {};
+                }
 
-                        // Sumar el conteo de Profesionales para la ciudad
-                        if (cityCodeProfessionalCounts[provinceName][cityName]) {
-                            const currentCount = parseInt(cityCodeProfessionalCounts[provinceName][cityName].replace(/\D/g, ''), 10);
-                            cityCodeProfessionalCounts[provinceName][cityName] = `Profesionales: ${currentCount + 1}`;
-                        } else {
-                            cityCodeProfessionalCounts[provinceName][cityName] = 'Profesionales: 1';
-                        }
-                    }
-                });
+                // Sumar el conteo de Profesionales para la ciudad
+                if (cityCodeTrainedCounts[provinceName][cityName]) {
+                    const currentCount = parseInt(cityCodeTrainedCounts[provinceName][cityName].replace(/\D/g, ''), 10);
+                    cityCodeTrainedCounts[provinceName][cityName] = `Capacitados: ${currentCount + 1}`;
+                } else {
+                    cityCodeTrainedCounts[provinceName][cityName] = 'Capacitados: 1';
+                }
             } else {
-                console.warn('El evento es nulo o municipalities_code no es un arreglo:', event);
+                console.warn('Los capacitados son nulos o muni_res_complete no es un arreglo:', trained);
             }
         });
-        return cityCodeProfessionalCounts;
+
+        return cityCodeTrainedCounts;
     }
 
     static getPolygonsByCodeCityAndProvince(polygons: string[]) {

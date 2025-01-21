@@ -42,7 +42,8 @@ export interface Event {
     event_objective: string;
     event_id: string;
     participant_count: string;
-  }
+}
+
 export interface DataFormat {
     id: string;
     created_at: string;
