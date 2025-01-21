@@ -266,7 +266,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }, [tempTrainedData]);
 
   function processData() {
-    initializeTreemapData(allTrainedData);
+    initializeTreemapData(tempTrainedData);
 
     let ageCount: { [key: string]: number } = {
       "18-28": 0,
@@ -327,37 +327,13 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }
 
   const initializeTreemapData = (data: Trained[]) => {
+    console.log(data)
     const filterData = countCrops(data);
     const mappedData = Object.keys(filterData).map(key => ({
       name: key,
       value: filterData[key]
     }));
     setTreemapData(mappedData);
-  };
-  
-  const processTreemapData = (filter: string, data: Trained[]) => {
-    let filterData: { [key: string]: number } = {};
-
-    switch (filter) {
-      case "crop":
-        filterData = countCrops(data);
-        break;
-      default:
-        return;
-    }
-
-    // Crear datos para el treemap
-    const mappedData = Object.keys(filterData).map((key) => ({
-      name: key,
-      value: filterData[key],
-    }));
-    setTreemapData(mappedData);
-  };
-
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    const newFilter = event.target.value;
-    setSelectedFilter(newFilter);
-    processTreemapData(newFilter, allTrainedData);
   };
 
   const occupationBackgroundColors = Object.keys(occupationStats).map(
