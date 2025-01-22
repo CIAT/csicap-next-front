@@ -16,9 +16,9 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
 
   // Determine the current pathname
   const pathname = usePathname();
-  const isHomePage = pathname === "/"; // Check if the current page is the home page
-  const isMonitoringPage = pathname.includes("monitoring"); // Check if the URL contains 'monitoring'
-  const isEvaluationPage = pathname.includes("evaluation"); // Check if the URL contains 'evaluation'
+  const isHomePage = pathname === "/";
+  const isMonitoringPage = pathname.includes("monitoring");
+  const isEvaluationPage = pathname.includes("evaluation");
 
   // Detect if the device is mobile
   useEffect(() => {
@@ -81,7 +81,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
         >
           <ul>
             {/* Render 'Seguimiento de eventos' and 'Registro' only if the URL contains 'monitoring' */}
-            {isMonitoringPage && (
+            {(isMonitoringPage || isHomePage) && (
                 <>
                   <li
                       className={styles.header_nav_item}
@@ -171,6 +171,26 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                   )}
                 </li>
             )}
+            <li
+                className={styles.header_nav_item}
+                onMouseEnter={() => handleMouseEnter("contact")}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => handleDropdown("contact")}
+            >
+              <Link href={getLink("/contact")} onClick={closeMenu}>
+                Contacto
+              </Link>
+            </li>
+            <li
+                className={styles.header_nav_item}
+                onMouseEnter={() => handleMouseEnter("contact")}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => handleDropdown("contact")}
+            >
+              <Link href={getLink("/about")} onClick={closeMenu}>
+                Acerca
+              </Link>
+            </li>
           </ul>
         </nav>
       </header>

@@ -29,8 +29,8 @@
 .headerStyle {
   position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 60px 10px 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   height: 13vh;
@@ -57,11 +57,12 @@
 
 .header_nav_item {
   position: relative;
-  margin-left: 40px;
   border-bottom: 1px solid white;
   font-size: 1rem;
   text-align: left;
   padding: 15px;
+  display: flex;
+  align-items: center;
 }
 
 /* Hamburger menu settings */
