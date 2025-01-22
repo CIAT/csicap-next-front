@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import {NEXT_PUBLIC_AWS_TOKEN} from "@/helpers/localVariables";
 
 export async function GET(request: NextRequest) {
     const url = new URL(request.url);
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
     const res = await fetch(shortName, {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_AWS_TOKEN}`,
+            Authorization: `Bearer ${NEXT_PUBLIC_AWS_TOKEN}`,
         },
     });
 

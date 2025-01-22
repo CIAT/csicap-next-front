@@ -1,8 +1,9 @@
 import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
+import {NEXT_PUBLIC_URL_GET_PRODUCERS} from "@/helpers/localVariables";
 
 class ProducersRepository {
     static async fetchEvents(): Promise<DataFormat[]> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_PRODUCERS;
+        const url = NEXT_PUBLIC_URL_GET_PRODUCERS;
         if(!url){
             return <DataFormat[]>{};
         }

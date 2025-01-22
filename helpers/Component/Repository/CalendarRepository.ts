@@ -1,10 +1,11 @@
 import {DataFormat, Event, EventFormat} from "@/interfaces";
 import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {NEXT_PUBLIC_URL_GET_EVENTS, NEXT_PUBLIC_URL_GET_EVENTS_CALENDAR} from "@/helpers/localVariables";
 
 class CalendarRepository {
     
     static async fetchEvents(): Promise<Trained> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
+        const url = NEXT_PUBLIC_URL_GET_EVENTS;
        
         if(!url){
             return <Trained>{};
@@ -18,7 +19,7 @@ class CalendarRepository {
     }
 
     static async fetchCalendarEvents(): Promise<DataFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS_CALENDAR;
+        const url = NEXT_PUBLIC_URL_GET_EVENTS_CALENDAR;
         if(!url){
             return <DataFormat>{};
         }
@@ -30,7 +31,7 @@ class CalendarRepository {
     }
 
     static async fetchCustomEvent(): Promise<EventFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;    
+        const url = NEXT_PUBLIC_URL_GET_EVENTS;
         if(!url){
             return <EventFormat>{};
         }

@@ -1,8 +1,9 @@
 import { ReportFormat, ReportNamesFormat } from "@/interfaces/Components/ReportsComponent";
+import {NEXT_PUBLIC_URL_GET_REPORTS} from "@/helpers/localVariables";
 
 class ReportsRepository {
     static async fetchEvents(): Promise<ReportNamesFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_REPORTS;
+        const url = NEXT_PUBLIC_URL_GET_REPORTS;
         if(!url){
             return <ReportNamesFormat>{};
         }
@@ -16,7 +17,7 @@ class ReportsRepository {
     }
 
     static async fetchEventById(reportId: string): Promise<ReportFormat> {
-      const baseUrl = process.env.NEXT_PUBLIC_URL_GET_REPORTS; // Base URL for fetching reports
+      const baseUrl = NEXT_PUBLIC_URL_GET_REPORTS; // Base URL for fetching reports
       if (!baseUrl) {
         return <ReportFormat>{}; // Return an empty object if the URL is not defined
       }
@@ -34,7 +35,7 @@ class ReportsRepository {
     }
 
     static async fetchFilteredReports(filters: { [key: string]: string | null }): Promise<ReportNamesFormat> {
-      const baseUrl = process.env.NEXT_PUBLIC_URL_GET_REPORTS; // Base URL for fetching reports
+      const baseUrl = NEXT_PUBLIC_URL_GET_REPORTS; // Base URL for fetching reports
       if (!baseUrl) {
           return <ReportNamesFormat>{}; // Return an empty object if the URL is not defined
       }
