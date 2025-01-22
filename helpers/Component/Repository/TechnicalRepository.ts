@@ -1,9 +1,8 @@
 import {DataFormat, DataItem} from "@/interfaces/Components/TechnicalComponent";
-import {NEXT_PUBLIC_URL_GET_TECHNICIAN} from "@/helpers/localVariables";
 
 class TechnicalRepository {
     static async fetchEvents(): Promise<DataFormat> {
-        const url = NEXT_PUBLIC_URL_GET_TECHNICIAN;
+        const url = process.env.NEXT_PUBLIC_URL_GET_TECHNICIAN;
         if(!url){
             return <DataItem[]>{};
         }

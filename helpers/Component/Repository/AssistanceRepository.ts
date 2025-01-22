@@ -1,9 +1,8 @@
 import {Trained} from "@/interfaces/Components/AssistanceComponent";
-import {NEXT_PUBLIC_URL_GET_ASSISTANCE} from "@/helpers/localVariables";
 
 class AssistanceRepository {
     static async getAssistanceData(): Promise<Trained[]> {
-        const url = NEXT_PUBLIC_URL_GET_ASSISTANCE;
+        const url = process.env.NEXT_PUBLIC_URL_GET_ASSISTANCE;
 
         if (!url) {
             return <Trained[]>{};

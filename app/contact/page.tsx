@@ -1,6 +1,5 @@
 import {NextPage} from "next";
 import styles from "./contact.module.css";
-import {EMAIL_CONTACT} from "@/helpers/localVariables";
 
 const ContactPage: NextPage = ({}) => {
     return(
@@ -23,7 +22,7 @@ const ContactPage: NextPage = ({}) => {
                 </div>
             </div>
             <form className={`${styles.container} ${styles.message_container}`}
-                  action={`https://formspree.io/f/${EMAIL_CONTACT}`}
+                  action={`https://formspree.io/f/${process.env.EMAIL_CONTACT}`}
                   method="POST"
             >
                 <div className={styles.message_title}>

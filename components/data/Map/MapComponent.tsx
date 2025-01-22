@@ -5,7 +5,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
-import {NEXT_PUBLIC_MAPBOX_TOKEN} from "@/helpers/localVariables";
 
 const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false, quintileType = "" }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -20,7 +19,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
       if (mapContainerRef.current) {
         const map = new mapboxgl.Map({
           container: mapContainerRef.current,
-          accessToken: NEXT_PUBLIC_MAPBOX_TOKEN,
+          accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
           style: "mapbox://styles/ciatkm/ckhgfstwq018818o06dqero91",
           center: [-74.297333, 4.570868],
           zoom: 5,
