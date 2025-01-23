@@ -183,9 +183,9 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
             </li>
             <li
                 className={styles.header_nav_item}
-                onMouseEnter={() => handleMouseEnter("contact")}
+                onMouseEnter={() => handleMouseEnter("about")}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => handleDropdown("contact")}
+                onClick={() => handleDropdown("about")}
             >
               <Link href={getLink("/about")} onClick={closeMenu}>
                 Acerca
