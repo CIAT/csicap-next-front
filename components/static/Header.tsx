@@ -16,7 +16,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
 
   // Determine the current pathname
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  const isHomePage = pathname === "/" || pathname === "/contact" || pathname === "/about";
   const isMonitoringPage = pathname.includes("monitoring");
   const isEvaluationPage = pathname.includes("evaluation");
 
