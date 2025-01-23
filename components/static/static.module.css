@@ -190,6 +190,15 @@
   }
 }
 
+.partner_container {
+  padding: 10px 0;
+}
+
+.partner_title {
+  padding: 10px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
 
 /* Larger screens (hide hamburger) */
 @media (min-width: 769px) {

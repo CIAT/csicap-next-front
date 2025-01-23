@@ -12,8 +12,25 @@ const Footer = () => {
         />
       </div>
       <div className={styles.footer_text}>
-        <p>© 2024 MyWebsite. All rights reserved.</p>
-        <nav>
+          <div className={styles.partner_container}>
+              <div className={styles.partner_title}>
+                  Socios
+              </div>
+              <div>
+                  AGROSAVIA ASABAMA ASOCAÑA ASOHOFRUCOL
+              </div>
+              <div>
+                  AUGURA CENICAFÉ CENICAÑA CIMMYT
+              </div>
+              <div>
+                  CIPAV FEDEARROZ FEDEGAN FEDEPANELA
+              </div>
+              <div>
+                  FEDEPAPA FENALCE
+              </div>
+          </div>
+          <p>© 2024 MyWebsite. All rights reserved.</p>
+          <nav>
           <ul className={styles.footerNavStyle}>
             <li className={styles.footerNavItemStyle}>
               <Link href="/privacy">Privacy Policy</Link>
