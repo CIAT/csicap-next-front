@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 3vw;
+    padding: 2vw;
+    gap: 2vw;
+}
+
+.text {
+    padding: 0.8vw;
+    margin: 0.2vw;
+    display: flex;
+    text-align: justify;
+}
+
+.title {
+    font-weight: 800;
+    font-size: 1.5vw;
+}
+
+.credits {
+    background-color: #f8f8f8;
+    border-radius: 40px;
+    padding: 2vw 1.3vw;
+}
+
+.important {
+    color: #cb2d2d;
+}
