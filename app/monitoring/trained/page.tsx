@@ -327,7 +327,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }
 
   const initializeTreemapData = (data: Trained[]) => {
-    console.log(data)
     const filterData = countCrops(data);
     const mappedData = Object.keys(filterData).map(key => ({
       name: key,

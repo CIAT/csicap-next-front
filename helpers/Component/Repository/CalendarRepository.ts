@@ -1,24 +1,9 @@
 import {DataFormat, Event, EventFormat} from "@/interfaces";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
 
 class CalendarRepository {
-    
-    static async fetchEvents(): Promise<Trained> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
-       
-        if(!url){
-            return <Trained>{};
-        }
-        const response = await fetch(`/api/verify-token?shortName=${url}`);
-       
-        if (!response.ok) {
-            throw new Error("Failed to fetch events");
-        }
-        return  await response.json();
-    }
-
     static async fetchCalendarEvents(): Promise<DataFormat> {
         const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS_CALENDAR;
+
         if(!url){
             return <DataFormat>{};
         }
@@ -30,7 +15,7 @@ class CalendarRepository {
     }
 
     static async fetchCustomEvent(): Promise<EventFormat> {
-        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;    
+        const url = process.env.NEXT_PUBLIC_URL_GET_EVENTS;
         if(!url){
             return <EventFormat>{};
         }
