@@ -80,8 +80,32 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
             className={`${styles.nav_style} ${isMenuOpen ? styles.navOpen : ""}`}
         >
           <ul>
+            {isHomePage && (
+                <>
+                  <li
+                      className={styles.header_nav_item}
+                      onMouseEnter={() => handleMouseEnter("contact")}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleDropdown("contact")}
+                  >
+                    <Link href={getLink("/monitoring/calendar")} onClick={closeMenu}>
+                      Monitoreo
+                    </Link>
+                  </li>
+                  <li
+                      className={styles.header_nav_item}
+                      onMouseEnter={() => handleMouseEnter("about")}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleDropdown("about")}
+                  >
+                    <Link href={getLink("/evaluation/impact")} onClick={closeMenu}>
+                      Evaluación de impacto
+                    </Link>
+                  </li>
+                </>
+            )}
             {/* Render 'Seguimiento de eventos' and 'Registro' only if the URL contains 'monitoring' */}
-            {(isMonitoringPage || isHomePage) && (
+            {(isMonitoringPage) && (
                 <>
                   <li
                       className={styles.header_nav_item}
