@@ -423,7 +423,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
       <div className="w-full h-full flex flex-wrap">
         {/* Card superior */}
         <div className={styles.top_div}>
-          <CardComponent styles={styleBeneficiaries} title={"Total familias registradas registrados"}>
+          <CardComponent styles={styleBeneficiaries} title={"Total familias registradas"}>
             {treemapData.length > 0 ? (
                 <div className={styles.top_div_division}>
                   <label className={styles.top_card_label}>{totalData}</label>
