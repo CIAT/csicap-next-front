@@ -4,5 +4,5 @@ export interface Trained {
     group_ocupations: string;
     age: string;
     gcf_activities: string[];
-    muni_res_complete: string;
+    muni_res_complete_code: string;
 }

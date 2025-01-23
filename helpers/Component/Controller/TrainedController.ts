@@ -6,7 +6,7 @@ class TrainedController {
         const uniqueCodes = new Set<string>();
 
         events.forEach(event => {
-            const code = event.muni_res_complete;
+            const code = event.muni_res_complete_code;
             if (code && code.trim() !== '') {
                 uniqueCodes.add(code);
             }

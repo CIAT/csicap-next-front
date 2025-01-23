@@ -521,7 +521,7 @@ class MapController {
         trainedPeople.forEach(trained => {
             // Verificar que event y municipalities_code no sean nulos o indefinidos
             // Aquí asumimos que cityCode es un string y no es necesario convertirlo
-            const cityData = this.getPolygonsByCodeCityAndProvince([trained.muni_res_complete])[0];
+            const cityData = this.getPolygonsByCodeCityAndProvince([trained.muni_res_complete_code])[0];
 
             if (cityData) {
                 const provinceName = this.removeAccents(cityData.provinceName);
