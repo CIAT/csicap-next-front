@@ -40,12 +40,12 @@ export default function Home() {
 
     return (
         <div className={styles.big_container}>
-            <div className={styles.landing_container}>
+            <div className={`${styles.img_background} ${styles.landing_container}`}>
                 <div className={`${styles.spacing} ${styles.landing}`}>
-                    <div className={`${styles.spacing} ${styles.text} ${styles.title}`}>
+                    <div className={`${styles.spacing} ${styles.color_title} ${styles.text} ${styles.title}`}>
                         Plataforma de monitoreo, evaluación, aprendizaje y evaluación de impacto del proyecto Colombia Agroalimentaria Sostenible
                     </div>
-                    <div className={`${styles.spacing} ${styles.text}`}>
+                    <div className={`${styles.spacing} ${styles.color_title} ${styles.text}`}>
                         La Plataforma de Monitoreo y Evaluación es una herramienta diseñada para recopilar, gestionar y analizar indicadores clave del proyecto de manera eficiente y segura.
                         <br />
                         Este sistema ofrece tableros interactivos que resumen el avance de los indicadores, proporcionando información en tiempo real para facilitar la toma de decisiones y mejorar la implementación del proyecto.

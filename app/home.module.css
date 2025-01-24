@@ -2,6 +2,13 @@
     scroll-behavior: smooth;
 }
 
+.img_background {
+    background-image: url("/photo-collage.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
 .landing_container {
     padding: 5vw;
     background-color: #e3e3e3;
@@ -120,4 +127,8 @@
 .title {
     font-size: 3vw;
     font-weight: 800;
+}
+
+.color_title {
+    color: #e3e3e3;
 }
