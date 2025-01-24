@@ -1,3 +1,7 @@
+.contact {
+    background-color: #f2ffe8;
+}
+
 .container {
     margin: 1.5rem;
     padding: 10rem;
@@ -6,6 +10,22 @@
     justify-content: center;
     height: 80vh;
     align-items: flex-start;
+}
+
+.image_container {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.background_text {
+    background-image: url('/text_background.png');
+    margin: -23px;
+}
+
+.background_contact {
+    background-image: url('/contact_background.png');
+    padding: 1px;
 }
 
 .shadow {
