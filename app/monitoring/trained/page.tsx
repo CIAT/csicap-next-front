@@ -88,9 +88,7 @@ const config = {
           size = size > 16 ? 16 : size;
           size = size < 10 ? 10 : size;
           return {
-            size,
-            family: 'Arial',
-            weight: 'normal',
+            size
           };
         },
         boxWidth: 10,
