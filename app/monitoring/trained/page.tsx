@@ -82,6 +82,16 @@ const config = {
     legend: {
       labels: {
         usePointStyle: true,
+        font: (context: any) => {
+          const width = context.chart.width;
+          let size = Math.round(width / 30);
+          size = size > 16 ? 16 : size;
+          size = size < 10 ? 10 : size;
+          return {
+            size
+          };
+        },
+        boxWidth: 10,
       },
       position: "left" as const,
     },
@@ -91,14 +101,14 @@ const config = {
           return "";
         },
         label: function (tooltipItem: any) {
-          const index = tooltipItem.dataIndex; // Índice del dato actual
-          const rawValue = tooltipItem.raw; // Valor numérico del dato actual
+          const index = tooltipItem.dataIndex;
+          const rawValue = tooltipItem.raw;
           const total = tooltipItem.dataset.data.reduce(
               (acc: number, val: number) => acc + val,
               0
-          ); // Suma total de los valores
-          const percentage = ((rawValue / total) * 100).toFixed(2); // Calcula el porcentaje
-          return `${tooltipItem.label}: ${rawValue} (${percentage}%)`; // Devuelve el texto del tooltip
+          );
+          const percentage = ((rawValue / total) * 100).toFixed(2);
+          return `${tooltipItem.label}: ${rawValue} (${percentage}%)`;
         },
       },
     },
