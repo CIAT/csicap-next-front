@@ -6,6 +6,64 @@ const AboutPage: NextPage = ({}) => {
         <div className={styles.container}>
             <div className={styles.about_container}>
                 <div className={`${styles.text} ${styles.title}`}>
+                    Plataforma de Monitoreo y Evaluación
+                </div>
+                <div className={styles.text}>
+                    La Plataforma de Monitoreo y Evaluación es una herramienta creada para recopilar, gestionar y
+                    analizar indicadores clave del proyecto de manera eficiente y segura. Este sistema, diseñado por el
+                    Eje 7 “Monitoreo y Evaluación de Impacto” bajo el liderazgo del equipo de Prospección, Economía
+                    Aplicada y Evaluación de Impacto (FAE, por sus siglas en inglés) de la Alianza Bioversity
+                    International y el CIAT, recibió retroalimentación de los componentes y socios para garantizar su
+                    funcionalidad y relevancia.
+                    <br/>
+                    <br/>
+                    La plataforma ofrece <b>tableros interactivos</b> que presentan información en tiempo real sobre el
+                    avance de los indicadores, facilitando la toma de decisiones y mejorando la implementación del proyecto.
+                </div>
+                <div className={`${styles.text} ${styles.title}`}>
+                    Estructura de la Plataforma
+                </div>
+                <div className={styles.text}>
+                    La plataforma se divide en dos secciones principales:
+                    <div className={`${styles.text} ${styles.second_title}`}>
+                        1. Monitoreo:
+                    </div>
+                    <ul className={styles.list}>
+                        <li className={styles.text}>
+                            Conecta a los agricultores con las actividades del proyecto y permite registrar
+                            continuamente a los
+                            beneficiarios y su progreso.
+                        </li>
+                        <li className={styles.text}>
+                            Proporciona datos sobre los eventos realizados, así como el seguimiento de los avances
+                            registrados.
+                        </li>
+                    </ul>
+                    <div className={`${styles.text} ${styles.second_title}`}>
+                        2. Evaluación de Impacto:
+                    </div>
+                    <ul className={styles.list}>
+                        <li className={styles.text}>
+                            Refleja los indicadores y metas del proyecto.
+                        </li>
+                        <li className={styles.text}>
+                            A medida que se desarrollan las intervenciones, proyectará el avance de estos
+                            indicadores
+                            con base
+                            en los datos disponibles.
+                        </li>
+                    </ul>
+                </div>
+                <div className={`${styles.text} ${styles.title}`}>
+                    Recolección y Gestión de Datos
+                </div>
+                <div className={styles.text}>
+                    La información presentada en la plataforma se construye a partir de los datos recopilados por
+                    agricultores, profesionales y socios en las diferentes cadenas productivas del país. Este proceso
+                    utiliza herramientas como la aplicación ODK para la colecta de datos y FormShare para su manejo y
+                    almacenamiento.
+                </div>
+                <div className={`${styles.text} ${styles.title}`}>
                     Sobre FAE
                 </div>
                 <div className={styles.text}>

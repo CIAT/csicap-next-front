@@ -17,6 +17,16 @@
     font-size: 1.5vw;
 }
 
+.second_title {
+    font-weight: 600;
+    font-size: 1.3vw;
+}
+
+.list {
+    list-style: circle;
+    margin-left: 50px;
+}
+
 .credits {
     background-color: #f8f8f8;
     border-radius: 40px;
