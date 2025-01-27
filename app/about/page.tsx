@@ -6,29 +6,38 @@ const AboutPage: NextPage = ({}) => {
         <div className={styles.container}>
             <div className={styles.about_container}>
                 <div className={`${styles.text} ${styles.title}`}>
-                    Acerca de Colombia Agroalimentaria Sostenible
+                    Sobre FAE
                 </div>
                 <div className={styles.text}>
-                    Lorem ipsum odor amet, consectetuer adipiscing elit. Dictum etiam dolor porttitor ligula nulla
-                    porttitor metus sapien. Tempus velit fringilla sem; sodales tempus quam varius viverra orci. Aenean
-                    nullam accumsan vitae lacinia taciti tempus. Arcu vehicula habitant dolor suspendisse viverra
-                    senectus massa. Parturient aliquam platea risus; interdum maximus scelerisque consectetur
-                    suspendisse. Ipsum nisi purus, ipsum risus neque a ac nostra. Cubilia inceptos scelerisque habitant
-                    amet ex arcu, efficitur eget. Hendrerit nam ac quam mus dis arcu finibus. Aenean massa quisque mi
-                    per fusce felis feugiat massa.
+                    El equipo FAE forma parte del Área de Desempeño, Innovación y Análisis Estratégico para el Impacto
+                    (PISA4Impact, por sus siglas en inglés), un grupo multidisciplinario compuesto por economistas,
+                    sociólogos y expertos en datos. Este equipo realiza investigaciones socioeconómicas orientadas por
+                    la demanda y análisis de políticas de impacto, con un enfoque especial en la sostenibilidad
+                    agroalimentaria y su contribución a los Objetivos de Desarrollo Sostenible (ODS).
                     <br/>
                     <br/>
-                    Egestas rhoncus proin turpis pretium mattis viverra. Convallis praesent placerat vivamus suscipit
-                    dapibus mauris enim a. Varius dis vitae ut integer; sagittis ipsum quam donec? Interdum enim
-                    vulputate sit velit rhoncus. Ligula augue convallis eu velit pretium sollicitudin velit. Quis dis
-                    mus dolor penatibus varius mi vivamus. Etiam viverra odio eleifend gravida gravida at curabitur
-                    quam. Ultricies lectus gravida est cursus habitant. Feugiat metus aenean sem neque mauris interdum
-                    pellentesque per. Felis dictum imperdiet non, lacus pharetra dictum!
+                    Entre sus áreas de trabajo destacan los mercados y la nutrición, los recursos genéticos, la
+                    agricultura y la ganadería, el cambio climático y las políticas agroalimentarias. Su objetivo es
+                    generar evidencia basada en investigación para apoyar la movilización de recursos, la rendición de
+                    cuentas y el progreso hacia los ODS.
                 </div>
             </div>
             <div className={styles.credits_container}>
                 <div className={`${styles.text} ${styles.title}`}>
                     Créditos
+                </div>
+                <div className={styles.text}>
+                    Gracias a todos nuestros colegas en la Alianza Bioversity-CIAT, Ministerio de Agricultura y
+                    Desarrollo Rural, y socios del proyecto por su compromiso y adecuado uso de la aplicación ODK que
+                    permite la colecta de la información. Las imágenes y los datos de la Plataforma de monitoreo,
+                    evaluación, aprendizaje y evaluación de impacto se pueden utilizar siempre que se proporcione el
+                    enlace
+                    <a
+                        className={styles.link}
+                        target="_blank"
+                        href={"https://melia.agroalimentariasostenible.co/"}
+                    > Colombia Agroalimentaria Sostenible
+                    </a> junto con la siguiente citación:
                 </div>
                 <div className={`${styles.text} ${styles.credits}`}>
                     Andrade, R.; Benavides, G.; Buritica, A.; Dcroz, S.; Gonzalez, C.; Guerrero, S.; Nasner, H.; Orozco,
@@ -37,7 +46,7 @@ const AboutPage: NextPage = ({}) => {
                     Bioversity International and International Center for Tropical Agriculture (CIAT), 2024.
                 </div>
                 <div className={`${styles.text} ${styles.note}`}>
-                    <div className={styles.important}>*</div> Autores en orden alfabético
+                    <a className={styles.important}>*</a> Autores en orden alfabético
                 </div>
             </div>
         </div>

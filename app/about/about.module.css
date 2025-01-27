@@ -10,9 +10,7 @@
 .text {
     padding: 0.8vw;
     margin: 0.2vw;
-    display: flex;
-    text-align: justify;
-}
+    }
 
 .title {
     font-weight: 800;
@@ -27,4 +25,12 @@
 
 .important {
     color: #cb2d2d;
+}
+
+.link {
+    color: #02BFB3;
+}
+
+.text_credit_container {
+    display: flex;
 }
