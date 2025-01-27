@@ -5,4 +5,6 @@ export interface Trained {
     age: string;
     gcf_activities: string[];
     muni_res_complete_code: string;
+    dep_res_complete_label: string;
+    muni_res_complete_label: string;
 }

@@ -183,16 +183,16 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
-  const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [allTrainedData, setAllTrainedData] = useState<Trained[]>([]);
   const [tempTrainedData, setTempTrainedData] = useState<Trained[]>([]);
-
-  const [allEventsData, setAllEventsData] = useState<Event[]>([]);
 
   const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
   const [ageState, setAgeState] = useState<CustomTooltipData[]>([]);
   const [occupationState, setOccupationState] = useState<CustomTooltipData[]>([]);
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
+  const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
+  const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+
   const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
     {
       value: "",
@@ -210,6 +210,14 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       value: "",
       label: "Ocupación",
     },
+    {
+      value: "",
+      label: "Departamento",
+    },
+    {
+      value: "",
+      label: "Municipio",
+    },
   ]);
 
   const tooltipOptions: Array<CustomTooltipData[]> = [
@@ -217,6 +225,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ageState,
     cropState,
     occupationState,
+    departmentState,
+    cityState
   ];
 
   const setTooltipOptions: Array<
@@ -226,6 +236,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setAgeState,
     setCropState,
     setOccupationState,
+    setDepartmentState,
+    setCityState
   ];
 
   const filterTypes = [
@@ -233,6 +245,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "age",
     "crop",
     "occupation",
+    "department",
+    "city"
   ];
 
   const placeHolders = [
@@ -240,6 +254,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "Edad",
     "Cadena productiva",
     "Ocupación",
+    "Departamento",
+    "Municipio"
   ];
 
   useEffect(() => {
@@ -259,6 +275,14 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           data,
           "group_ocupations"
       );
+      const uniqueDepartments = EventsController.getUniqueValues(
+          data,
+          "dep_res_complete_label"
+      )
+      const uniqueCities = EventsController.getUniqueValues(
+          data,
+          "muni_res_complete_label"
+      )
 
       setAllTrainedData(data);
       setTempTrainedData(data);
@@ -266,6 +290,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       setAgeState([...uniqueAge]);
       setCropState([...uniqueCrop]);
       setOccupationState([...uniqueOccupation]);
+      setDepartmentState([...uniqueDepartments]);
+      setCityState([...uniqueCities]);
 
       initializeTreemapData(data);
     })

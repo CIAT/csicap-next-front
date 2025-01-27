@@ -29,6 +29,10 @@ export const getUniqueValuesFunctionsTrained = () => [
         EventsController.getUniqueValues(events, "pr_primary_crop"),
     (events: Trained[]) =>
         EventsController.getUniqueValues(events, "group_ocupations"),
+    (events: Trained[]) =>
+        EventsController.getUniqueValues(events, "dep_res_complete_label"),
+    (events: Trained[]) =>
+        EventsController.getUniqueValues(events, "muni_res_complete_label"),
 ];
 
 export const getUniqueValuesFunctionsProfessionals = () => [
@@ -104,6 +108,10 @@ export const filterFunctionsTrained: Record<
         EventsController.filterEventsByValue(events, "pr_primary_crop", value),
     occupation: (events, value) =>
         EventsController.filterEventsByValue(events, "group_ocupations", value),
+    department: (events, value) =>
+        EventsController.filterEventsByValue(events, "dep_res_complete_label", value),
+    city: (events, value) =>
+        EventsController.filterEventsByValue(events, "muni_res_complete_label", value)
 };
 
 export const filterFunctionsProfessionals: Record<
