@@ -521,7 +521,7 @@ class MapController {
         trainedPeople.forEach(trained => {
             // Verificar que event y municipalities_code no sean nulos o indefinidos
             // Aquí asumimos que cityCode es un string y no es necesario convertirlo
-            const cityData = this.getPolygonsByCodeCityAndProvince([trained.muni_res_complete_code])[0];
+            const cityData = this.getPolygonsByCodeCityAndProvince(trained.muni_res_complete_code);
 
             if (cityData) {
                 const provinceName = this.removeAccents(cityData.provinceName);
@@ -540,41 +540,43 @@ class MapController {
                     cityCodeTrainedCounts[provinceName][cityName] = 'Capacitados: 1';
                 }
             } else {
-                console.warn('Los capacitados son nulos o muni_res_complete no es un arreglo:', trained);
+                console.warn('Los capacitados son nulos:', trained);
             }
         });
 
         return cityCodeTrainedCounts;
     }
 
-    static getPolygonsByCodeCityAndProvince(polygons: string[]) {
-        return polygons.map(code => {
-            // Convertir el código del municipio en string para facilitar la manipulación
-            const codeStr = String(code);
+    static getPolygonsByCodeCityAndProvince(code: string) {
+        if (code === null) return;
 
-            // Los primeros dos dígitos del código representan la provincia
-            const provinceCode = codeStr.substring(0, 2);
+        // Convertir el código del municipio en string para facilitar la manipulación
+        let codeStr = code;
 
-            // Encontrar la provincia usando los primeros dos dígitos
-            const provinceFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
-                feature.properties.mpio_cdpmp.startsWith(provinceCode)
-            );
+        if (codeStr.length === 4) {
+            codeStr = `0${codeStr}`;
+        }
 
-            // Encontrar el municipio usando el código completo
-            const cityFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
-                feature.properties.mpio_cdpmp === code
-            );
+        // Los primeros dos dígitos del código representan la provincia
+        const provinceCode = codeStr.substring(0, 2);
 
-            if (cityFeature && provinceFeature) {
-                return {
-                    provinceName: provinceFeature.properties.dpto_cnmbr,
-                    cityName: cityFeature.properties.mpio_cnmbr,
-                    feature: cityFeature
-                };
-            }
+        // Encontrar la provincia usando los primeros dos dígitos
+        const provinceFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.dpto_ccdgo === provinceCode
+        );
 
-            return undefined;
-        }).filter(feature => feature !== undefined);
+        // Encontrar el municipio usando el código completo
+        const cityFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.mpio_cdpmp === codeStr
+        );
+
+        if (cityFeature && provinceFeature) {
+            return {
+                provinceName: provinceFeature.properties.dpto_cnmbr,
+                cityName: cityFeature.properties.mpio_cnmbr,
+                feature: cityFeature
+            };
+        }
     }
 
 
@@ -691,34 +693,6 @@ class MapController {
         const regex = new RegExp(`${label}: (\\d+)`);
         const match = text.match(regex);
         return match ? Number(match[1]) : 0;
-    }
-
-    static updateCountTrained(events: {
-        participant_count: string;
-        city: string;
-        province: string;
-    }[]): NestedDictionary {
-        const trainedCounts: NestedDictionary = {};
-
-        events.forEach(event => {
-            const province = this.removeAccents(event.province);
-            const city = this.removeAccents(event.city);
-
-            if (!trainedCounts[province]) {
-                trainedCounts[province] = {};
-            }
-
-            // Convertir participant_count a número
-            const participantCount = parseInt(event.participant_count, 10) || 0;
-
-            if (trainedCounts[province][city]) {
-                const currentCount = parseInt(trainedCounts[province][city].replace(/\D/g, ''), 10) || 0;
-                trainedCounts[province][city] = `Capacitados: ${currentCount + participantCount}`;
-            } else {
-                trainedCounts[province][city] = `Capacitados: ${participantCount}`;
-            }
-        });
-        return trainedCounts;
     }
 }
 
