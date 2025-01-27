@@ -1,16 +1,9 @@
-'use client'; 
+"use client"
 
-import * as React from "react";
+import Home from "@/app/Home";
 
-// 1. import `NextUIProvider` component
-import {Link, NextUIProvider} from "@nextui-org/react";
-
-
-export default function Home() {
-  return (
-    <NextUIProvider>
-      <div className="w-screen h-screen">
-      </div>
-    </NextUIProvider>
-  );
+export default function App() {
+  return(
+      <Home></Home>
+  )
 }

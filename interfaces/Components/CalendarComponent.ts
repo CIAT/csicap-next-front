@@ -8,6 +8,7 @@ export interface EventsData {
     male_participants: string;
     other_participants: string;
     participant_count: string;
+    component: string[];
     city: string;
     crop: string[];
     eje: string[];
@@ -19,6 +20,7 @@ export interface EventsData {
     email: string;
     change_selection: string;
     not_assistant: string;
+    age: string;
 }
 
 export interface Event {
@@ -26,10 +28,12 @@ export interface Event {
     eje: string[];
     responsable: string;
     city: string;
+    component: string[];
     guess_type: string[];
     institution: string[];
     event_type: string;
     province: string;
+    gcf_activities: string[];
     form_state: string;
     name: string;
     datesEnd: string;
@@ -38,7 +42,8 @@ export interface Event {
     event_objective: string;
     event_id: string;
     participant_count: string;
-  }
+}
+
 export interface DataFormat {
     id: string;
     created_at: string;

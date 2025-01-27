@@ -6,12 +6,10 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import { MapComponentProps } from "@/interfaces";
 import { colors } from "@/interfaces/Map/colors";
 
-mapboxgl.accessToken = "pk.eyJ1IjoiZXNwZXJhbnphb3JvemNvIiwiYSI6ImNsYm5ya3ZzNzA3aG4zb3FzY3Z0NTVuMm0ifQ.zzzCxKwH2AuC9jI-EsAdng";
-
-const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data, useQuintile = false }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, data, useQuintile = false, quintileType = "" }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);  // Track if the map and style are fully loaded
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [quintileSteps, setQuintileSteps] = useState<number[]>([]);
 
   useEffect(() => {
@@ -21,19 +19,18 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
       if (mapContainerRef.current) {
         const map = new mapboxgl.Map({
           container: mapContainerRef.current,
-          style: "mapbox://styles/mapbox/navigation-day-v1",
+          accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+          style: "mapbox://styles/ciatkm/ckhgfstwq018818o06dqero91",
           center: [-74.297333, 4.570868],
-          zoom: 5
+          zoom: 5,
         });
 
-        // disable map rotation using right click + drag
         map.dragRotate.disable();
-        // disable map rotation using touch rotation gesture
         map.touchZoomRotate.disableRotation();
 
         map.on("load", () => {
-          setMapLoaded(true); // Set map as loaded once the style and map are fully ready
-          MapController.highlightPolygons(map, polygons, data, useQuintile, filterData);
+          setMapLoaded(true);
+          MapController.highlightPolygons(map, polygons, data, useQuintile, quintileType, filterData);
         });
 
         mapRef.current = map;
@@ -45,30 +42,69 @@ const MapComponent: React.FC<MapComponentProps> = ({ polygons, filterData, data,
   }, [mapLoaded, polygons, data]);
 
   useEffect(() => {
-    // Only run the logic if the map is fully loaded
     if (mapLoaded && mapRef.current) {
-      MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, filterData);
+      MapController.cleanMap(mapRef.current);
+      MapController.highlightPolygons(mapRef.current, polygons, data, useQuintile, quintileType, filterData);
 
       if (useQuintile) {
-        const quintiles = MapController.calculateQuintiles(data, "Asistentes");
+        const quintiles = MapController.calculateQuartile(data, quintileType);
         setQuintileSteps(quintiles);
         MapController.changeFillColor(mapRef.current, quintiles);
       }
+
+      mapRef.current.on("idle", () => {
+        if (!mapRef.current) return;
+
+        const content = mapRef.current.getCanvas().toDataURL();
+        MapController.setMapReference(content);
+      });
     }
   }, [mapLoaded, polygons, data]);
 
   return (
       <>
-        <div ref={mapContainerRef} id="map" className={style["mapContainer"]}></div>
+        <div id={id || "map"} ref={mapContainerRef} className={style["mapContainer"]}></div>
         {useQuintile && (
             <div className={style["legend"]}>
-              <h4>Asistentes por municipio</h4>
-              {quintileSteps.map((step, index) => (
-                  <div key={index} className={style["legendItem"]}>
-                    <span className={style["legendColor"]} style={{ backgroundColor: colors[index] }}></span>
-                    <span>{`De ${step} a ${quintileSteps[index + 1] || "más"}`}</span>
-                  </div>
-              ))}
+              {quintileType === "Profesionales" ? (<h4>{quintileType} por departamento</h4>) : (
+                  <h4>{quintileType} por municipio</h4>)}
+              {(quintileType === "Eventos" || quintileType === "Familias registradas") ? (
+                  <>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[0] }}></span>
+                      <span>1</span>
+                    </div>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[1] }}></span>
+                      <span>2</span>
+                    </div>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[2] }}></span>
+                      <span>De 3 a 10</span>
+                    </div>
+                    <div className={style["legendItem"]}>
+                      <span className={style["legendColor"]} style={{ backgroundColor: colors[3] }}></span>
+                      <span>Más de 10</span>
+                    </div>
+                  </>
+              ) : (
+                  quintileSteps.map((_, index) => {
+                    if (index % 2 !== 0) return null;
+
+                    const start = quintileSteps[index];
+                    const end = quintileSteps[index + 1];
+
+                    return (
+                        <div key={index} className={style["legendItem"]}>
+                  <span
+                      className={style["legendColor"]}
+                      style={{ backgroundColor: colors[index / 2] }}
+                  ></span>
+                          <span>{`De ${start} a ${end}`}</span>
+                        </div>
+                    );
+                  })
+              )}
             </div>
         )}
       </>

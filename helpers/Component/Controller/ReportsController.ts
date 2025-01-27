@@ -40,20 +40,30 @@ class ReportsController {
   }
 
   static formatHeaders(data: any): ReportNames[] {
-    // Asegurarse de que el dato recibido es un arreglo y tiene una propiedad 'data'.
-    if (!data || !Array.isArray(data) || data.length === 0 || !data[0].data) {
-      console.error("Invalid data format in formatHeaders:", data);
-      throw new TypeError("Invalid data format");
-    }
+    try {
+      // Validate input structure
+      if (!data || typeof data !== "object" || !Array.isArray(data.data)) {
+        console.error("Invalid data format in formatHeaders:", data); // Log error
+        throw new TypeError("Invalid data format");
+      }
   
-    // Procesar el arreglo de reportes contenido en la propiedad 'data' del primer objeto.
-    return data[0].data.map((report: any) => ({
-      name: report.name || "N/A",
-      event_id: report.event_id || "NN/A",
-      is_reported: report.is_reported || "0",
-      not_assistant: report.not_assistant || "0",
-    }));
+      // Map over the data to create formatted report headers
+      return data.data.map((report: any, index: number) => {
+
+        return {
+          name: report.name || "N/A",
+          event_id: report.event_id || "N/A",
+          is_reported: report.is_reported || "0",
+          not_assistant: report.not_assistant || "0",
+          datesEnd: report.datesEnd || "N/A",
+        };
+      });
+    } catch (error) {
+      console.error("Error in formatHeaders:", error); // Log unexpected errors
+      return []; // Return an empty array in case of an error
+    }
   }
+  
   
   
 }

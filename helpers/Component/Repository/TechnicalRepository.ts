@@ -7,7 +7,7 @@ class TechnicalRepository {
             return <DataItem[]>{};
         }
 
-        const response = await fetch(url);
+        const response = await fetch(`/api/verify-token?shortName=${url}`);
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }

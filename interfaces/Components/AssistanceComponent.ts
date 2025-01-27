@@ -1,8 +1,10 @@
-export interface Assistance {
-    main_occupation: string;
-    organization_affiliation: null;
-    birth_date: string;
-    event_id: string;
+export interface Trained {
+    pr_primary_crop: string;
     sex_complete: string;
-    fecha: string;
+    group_ocupations: string;
+    age: string;
+    gcf_activities: string[];
+    muni_res_complete_code: string;
+    dep_res_complete_label: string;
+    muni_res_complete_label: string;
 }

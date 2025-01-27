@@ -26,18 +26,18 @@ body {
   /* Set the text color using the custom variable defined above */
   color: black; /* Use the --foreground-rgb variable */
   overflow-x: hidden;
+  font-size: 2vh;
 }
 
 .layout {
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   max-height: fit-content;
 }
 
 .layout_embedded{
-  width: 100vw;
-  min-height: 90vh;
-  max-height: fit-content;
+  width: 100%;
+  height: 85vh;
 }
 
 @media screen and (max-width: 1023px){

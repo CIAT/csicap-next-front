@@ -25,6 +25,7 @@ class CalendarController {
             province: event.province,
             responsable: event.responsable,
             city: event.city || "",
+            component: event.component || [],
             crop: event.crop || [],
             eje: event.eje || [],
             guess_type: event.guess_type || [],
@@ -42,9 +43,11 @@ class CalendarController {
             initialDate: event.date, // Convert to Date object
             end: event.datesEnd,
             title: event.name,
-            province: event.province,
             responsable: event.responsable,
+            component: event.component,
             city: event.city || "",
+            province: event.province || "",
+            gcf_activities: event.gcf_activities || [],
             crop: event.crop || [],
             eje: event.eje || [],
             guess_type: event.guess_type || [],
@@ -66,9 +69,29 @@ class CalendarController {
         return Array.from(new Set(cities));
     }
 
-    static extractProvincesAndCities(events: { province: string, city: string}[]): string[][]{
-        const provincesAndCities = events.map(event => [event.province, event.city]);
+    static extractProvincesAndCities(trained: { province: string, city: string}[]): string[][]{
+        const provincesAndCities = trained.map(event => [event.province, event.city]);
         return Array.from(new Set(provincesAndCities));
+    }
+
+    static filterEventsByComponent(events: EventsData[], component: string): EventsData[] {
+        if(component === ""){
+            return events;
+        }
+
+        return events.filter(event => {
+            return event.component.some(components => components === component);
+        })
+    }
+
+    static filterEventsByInstitution(events: EventsData[], institution: string): EventsData[] {
+        if(institution === ""){
+            return events;
+        }
+
+        return events.filter(event => {
+            return event.institution.some(tempInstitution => institution === tempInstitution);
+        })
     }
 
     static filterEventsByCrop(events: EventsData[], crop: string): EventsData[] {
@@ -83,7 +106,7 @@ class CalendarController {
         );
     }
 
-    static filterEventsByProvince(events: EventsData[], province: string): EventsData[] {
+    static filterEventsByDepartment(events: EventsData[], province: string): EventsData[] {
         if (province === "") {
             return events;
         }
@@ -93,7 +116,7 @@ class CalendarController {
         );
     }
 
-    static filterEventsByCities(events: EventsData[], city: string): EventsData[] {
+    static filterEventsByCity(events: EventsData[], city: string): EventsData[] {
         if (city === "") {
             return events;
         }
@@ -103,7 +126,7 @@ class CalendarController {
         );
     }
 
-    static filterEventsByAxe(events: EventsData[], axe: string): EventsData[] {
+    static filterEventsByAxis(events: EventsData[], axe: string): EventsData[] {
         if (axe === "") {
             return events;
         }

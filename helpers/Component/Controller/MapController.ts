@@ -2,11 +2,27 @@ import colombiaGeoJSONByCities from "@/components/maps/ColombiaDepartments.json"
 import {sectionStateData} from "@/interfaces";
 import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
+import {colors as staticColors} from "@/interfaces/Map/colors";
+import {Trained} from "@/interfaces/Components/AssistanceComponent";
 
 class MapController {
     static selectedCity: string | null = null;
     static selectedProvince: string | null = null;
+    static mapReference: string;
+
+    static setMapReference(mapReference: string) {
+        this.mapReference = mapReference;
+    }
+
+    static downloadMapAsImage(fileName?: string): void {
+        const link = document.createElement("a");
+        link.href = this.mapReference;
+        link.download = (fileName != null ? fileName : "mapImage.png");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
     static removeAccents(input: string): string {
         if(!input){
@@ -26,31 +42,50 @@ class MapController {
     }
 
     static applyFillColor(map: mapboxgl.Map, steps: Number[]) {
-        const fillColor = [
+        const colors = staticColors;
+
+        // Ajustar los extremos para evitar duplicados, manteniendo el valor más a la derecha
+        const adjustedSteps = steps.map((step, index, arr) => {
+            if (index < arr.length - 1 && step === arr[index + 1]) {
+                // Ajustar el valor más a la derecha, es decir, el siguiente valor duplicado
+                return Number(step) - 0.0001 * (arr.length - index); // Sumar un valor pequeño, con mayor ajuste para los índices más a la derecha
+            }
+            return step; // Mantener el valor original
+        });
+
+        // Crear la propiedad de color
+        const fillColor: DataDrivenPropertyValueSpecification<string> = [
             'case',
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                '#B6D7E0', steps[1],
-                '#6DABBE', steps[2],
-                '#6DABBE', steps[3],
-                '#569AAF', steps[4],
-                '#407A8D'
+                colors[0], adjustedSteps[1],
+                colors[1], adjustedSteps[3],
+                colors[2], adjustedSteps[5],
+                colors[3]
             ]
         ];
 
+        // Aplicar los colores al mapa
         map.setPaintProperty('highlightPolygons-fill', 'fill-color', fillColor);
-        map.setPaintProperty('highlightPolygons-outline', 'line-color', fillColor);
     }
 
+    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary | Record<string, string>, quintileType: string) {
+        if(this.isNestedDictionary(counts)){
+            this.updateMapValuesForNestedDictionary(polygonsFeatures, counts, quintileType);
+            return;
+        }
 
-    static updateMapValues(polygonsFeatures: any, counts: NestedDictionary) {
+        this.updateMapValuesForDictionary(polygonsFeatures, counts, quintileType);
+    }
+
+    static updateMapValuesForNestedDictionary(polygonsFeatures: any, counts: NestedDictionary, quintileType: string){
         polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; mpio_cnmbr: string; }; }) => {
             const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
             const cityName = this.removeAccents(feature.properties.mpio_cnmbr);
 
             if (provinceName && cityName && counts[provinceName] && counts[provinceName][cityName]) {
-                feature.properties.value = this.extractCount(counts[provinceName][cityName], 'Asistentes');
+                feature.properties.value = this.extractCount(counts[provinceName][cityName], quintileType);
                 return;
             }
 
@@ -58,53 +93,104 @@ class MapController {
         });
     }
 
-    static calculateQuintiles(data: NestedDictionary, valueKey: string): number[] {
-        const values: number[] = [];
+    static updateMapValuesForDictionary(polygonsFeatures: any, counts: Record<string, string>, quintileType: string) {
+        polygonsFeatures.forEach((feature: { properties: { value: any; dpto_cnmbr: string; }; }) => {
+            const provinceName = this.removeAccents(feature.properties.dpto_cnmbr);
 
-        for (const key in data) {
-            if (data[key] && typeof data[key] === 'object') {
-                for (const subKey in data[key]) {
-                    const valueString = data[key][subKey];
-                    if (valueString.includes("Asistentes")) {
-                        const value = this.extractCount(valueString, valueKey);
-                        if (value > 0) {
-                            values.push(value);
+            if (provinceName && counts[provinceName]) {
+                feature.properties.value = this.extractCount(counts[provinceName], quintileType);
+                return;
+            }
+
+            feature.properties.value = 0;
+        });
+    }
+
+    static isNestedDictionary(obj: unknown): obj is NestedDictionary {
+        if (typeof obj !== 'object' || obj === null) return false;
+
+        // Verificar que cada valor sea un objeto con claves string y valores string
+        return Object.values(obj).every(value =>
+            typeof value === 'object' &&
+            value !== null &&
+            Object.values(value).every(innerValue => typeof innerValue === 'string')
+        );
+    }
+
+    static calculateQuartile(data: NestedDictionary | Record<string, string>, valueKey: string): number[] {
+        if (valueKey === "Eventos") return [1, 2, 2, 3, 3, 10, 10, 33];
+        if (valueKey === "Familias registradas") return [1, 2, 2, 3, 3, 10, 10, 320];
+
+        const values: number[] = this.getValuesForQuartile(data, valueKey);
+
+        // Si no hay valores, retornar extremos como ceros
+        if (values.length === 0) {
+            return Array(8).fill(0);
+        }
+
+        // Ordenar los valores
+        values.sort((a, b) => a - b);
+
+        // Calcular extremos de cada cuartil
+        const quartileExtremes: number[] = [];
+        const quartileSize = Math.ceil(values.length / 4);
+
+        for (let i = 0; i < 4; i++) {
+            const start = i * quartileSize;
+            const end = i === 3 ? values.length : (i + 1) * quartileSize;
+            quartileExtremes.push(values[start]);
+            quartileExtremes.push(values[end - 1]);
+        }
+
+        return quartileExtremes;
+    }
+
+    static getValuesForQuartile(data: NestedDictionary | Record<string, string>, valueKey: string): number[] {
+        const values: number[] = [];
+        if (this.isNestedDictionary(data)) {
+            for (const key in data) {
+                if (data[key] && typeof data[key] === 'object') {
+                    for (const subKey in data[key]) {
+                        const valueString = data[key][subKey];
+                        if (valueString.includes(valueKey)) {
+                            const value = this.extractCount(valueString, valueKey);
+                            if (!isNaN(value) && value > 0) {
+                                values.push(value);
+                            }
                         }
                     }
                 }
             }
+            return values;
         }
 
-        // Si no hay valores, retornar quintiles como ceros
-        if (values.length === 0) {
-            return [0, 0, 0, 0, 0];
+        for (const key in data) {
+            const valueString = data[key];
+            if (valueString.includes(valueKey)) {
+                const value = this.extractCount(valueString, valueKey);
+                if (!isNaN(value) && value > 0) {
+                    values.push(value);
+                }
+            }
         }
 
-        // Calcular los quintiles
-        values.sort((a, b) => a - b);
-        const quintiles: number[] = [];
-
-        for (let i = 1; i <= 5; i++) {
-            const index = Math.floor((i * values.length) / 5) - 1;
-            quintiles.push(values[Math.min(index, values.length - 1)]);
-        }
-
-        return quintiles;
+        return values;
     }
 
     static highlightPolygons(
         map: mapboxgl.Map,
         polygons: string[][] | string[],
-        counts: NestedDictionary,
+        counts: NestedDictionary | Record<string, string>,
         useQuintile?: boolean,
+        quintileType?: string,
         filterEvents?: (newState: sectionStateData) => void,
     )  {
         let hoveredStateId: number | string | null = null;
         let tooltip = this.createOrGetTooltip(map);
         const polygonsFeatures = this.getPolygons(polygons);
 
-        if(useQuintile) {
-            this.updateMapValues(polygonsFeatures, counts);
+        if(useQuintile && quintileType) {
+            this.updateMapValues(polygonsFeatures, counts, quintileType);
         }
 
         if (polygonsFeatures.length > 0) {
@@ -170,7 +256,7 @@ class MapController {
                 source: "highlightPolygons",
                 layout: {},
                 paint: {
-                    "line-color": "#0E6E8C",
+                    "line-color": "#D2D8D8",
                     "line-width": 1
                 }
             });
@@ -182,7 +268,7 @@ class MapController {
         map: mapboxgl.Map,
         hoveredStateId: number | string | null,
         tooltip: HTMLDivElement,
-        counts: NestedDictionary,
+        counts: NestedDictionary | Record<string, string>,
         filterEvents?: (newState: sectionStateData) => void
     ) {
         map.on('mousemove', 'highlightPolygons-fill', (e) => {
@@ -203,7 +289,7 @@ class MapController {
     }
 
     // Método para manejar el movimiento del ratón sobre el mapa
-    static handleMouseMove(e: any, map: mapboxgl.Map, tooltip: HTMLDivElement, hoveredStateId: number | string | null, counts: NestedDictionary) {
+    static handleMouseMove(e: any, map: mapboxgl.Map, tooltip: HTMLDivElement, hoveredStateId: number | string | null, counts: NestedDictionary | Record<string, string>) {
         tooltip.style.display = 'none';
 
         if (e.features && e.features[0].properties && e.features.length > 0) {
@@ -252,31 +338,48 @@ class MapController {
     }
 
     // Método para actualizar el contenido del tooltip
-    static updateTooltipContent(e: any, tooltip: HTMLDivElement, counts: NestedDictionary) {
+    static updateTooltipContent(
+        e: any,
+        tooltip: HTMLDivElement,
+        counts: NestedDictionary | Record<string, string>
+    ) {
         let provinceName = String(e.features[0].properties.dpto_cnmbr);
         let cityName = String(e.features[0].properties.mpio_cnmbr);
-
-        let tooltipHtmlContent = `<strong>${provinceName}: ${cityName}</strong>`;
 
         provinceName = this.removeAccents(provinceName);
         cityName = this.removeAccents(cityName);
 
-        if (counts && counts[provinceName] && counts[provinceName][cityName]) {
-            const content = counts[provinceName][cityName];
+        const isNestedDictionary = this.isNestedDictionary(counts);
 
-            const currentTotal = this.extractCount(content, 'Asistentes');
+        // Define tooltip content based on whether `counts` is a NestedDictionary
+        let tooltipHtmlContent = isNestedDictionary
+            ? `<strong>${provinceName}: ${cityName}</strong>`
+            : `<strong>${provinceName}</strong>`;
 
-            const hasAssistants = content.includes('Asistentes');
+        if (isNestedDictionary) {
+            if (counts[provinceName] && counts[provinceName][cityName]) {
+                const content = counts[provinceName][cityName];
+                const currentTotal = this.extractCount(content, 'Capacitados');
+                const hasAssistants = content.includes('Capacitados');
 
-            if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
-                tooltipHtmlContent += `<br><strong>${content}</strong>`;
+                if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
+                    tooltipHtmlContent += `<br><strong>${content}</strong>`;
+                }
+            }
+        } else {
+            if (counts[provinceName]) {
+                const content = counts[provinceName] as string;
+                const currentTotal = this.extractCount(content, 'Capacitados');
+                const hasAssistants = content.includes('Capacitados');
+
+                if (!hasAssistants || (hasAssistants && currentTotal > 0)) {
+                    tooltipHtmlContent += `<br><strong>${content}</strong>`;
+                }
             }
         }
 
         tooltip.innerHTML = tooltipHtmlContent;
     }
-
-
 
     // Método para manejar la salida del ratón del mapa
     static handleMouseLeave(map: mapboxgl.Map, hoveredStateId: number | string | null, tooltip: HTMLDivElement) {
@@ -293,7 +396,7 @@ class MapController {
     }
 
     // Método para manejar el clic sobre los polígonos
-    static handlePolygonClick(e: any, map: mapboxgl.Map, counts: NestedDictionary, filterEvents?: (newState: sectionStateData) => void) {
+    static handlePolygonClick(e: any, map: mapboxgl.Map, counts: NestedDictionary | Record<string, string>, filterEvents?: (newState: sectionStateData) => void) {
         if (!filterEvents) {
             return;
         }
@@ -320,7 +423,7 @@ class MapController {
         filterEvents(filterObject);
         MapController.selectedCity = clickedCity;
         MapController.selectedProvince = clickedProvince;
-        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, undefined, filterEvents);
+        MapController.highlightPolygons(map, [[clickedProvince, clickedCity]], counts, undefined, "", filterEvents);
     }
 
     // Método para limpiar el mapa si no hay polígonos encontrados
@@ -360,9 +463,17 @@ class MapController {
     }
 
     static getPolygons(polygons: string[][] | string[]) {
-        if (typeof polygons[0] === 'string'){
+        const number = polygons[0] as string;
+        const isNumber = !Number.isNaN(Number(number));
+
+        if(isNumber){
             return this.getPolygonsByCode(polygons as string[]);
         }
+
+        if (typeof polygons[0] === 'string'){
+            return this.getPolygonsByDepartment(polygons as string[]);
+        }
+
         return this.getPolygonsByName(polygons as string[][])
     }
 
@@ -377,6 +488,14 @@ class MapController {
         }).filter(feature => feature !== undefined);
     }
 
+    static getPolygonsByDepartment(departments: string[]) {
+        return departments.flatMap(department => {
+            return colombiaGeoJSONByCities.features.filter((feature: any) =>
+                MapController.removeAccents(feature.properties.dpto_cnmbr) === MapController.removeAccents(department)
+            );
+        });
+    }
+
     static getPolygonsByCode(polygons: string[]) {
         return polygons.map(code => {
             return colombiaGeoJSONByCities.features.find((feature: any) =>
@@ -384,74 +503,80 @@ class MapController {
         }).filter(feature => feature !== undefined);
     }
 
-    static updateCountEventsByCityCodes(events: { municipalities_code: string[] }[]): NestedDictionary {
-        const cityCodeTechnicianCounts: NestedDictionary = {};
+    static getPolygonsByDepartmentCode(polygons: string[]) {
+        return polygons.map(code => {
+            return colombiaGeoJSONByCities.features.find((feature: any) =>
+                feature.properties.dpto_ccdgo === code);
+        }).filter(feature => feature !== undefined);
+    }
+
+    static updateCountTrainedByCityCodes(trainedPeople: Trained[]): NestedDictionary {
+        const cityCodeTrainedCounts: NestedDictionary = {};
 
         // Verificar si events es un arreglo
-        if (!Array.isArray(events)) {
+        if (!Array.isArray(trainedPeople)) {
             throw new Error('El parámetro events debe ser un arreglo');
         }
 
-        events.forEach(event => {
+        trainedPeople.forEach(trained => {
             // Verificar que event y municipalities_code no sean nulos o indefinidos
-            if (event && Array.isArray(event.municipalities_code)) {
-                event.municipalities_code.forEach(cityCode => {
-                    // Aquí asumimos que cityCode es un string y no es necesario convertirlo
-                    const cityData = this.getPolygonsByCodeCityAndProvince([cityCode])[0];
+            // Aquí asumimos que cityCode es un string y no es necesario convertirlo
+            const cityData = this.getPolygonsByCodeCityAndProvince(trained.muni_res_complete_code);
 
-                    if (cityData) {
-                        const provinceName = this.removeAccents(cityData.provinceName);
-                        const cityName = this.removeAccents(cityData.cityName);
+            if (cityData) {
+                const provinceName = this.removeAccents(cityData.provinceName);
+                const cityName = this.removeAccents(cityData.cityName);
 
-                        // Inicializar la provincia si no existe
-                        if (!cityCodeTechnicianCounts[provinceName]) {
-                            cityCodeTechnicianCounts[provinceName] = {};
-                        }
+                // Inicializar la provincia si no existe
+                if (!cityCodeTrainedCounts[provinceName]) {
+                    cityCodeTrainedCounts[provinceName] = {};
+                }
 
-                        // Sumar el conteo de técnicos para la ciudad
-                        if (cityCodeTechnicianCounts[provinceName][cityName]) {
-                            const currentCount = parseInt(cityCodeTechnicianCounts[provinceName][cityName].replace(/\D/g, ''), 10);
-                            cityCodeTechnicianCounts[provinceName][cityName] = `Técnicos: ${currentCount + 1}`;
-                        } else {
-                            cityCodeTechnicianCounts[provinceName][cityName] = 'Técnicos: 1';
-                        }
-                    }
-                });
+                // Sumar el conteo de Profesionales para la ciudad
+                if (cityCodeTrainedCounts[provinceName][cityName]) {
+                    const currentCount = parseInt(cityCodeTrainedCounts[provinceName][cityName].replace(/\D/g, ''), 10);
+                    cityCodeTrainedCounts[provinceName][cityName] = `Capacitados: ${currentCount + 1}`;
+                } else {
+                    cityCodeTrainedCounts[provinceName][cityName] = 'Capacitados: 1';
+                }
             } else {
-                console.warn('El evento es nulo o municipalities_code no es un arreglo:', event);
+                console.warn('Los capacitados son nulos:', trained);
             }
         });
-        return cityCodeTechnicianCounts;
+
+        return cityCodeTrainedCounts;
     }
 
-    static getPolygonsByCodeCityAndProvince(polygons: string[]) {
-        return polygons.map(code => {
-            // Convertir el código del municipio en string para facilitar la manipulación
-            const codeStr = String(code);
+    static getPolygonsByCodeCityAndProvince(code: string) {
+        if (code === null) return;
 
-            // Los primeros dos dígitos del código representan la provincia
-            const provinceCode = codeStr.substring(0, 2);
+        // Convertir el código del municipio en string para facilitar la manipulación
+        let codeStr = code;
 
-            // Encontrar la provincia usando los primeros dos dígitos
-            const provinceFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
-                feature.properties.mpio_cdpmp.startsWith(provinceCode)
-            );
+        if (codeStr.length === 4) {
+            codeStr = `0${codeStr}`;
+        }
 
-            // Encontrar el municipio usando el código completo
-            const cityFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
-                feature.properties.mpio_cdpmp === code
-            );
+        // Los primeros dos dígitos del código representan la provincia
+        const provinceCode = codeStr.substring(0, 2);
 
-            if (cityFeature && provinceFeature) {
-                return {
-                    provinceName: provinceFeature.properties.dpto_cnmbr,
-                    cityName: cityFeature.properties.mpio_cnmbr,
-                    feature: cityFeature
-                };
-            }
+        // Encontrar la provincia usando los primeros dos dígitos
+        const provinceFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.dpto_ccdgo === provinceCode
+        );
 
-            return undefined;
-        }).filter(feature => feature !== undefined);
+        // Encontrar el municipio usando el código completo
+        const cityFeature = colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.mpio_cdpmp === codeStr
+        );
+
+        if (cityFeature && provinceFeature) {
+            return {
+                provinceName: provinceFeature.properties.dpto_cnmbr,
+                cityName: cityFeature.properties.mpio_cnmbr,
+                feature: cityFeature
+            };
+        }
     }
 
 
@@ -477,6 +602,26 @@ class MapController {
         return cityEventCounts;
     }
 
+    static updateCountProfessionalsByProvince(events: { department_where_you_work: string[] }[]): Record<string, string> {
+        const provinceProfessionalsCounts: Record<string, string> = {};
+
+        events.forEach(event => {
+            event.department_where_you_work.forEach(department => {
+                const province: string = this.removeAccents(department);
+
+                if (provinceProfessionalsCounts[province]) {
+                    const currentCount = parseInt(provinceProfessionalsCounts[province].replace(/\D/g, ''), 10);
+                    provinceProfessionalsCounts[province] = `Profesionales: ${currentCount + 1}`;
+                    return;
+                }
+
+                provinceProfessionalsCounts[province] = 'Profesionales: 1';
+            });
+        });
+
+        return provinceProfessionalsCounts;
+    }
+
     static updateCountBeneficiariesByCity(events: {
         pr_dpto: string;
         pr_muni: string
@@ -493,11 +638,11 @@ class MapController {
 
             if (cityBeneficiariesCounts[province][city]) {
                 const currentCount = parseInt(cityBeneficiariesCounts[province][city].replace(/\D/g, ''), 10);
-                cityBeneficiariesCounts[province][city] = `Registrados: ${currentCount + 1}`;
+                cityBeneficiariesCounts[province][city] = `Familias registradas: ${currentCount + 1}`;
                 return;
             }
 
-            cityBeneficiariesCounts[province][city] = 'Registrados: 1';
+            cityBeneficiariesCounts[province][city] = 'Familias registradas: 1';
         });
         return cityBeneficiariesCounts;
     }
@@ -524,11 +669,11 @@ class MapController {
             }
 
             if (!genderCounts[province][city]) {
-                genderCounts[province][city] = `Asistentes: 0<br>Mujeres: 0<br>Hombres: 0<br>Otros: 0`;
+                genderCounts[province][city] = `Capacitados: 0<br>Mujeres: 0<br>Hombres: 0<br>Otros: 0`;
             }
 
             const existingCounts = genderCounts[province][city];
-            const currentTotal = this.extractCount(existingCounts, 'Asistentes');
+            const currentTotal = this.extractCount(existingCounts, 'Capacitados');
             const currentFemale = this.extractCount(existingCounts, 'Mujeres');
             const currentMale = this.extractCount(existingCounts, 'Hombres');
             const currentOther = this.extractCount(existingCounts, 'Otros');
@@ -538,7 +683,7 @@ class MapController {
             const newMale = currentMale + maleCount;
             const newOther = currentOther + otherCount;
 
-            genderCounts[province][city] = `Asistentes: ${newTotal}<br>Mujeres: ${newFemale}<br>Hombres: ${newMale}<br>Otros: ${newOther}`;
+            genderCounts[province][city] = `Capacitados: ${newTotal}<br>Mujeres: ${newFemale}<br>Hombres: ${newMale}<br>Otros: ${newOther}`;
         });
 
         return genderCounts;
@@ -548,34 +693,6 @@ class MapController {
         const regex = new RegExp(`${label}: (\\d+)`);
         const match = text.match(regex);
         return match ? Number(match[1]) : 0;
-    }
-
-    static updateCountAssistants(events: {
-        participant_count: string;
-        city: string;
-        province: string;
-    }[]): NestedDictionary {
-        const assistanceCounts: NestedDictionary = {};
-
-        events.forEach(event => {
-            const province = this.removeAccents(event.province);
-            const city = this.removeAccents(event.city);
-
-            if (!assistanceCounts[province]) {
-                assistanceCounts[province] = {};
-            }
-
-            // Convertir participant_count a número
-            const participantCount = parseInt(event.participant_count, 10) || 0;
-
-            if (assistanceCounts[province][city]) {
-                const currentCount = parseInt(assistanceCounts[province][city].replace(/\D/g, ''), 10) || 0;
-                assistanceCounts[province][city] = `Asistentes: ${currentCount + participantCount}`;
-            } else {
-                assistanceCounts[province][city] = `Asistentes: ${participantCount}`;
-            }
-        });
-        return assistanceCounts;
     }
 }
 

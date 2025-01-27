@@ -4,24 +4,37 @@ import {
     CardHeader,
     Divider
 } from "@nextui-org/react";
-import {ReactNode} from "react";
+import React, {ReactNode} from "react";
+import styles from "@/components/components.module.css";
+import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
+import {isMap} from "node:util/types";
 
 interface CardProps {
     styles: { [key: string]: string };
     title: string;
     children: ReactNode;
+    id?: string;
+    data?: any;
+    mapImageName?: string;
 }
 
-const CardComponent: React.FC<CardProps> = ({ styles, title, children }) => {
+const CardComponent: React.FC<CardProps> = ({ styles, title, children, id, data, mapImageName }) => {
     return (
         <div className={styles.card}>
             <Card className={styles.card_container}>
                 <CardHeader className={styles.card_header}>
-                    <div className={styles.flex_col}>
-                        <p className={`${styles.text_md} ${styles.text_black}`}>{title}</p>
+                    <div className={styles.header}>
+                        <p className={`${styles.text_black}`}>{title}</p>
+                        {(id || data || mapImageName) && (
+                            <ExportDropdown
+                                chartId={id}
+                                chartData={data}
+                                mapImageName={mapImageName}
+                            />
+                        )}
                     </div>
                 </CardHeader>
-                <Divider />
+                <Divider/>
                 <CardBody>
                     <div className={styles.flex_full}>
                         {children}
