@@ -448,6 +448,10 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
   };
 
+  useEffect(() => {
+    initializeTreemapData(tempTrainedData);
+  }, [tempTrainedData]);
+
   return (
     <div className={styles.div}>
       <CustomTooltip
@@ -568,8 +572,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
               <div className={styles.header_container}>
                 {noInformationCrop > 0 && (
                     <div className={styles.important_text}>
-                      <div className={styles.important}>*</div>
-                      No se tiene información para el {Math.round((noInformationCrop / allTrainedData.length) * 100)}% de los datos.
+                      <div className={styles.important}>*</div>No se tiene información para el {Math.round((noInformationCrop / allTrainedData.length) * 100)}% de los capacitados.
                     </div>
                 )}
                 <ExportDropdown
@@ -610,7 +613,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                 <div className={styles.header_container}>
                   {noInformationMunicipality > 0 && (
                       <div className={styles.important_text}>
-                        <div className={styles.important}>*</div> No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los datos.
+                        <div className={styles.important}>*</div> No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
                       </div>
                   )}
                   <ExportDropdown
