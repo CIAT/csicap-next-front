@@ -19,6 +19,18 @@ class TrainedController {
         
         return Array.from(new Set(uniqueCodes));
     }
+
+    static countDataWithoutInformation<T, K extends keyof T>(events: T[], key: K): number {
+        let count: number = 0;
+
+        events.forEach(event => {
+            if (event[key] === null) {
+                count++;
+            }
+        })
+
+        return count;
+    }
 }
 
 export default TrainedController;

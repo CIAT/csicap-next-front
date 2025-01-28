@@ -8,11 +8,8 @@ import {ArcElement, BarElement, CategoryScale, Chart, Legend, LinearScale, Toolt
 import {TreemapController, TreemapElement} from "chartjs-chart-treemap";
 import ChartCardComponent from "@/components/events/chartCard";
 import MapComponent from "@/components/data/Map/MapComponent";
-import CalendarController from "@/helpers/Component/Controller/CalendarController";
 import React, {useEffect, useState} from "react";
-import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
-import {Event, EventsData} from "@/interfaces";
 import TrainedController from "@/helpers/Component/Controller/TrainedController"
 import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
@@ -26,7 +23,7 @@ import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import EventController from "@/helpers/Component/Controller/EventsController";
 import {Trained} from "@/interfaces/Components/AssistanceComponent";
-
+import { Info } from 'lucide-react';
 
 Chart.register(
   Tooltip,
@@ -192,6 +189,9 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
   const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [noInformationCrop, setNoInformationCrop] = useState<number>(0);
+  const [noInformationMunicipality, setNoInformationMunicipality] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [tooltipValues, setTooltipValues] = useState<Array<CustomTooltipData>>([
     {
@@ -261,6 +261,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   useEffect(() => {
     AssistanceRepository.getAssistanceData().then((data: Trained[]) => {
       setCounts(MapController.updateCountTrainedByCityCodes(data));
+      setNoInformationCrop(TrainedController.countDataWithoutInformation(data, "pr_primary_crop"));
+      setNoInformationMunicipality(TrainedController.countDataWithoutInformation(data, "muni_res_complete_code"));
 
       const uniqueGender = EventsController.getUniqueValues(
           data,
@@ -446,6 +448,14 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
   };
 
+  useEffect(() => {
+    console.log(noInformationCrop)
+  }, [noInformationCrop]);
+
+  useEffect(() => {
+    console.log(noInformationMunicipality)
+  }, [noInformationMunicipality]);
+
   return (
     <div className={styles.div}>
       <CustomTooltip
@@ -561,9 +571,15 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       <div className={styles.bottom_div}>
         <div className={styles.width}>
           <ChartCardComponent
-            title="Número de capacitados"
+            title="Capacitados por cadena productiva de interés"
             header={
               <div className={styles.header_container}>
+                {noInformationCrop > 0 && (
+                    <div className={styles.important_text}>
+                      <div className={styles.important}>*</div>
+                      No se tiene información para el {Math.round((noInformationCrop / allTrainedData.length) * 100)}% de los datos.
+                    </div>
+                )}
                 <ExportDropdown
                     chartId={treemapChartAssistantsCountId}
                     chartData={treeData}
@@ -572,21 +588,38 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             }
           >
             {treemapData.length > 0 ? (
-            <ReactChart
-                id={treemapChartAssistantsCountId}
-                type="treemap"
-                data={treeData}
-                options={options}
-            />
-            ) : (<div className="flex w-full h-full items-center justify-center"><LoadingAnimation /></div>)}
+                <div className={styles.treemap_container}>
+                  <ReactChart
+                      id={treemapChartAssistantsCountId}
+                      type="treemap"
+                      data={treeData}
+                      options={options}
+                  />
+                  <div className={styles.more_info_container}>
+                    <button className={styles.more_info} onClick={() => setIsOpen(prevState => !prevState)}>
+                      <Info/>
+                    </button>
+                    {isOpen && (
+                        <div className={`${styles.more_info_text} ${styles.shadow}`}>
+                          Este gráfico refleja el cultivo reportado en el caso de los agricultores, y el cultivo de trabajo en el caso de los técnicos
+                        </div>
+                    )}
+                  </div>
+                </div>
+            ) : (<div className="flex w-full h-full items-center justify-center"><LoadingAnimation/></div>)}
           </ChartCardComponent>
         </div>
 
         <div className={styles.width}>
           <ChartCardComponent
-              title="Capacitados por municipio"
+              title="Capacitados por municipio de residencia"
               header={
                 <div className={styles.header_container}>
+                  {noInformationMunicipality > 0 && (
+                      <div className={styles.important_text}>
+                        <div className={styles.important}>*</div> No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los datos.
+                      </div>
+                  )}
                   <ExportDropdown
                       mapImageName={"capacitados_map.png"}/>
                 </div>
