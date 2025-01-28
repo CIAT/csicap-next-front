@@ -448,6 +448,10 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
   };
 
+  useEffect(() => {
+    initializeTreemapData(tempTrainedData);
+  }, [tempTrainedData]);
+
   return (
     <div className={styles.div}>
       <CustomTooltip
