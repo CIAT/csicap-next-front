@@ -179,7 +179,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [ethnicityNumber, setEthnicityNumber] = useState<number[]>([]);
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
-  const [treemapTitle, setTreemapTitle] = useState("Número de profesionales");
+  const [treemapTitle, setTreemapTitle] = useState("Profesional por institución");
   const [counts, setCounts] = useState<Record<string, string>>({});
 
   const [treemapData, setTreemapData] = useState<
