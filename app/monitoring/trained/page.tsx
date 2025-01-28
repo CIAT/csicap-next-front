@@ -130,9 +130,9 @@ const options = {
           const total = tooltipItem.dataset.tree.reduce(
               (sum: number, node: any) => sum + node.value,
               0
-          ); // Calcula el total de todos los valores
-          const percentage = ((data.v / total) * 100).toFixed(2); // Calcula el porcentaje
-          return `${data.g}: ${data.v} (${percentage}%)`; // Retorna la etiqueta con valor y porcentaje
+          );
+          const percentage = ((data.v / total) * 100).toFixed(2);
+          return `${data.g}: ${data.v} (${percentage}%)`;
         },
       },
     },
@@ -448,14 +448,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
   };
 
-  useEffect(() => {
-    console.log(noInformationCrop)
-  }, [noInformationCrop]);
-
-  useEffect(() => {
-    console.log(noInformationMunicipality)
-  }, [noInformationMunicipality]);
-
   return (
     <div className={styles.div}>
       <CustomTooltip
@@ -590,6 +582,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             {treemapData.length > 0 ? (
                 <div className={styles.treemap_container}>
                   <ReactChart
+                      redraw={true}
                       id={treemapChartAssistantsCountId}
                       type="treemap"
                       data={treeData}
