@@ -448,10 +448,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     ],
   };
 
-  useEffect(() => {
-    initializeTreemapData(tempTrainedData);
-  }, [tempTrainedData]);
-
   return (
     <div className={styles.div}>
       <CustomTooltip
@@ -585,7 +581,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             {treemapData.length > 0 ? (
                 <div className={styles.treemap_container}>
                   <ReactChart
-                      redraw={true}
                       id={treemapChartAssistantsCountId}
                       type="treemap"
                       data={treeData}
