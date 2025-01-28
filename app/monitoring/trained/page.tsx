@@ -450,7 +450,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     initializeTreemapData(tempTrainedData);
-  }, [tempTrainedData]);
+  }, [tempTrainedData, isOpen]);
 
   return (
     <div className={styles.div}>
