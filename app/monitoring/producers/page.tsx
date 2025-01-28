@@ -167,7 +167,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   >([
     {
       value: "",
-      label: "Género"
+      label: "Género del registrante"
     },
     {
       value: "",
@@ -175,7 +175,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Etnia"
+      label: "Etnia del registrante"
     },
     {
       value: "",
@@ -197,7 +197,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const tooltipOptions: Array<CustomTooltipData[]> = [genderState, propertyState, ethnicState, primaryCropState, guildState, departmentState, cityState];
   const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setGenderState, setPropertyState, setEthnicState, setPrimaryCropState, setGuildState, setDepartmentState, setCityState];
   const filterTypes = ["gender", "property", "ethnic", "primaryCrop", "guild", "department", "city"];
-  const placeHolders = ["Género", "Tipo de propiedad", "Etnia", "Cadena productiva", "Gremio", "Departamento", "Municipio"];
+  const placeHolders = ["Género del registrante", "Tipo de propiedad", "Etnia del registrante", "Cadena productiva", "Gremio", "Departamento", "Municipio"];
 
   useEffect(() => {
     ProducersRepository.fetchEvents()
@@ -260,7 +260,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     labels: ethnicityLabel,
     datasets: [
       {
-        label: "Etnia",
+        label: "Etnia del registrante",
         data: ethnicityNumber,
         backgroundColor: colores,
         borderColor: colores,
@@ -438,7 +438,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           <CardComponent
               id={doughnutProducersGenreId}
               data={sex}
-              title="Género"
+              title="Género del registrante"
               styles={styleBeneficiaries}
           >
             {treemapData.length > 0 ? (
@@ -478,7 +478,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           <CardComponent
               id={doughnutProducersEthnicity}
               data={etnia}
-              title="Etnia"
+              title="Etnia del registrante"
               styles={styleBeneficiaries}
           >
             {treemapData.length > 0 ? (
@@ -497,7 +497,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         <div className={styles.bottom_div}>
           <div className={styles.flex_container}>
             <div className={styles.width}>
-              <ChartCardComponent title="Número de familias registradas" header={
+              <ChartCardComponent title="Familias registradas por cadena productiva" header={
                 <div className={styles.header_container}>
                   <ExportDropdown
                       chartId={treemapChartProducersCountId}
