@@ -729,9 +729,9 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
               {eventStatusData.
               reduce((accumulateValue, currentValue) =>
                   accumulateValue + currentValue, 0) > 0 ? (
-                  eventStatusData.
+                  EventsController.formatNumber(eventStatusData.
                   reduce((accumulateValue, currentValue) =>
-                      accumulateValue + currentValue, 0)
+                      accumulateValue + currentValue, 0))
               ) : (
                   <LoadingAnimation />
               )}

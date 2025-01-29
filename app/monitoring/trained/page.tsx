@@ -502,7 +502,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         >
           <label className={styles.top_card_label}>
             {tempTrainedData.length > 0 ? (
-                tempTrainedData.length
+                EventsController.formatNumber(tempTrainedData.length)
             ) : (
               <LoadingAnimation />
             )}

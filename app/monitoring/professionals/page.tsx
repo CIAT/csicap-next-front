@@ -510,7 +510,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
             >
               {treemapData.length > 0 ? (
                   <div className={styles.top_div_division}>
-                    <label className={styles.top_card_label}>{totalData}</label>
+                    <label className={styles.top_card_label}>{EventsController.formatNumber(totalData)}</label>
                   </div>
               ) : (
                   <LoadingAnimation/>

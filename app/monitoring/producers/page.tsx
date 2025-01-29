@@ -138,8 +138,6 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [allEventsData, setAllEventsData] = useState<DataFormat[]>([]);
 
-  const [selectedEvent, setSelectedEvent] = useState<DataFormat | null>(null);
-  const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [totalData, setTotalData] = useState<number>(0);
   const [totalProducersData, setTotalProducersData] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
@@ -226,7 +224,6 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
       })
       .catch(error => {
         console.error("Error fetching events:", error);
-        setDataCalendarResp(-1);
       });
   }, []);
 
@@ -426,9 +423,9 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           <CardComponent styles={styleBeneficiaries} title={"Total familias registradas"}>
             {treemapData.length > 0 ? (
                 <div className={styles.top_div_division}>
-                  <label className={styles.top_card_label}>{totalData}</label>
+                  <label className={styles.top_card_label}>{EventsController.formatNumber(totalData)}</label>
                   <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
-                  <label className={styles.other_card_label}>{totalProducersData}</label>
+                  <label className={styles.other_card_label}>{EventsController.formatNumber(totalProducersData)}</label>
                 </div>
             ) : (
                 <LoadingAnimation/>

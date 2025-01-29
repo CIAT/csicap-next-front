@@ -3,6 +3,10 @@ import {EventsData} from "@/interfaces";
 import {parseISO} from "date-fns";
 
 class EventController {
+    static formatNumber = (num: number): string => {
+        return new Intl.NumberFormat('es-ES', { useGrouping: true }).format(num);
+    };
+
     static getEventsByFormState<T extends EventsData>(
         events: T[],
         filterType: string,
