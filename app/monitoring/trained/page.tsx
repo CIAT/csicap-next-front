@@ -189,6 +189,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
   const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
+
   const [noInformationCrop, setNoInformationCrop] = useState<number>(0);
   const [noInformationMunicipality, setNoInformationMunicipality] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -218,6 +220,10 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       value: "",
       label: "Municipio",
     },
+    {
+      value: "",
+      label: "Institución",
+    },
   ]);
 
   const tooltipOptions: Array<CustomTooltipData[]> = [
@@ -226,7 +232,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     cropState,
     occupationState,
     departmentState,
-    cityState
+    cityState,
+    institutionState
   ];
 
   const setTooltipOptions: Array<
@@ -237,7 +244,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setCropState,
     setOccupationState,
     setDepartmentState,
-    setCityState
+    setCityState,
+    setInstitutionState
   ];
 
   const filterTypes = [
@@ -246,7 +254,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "crop",
     "occupation",
     "department",
-    "city"
+    "city",
+    "institution"
   ];
 
   const placeHolders = [
@@ -255,7 +264,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "Cadena productiva",
     "Ocupación",
     "Departamento",
-    "Municipio"
+    "Municipio",
+    "Institución"
   ];
 
   useEffect(() => {
@@ -285,6 +295,11 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
           data,
           "muni_res_complete_label"
       )
+      const uniqueInstitutions = EventsController.getUniqueValues(
+          data,
+          "organization_affiliation_complete",
+          true
+      )
 
       setAllTrainedData(data);
       setTempTrainedData(data);
@@ -294,6 +309,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       setOccupationState([...uniqueOccupation]);
       setDepartmentState([...uniqueDepartments]);
       setCityState([...uniqueCities]);
+      setInstitutionState([...uniqueInstitutions]);
 
       initializeTreemapData(data);
     })

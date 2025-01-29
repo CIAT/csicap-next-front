@@ -33,6 +33,8 @@ export const getUniqueValuesFunctionsTrained = () => [
         EventsController.getUniqueValues(events, "dep_res_complete_label"),
     (events: Trained[]) =>
         EventsController.getUniqueValues(events, "muni_res_complete_label"),
+    (events: Trained[]) =>
+        EventsController.getUniqueValues(events, "organization_affiliation_complete", true),
 ];
 
 export const getUniqueValuesFunctionsProfessionals = () => [
@@ -111,7 +113,9 @@ export const filterFunctionsTrained: Record<
     department: (events, value) =>
         EventsController.filterEventsByValue(events, "dep_res_complete_label", value),
     city: (events, value) =>
-        EventsController.filterEventsByValue(events, "muni_res_complete_label", value)
+        EventsController.filterEventsByValue(events, "muni_res_complete_label", value),
+    institution: (events, value) =>
+        EventsController.filterEventsByValue(events, "organization_affiliation_complete", value, true)
 };
 
 export const filterFunctionsProfessionals: Record<
