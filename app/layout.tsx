@@ -20,7 +20,7 @@ export default function RootLayout({
     const pathname = usePathname();
     const showLayout = !pathname.includes("/embed");
     const layoutClassName = showLayout ? "layout" : "layout_embedded";
-    const isProduction = true;
+    const isProduction = process.env.NEXT_PUBLIC_ENV_DEPLOY === "prod";
 
     return (
         <html lang="en">
