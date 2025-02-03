@@ -120,7 +120,6 @@ class MapController {
     static calculateQuartile(data: NestedDictionary | Record<string, string>, valueKey: string): number[] {
         if (valueKey === "Eventos") return [1, 2, 2, 3, 3, 10, 10, 33];
         if (valueKey === "Familias registradas") return [1, 2, 2, 3, 3, 10, 10, 320];
-        if (valueKey === "Profesionales") return [5, 28, 29, 52, 53, 180, 181, 308];
 
         const values: number[] = this.getValuesForQuartile(data, valueKey);
 
