@@ -606,7 +606,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
                 <ChartCardComponent
-                    title="Profesionales por departamento"
+                    title="Profesionales por departamento donde trabajan"
                     header={
                       <div className={styles.header_container}>
                         <ExportDropdown

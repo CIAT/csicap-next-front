@@ -83,7 +83,6 @@ const colors = [
   "#569aaf",
 ];
 
-// Calculate finished, in-progress, and programmed events based on form_state and datesEnd
 function calculateEventStatus(events: EventFormat[]) {
   let finishedEvents = 0;
   let inProgressEvents = 0;
@@ -92,20 +91,16 @@ function calculateEventStatus(events: EventFormat[]) {
   currentDate.setHours(0, 0, 0, 0);
 
   events.forEach((EventFormat) => {
-    // Validar si datesEnd es válido antes de parsearlo
     const eventEndDate = EventFormat.datesEnd
       ? parseISO(EventFormat.datesEnd)
       : null;
 
     if (EventFormat.form_state === "0") {
-      // Si form_state es 0, cuenta como finalizado
       finishedEvents += 1;
     } else if (EventFormat.form_state === "1") {
-      // Si form_state es 1, revisar la fecha si está presente
       if (eventEndDate && eventEndDate >= currentDate) {
         programmedEvents += 1;
       } else {
-        // Eventos sin cerrar o sin fecha válida
         inProgressEvents += 1;
       }
     }
@@ -154,7 +149,6 @@ function countInstitutionsTreeMap(events: EventFormat[]) {
   return institutionCount;
 }
 
-// Count occurrences of each "institution"
 function countInstitutions(events: EventFormat[]) {
   const predefinedInstitutions = new Set([
     "CIMMYT",
