@@ -29,6 +29,18 @@ body {
   font-size: 2vh;
 }
 
+html, body {
+  overflow: auto;
+  scrollbar-gutter: stable;
+  -ms-overflow-style: none; /* IE y Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .layout {
   width: 100%;
   min-height: 100vh;

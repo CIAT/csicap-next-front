@@ -3,12 +3,15 @@
 import { Inter } from "next/font/google";
 import { NextUIProvider } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
+import { useState } from "react"; // Nuevo
 import "./globals.css";
 import "../components/static/static.module.css";
 import Header from "@/components/static/Header";
 import Footer from "@/components/static/Footer";
 import { metadata } from "@/components/Metadata/Metadata";
 import Script from "next/script";
+import CookieBanner from "@/components/cookies/CookiesBanner/CookiesBanner";
+import TermsPopup from "@/components/cookies/TermsPopup/TermsPopup";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +25,8 @@ export default function RootLayout({
     const layoutClassName = showLayout ? "layout" : "layout_embedded";
     const isProduction = process.env.NEXT_PUBLIC_ENV_DEPLOY === "prod";
 
+    const [showTerms, setShowTerms] = useState(false);
+
     return (
         <html lang="en">
         <head>
@@ -31,10 +36,7 @@ export default function RootLayout({
             {isProduction && (
                 <>
                     {/* Google Analytics */}
-                    <Script
-                        async
-                        src="https://www.googletagmanager.com/gtag/js?id=G-14FSWFJX6S"
-                    />
+                    <Script async src="https://www.googletagmanager.com/gtag/js?id=G-14FSWFJX6S" />
                     <Script id="google-analytics">
                         {`
                 window.dataLayer = window.dataLayer || [];
@@ -77,6 +79,12 @@ export default function RootLayout({
                     <Footer />
                 </footer>
             )}
+
+            {/* Banner de Cookies */}
+            <CookieBanner onShowTerms={() => setShowTerms(true)} />
+
+            {/* Modal de términos (solo se muestra si showTerms es true) */}
+            {showTerms && <TermsPopup onClose={() => setShowTerms(false)} />}
         </NextUIProvider>
         </body>
         </html>
