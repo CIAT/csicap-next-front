@@ -17,6 +17,7 @@ const CookieBanner: React.FC<CookieBannerProps> = ({ onShowTerms }) => {
 
     const acceptCookies = () => {
         localStorage.setItem("cookiesAccepted", "true");
+        onShowTerms();
         setIsVisible(false);
     };
 

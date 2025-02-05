@@ -14,7 +14,7 @@ const TermsPopup: FC<TermsPopupProps> = ({ onClose }) => {
                 <div className={styles.main_title}>POLÍTICA DE PRIVACIDAD</div>
 
                 {/* Terms of Use Section */}
-                <div className={styles.title}>Términos de Uso – https://alliancebioversityciat.org/</div>
+                <div className={styles.terms_title}>Términos de Uso – https://alliancebioversityciat.org/</div>
                 <div className={styles.title}>Fecha de vigencia:</div>
                 <p>Enero 2025</p>
                 <p>

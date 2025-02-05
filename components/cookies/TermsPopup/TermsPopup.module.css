@@ -1,4 +1,5 @@
 .container {
+    height: 92vh;
     position: fixed;
     top: 0;
     left: 0;
@@ -9,7 +10,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    z-index: 9000;
+    z-index: 9999;
 }
 
 .main_title {
@@ -18,6 +19,7 @@
 }
 
 .title,
+.terms_title,
 .container h4 {
     font-size: 1.8vw;
     font-weight: bold;
@@ -94,4 +96,32 @@
 .link {
     text-decoration: underline;
     color: #60a5fa;
+}
+
+@media (max-width: 768px) {
+    .container p,
+    .container h4,
+    .container h5,
+    .container h6,
+    .container div div,
+    .container div ul li,
+    .container div ul li a{
+        font-size: 3vw;
+    }
+}
+
+@media (max-width: 390px) {
+    .container p,
+    .container h4,
+    .container h5,
+    .container h6,
+    .container div div,
+    .container div ul li,
+    .container div ul li a{
+        font-size: 5vw;
+    }
+
+    .terms_title {
+        font-size: 1vw;
+    }
 }
