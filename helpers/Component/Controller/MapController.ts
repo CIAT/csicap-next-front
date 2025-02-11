@@ -5,6 +5,7 @@ import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 import {colors as staticColors} from "@/interfaces/Map/colors";
 import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import html2canvas from "html2canvas";
 
 class MapController {
     static selectedCity: string | null = null;
@@ -15,13 +16,68 @@ class MapController {
         this.mapReference = mapReference;
     }
 
-    static downloadMapAsImage(fileName?: string): void {
-        const link = document.createElement("a");
-        link.href = this.mapReference;
-        link.download = (fileName != null ? fileName : "mapImage.png");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    static async downloadMapAsImage(fileName?: string): Promise<void> {
+        if (!this.mapReference) {
+            console.error("No se encontró la referencia del mapa.");
+            return;
+        }
+
+        // Crear imagen del mapa
+        const mapImage = new Image();
+        mapImage.src = this.mapReference;
+
+        // Esperar a que la imagen cargue
+        await new Promise((resolve) => (mapImage.onload = resolve));
+
+        // Capturar la leyenda como imagen
+        const legendElement = document.querySelector(`.${style["legend"]}`) as HTMLElement;
+        if (!legendElement) {
+            console.error("No se encontró la leyenda.");
+            return;
+        }
+
+        const legendCanvas = await html2canvas(legendElement, { backgroundColor: null });
+        const legendImage = new Image();
+        legendImage.src = legendCanvas.toDataURL("image/png");
+
+        // Esperar a que la imagen de la leyenda cargue
+        await new Promise((resolve) => (legendImage.onload = resolve));
+
+        // Crear el canvas donde combinaremos ambas imágenes
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+            console.error("No se pudo obtener el contexto 2D del canvas.");
+            return;
+        }
+
+        // Ajustar tamaño del canvas para incluir mapa + leyenda
+        canvas.width = mapImage.width;
+        canvas.height = mapImage.height + legendImage.height + 10; // Espacio para la leyenda
+
+        // Dibujar el mapa en el canvas
+        ctx.drawImage(mapImage, 0, 0);
+
+        const legendX = canvas.width - legendImage.width - 10;
+        const legendY = canvas.height - (legendImage.height * 2) - 20;
+
+        ctx.drawImage(legendImage, legendX, legendY);
+
+        // Convertir el canvas en imagen y descargarla
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                console.error("Error al generar la imagen.");
+                return;
+            }
+
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName ?? "map_with_legend.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }, "image/png");
     }
 
     static removeAccents(input: string): string {
