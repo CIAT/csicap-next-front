@@ -508,7 +508,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Total profesionales registrados"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.top_div_division}>
                     <label className={styles.top_card_label}>{EventsController.formatNumber(totalData)}</label>
                   </div>
@@ -524,7 +524,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Género"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut
                         id={doughnutChartProfessionalGenreId}
@@ -544,7 +544,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Nivel educativo"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut
                         id={doughnutChartProfessionalOccupationId}
@@ -564,7 +564,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Etnia"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut
                         id={doughnutProducersEthnicity}
@@ -591,7 +591,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                     />
                   </div>
                 }>
-                  {treemapData.length > 0 ? (
+                  {events.length > 0 ? (
                       <ReactChart
                           id={treemapChartProfessionalCountId}
                           type="treemap"
@@ -614,7 +614,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                       </div>
                     }
                 >
-                  {treemapData.length > 0 && filteredEvents && counts ? (
+                  {(events.length > 0 && counts) ? (
                       <div className="w-full h-full">
                         <MapComponent
                             polygons={ProfessionalController.extractProvincesCode(filteredEvents)}
