@@ -732,7 +732,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             </label>
           </CardComponent>
           <ChartCardComponent
-              title="Eventos por cultivo"
+              title="Eventos por sistema productivo"
               style={styles.card_tree}
               header={
                 <div className={styles.header_container}>
