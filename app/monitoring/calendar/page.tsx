@@ -71,7 +71,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -114,7 +114,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "Componente",
     "Eje",
     "Institución",
-    "Cadena productiva",
+    "Sistema productivo",
     "Departamento",
     "Municipio",
   ];

@@ -201,7 +201,7 @@ export async function GET(request: Request) {
       { label: "Conclusión", value: reportData.conclusion },
       { label: "Responsable", value: reportData.responsable },
       { label: "Institución", value: reportData.institution },
-      { label: "Cadena Productiva", value: reportData.crop },
+      { label: "Sistema productivo", value: reportData.crop },
     ];
 
     // Modified content rendering to handle only actual arrays as bullet points
