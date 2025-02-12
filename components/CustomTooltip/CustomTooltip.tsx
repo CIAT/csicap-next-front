@@ -3,6 +3,8 @@ import Select from "react-select";
 import styles from "./tooltip.module.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {getMonth, getYear} from "date-fns";
+import {range} from "pdf-lib";
 
 interface MultiSelectProps<T> {
   options: Array<Array<T>>;
@@ -29,9 +31,23 @@ const CustomTooltip = <T,>({
   getOptionValue = (option) => String(option),
   useDate = false
 }: MultiSelectProps<T>) => {
-  const [dateRange, setDateRange] = useState([null, null]);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startDate, endDate] = dateRange;
-
+  const years = range(1990, getYear(new Date()) + 1);
+  const months = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
 
   console.log(new Date(dateRange[0]!).toLocaleDateString("es"));
 
@@ -62,7 +78,55 @@ const CustomTooltip = <T,>({
         {
           useDate && (
               <DatePicker
-                  selectsRange={true}
+                  renderCustomHeader={({
+                                         date,
+                                         changeYear,
+                                         changeMonth,
+                                         decreaseMonth,
+                                         increaseMonth,
+                                         prevMonthButtonDisabled,
+                                         nextMonthButtonDisabled,
+                                       }) => (
+                      <div
+                          style={{
+                            margin: 10,
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                      >
+                        <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                          {"<"}
+                        </button>
+                        <select
+                            value={getYear(date)}
+                            onChange={({ target: { value } }) => changeYear(Number(value))}
+                        >
+                          {years.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                          ))}
+                        </select>
+
+                        <select
+                            value={months[getMonth(date)]}
+                            onChange={({ target: { value } }) =>
+                                changeMonth(months.indexOf(value))
+                            }
+                        >
+                          {months.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                          ))}
+                        </select>
+
+                        <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
+                          {">"}
+                        </button>
+                      </div>
+                  )}
+                  selectsRange
                   startDate={startDate}
                   endDate={endDate}
                   dateFormat={"dd/MM/YYYY"}
@@ -71,6 +135,8 @@ const CustomTooltip = <T,>({
                     setDateRange(update);
                   }}
                   placeholderText="Fecha"
+                  selectsDisabledDaysInRange
+                  inline
               />
             )
         }
