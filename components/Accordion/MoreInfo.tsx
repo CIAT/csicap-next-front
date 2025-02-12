@@ -23,7 +23,7 @@ const MoreInfo: React.FC<MoreInfoProps> = ({ objetive, city, crop, institution, 
                         <span>{city}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <strong>Cadena productiva:</strong>
+                        <strong>Sistema productivo:</strong>
                         <span>{crop.join(", ")}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>

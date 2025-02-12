@@ -177,7 +177,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cadena productiva"
+      label: "Sistema productivo"
     },
     {
       value: "",
@@ -195,7 +195,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const tooltipOptions: Array<CustomTooltipData[]> = [genderState, propertyState, ethnicState, primaryCropState, guildState, departmentState, cityState];
   const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setGenderState, setPropertyState, setEthnicState, setPrimaryCropState, setGuildState, setDepartmentState, setCityState];
   const filterTypes = ["gender", "property", "ethnic", "primaryCrop", "guild", "department", "city"];
-  const placeHolders = ["Género del registrante", "Tipo de propiedad", "Etnia del registrante", "Cadena productiva", "Gremio", "Departamento", "Municipio"];
+  const placeHolders = ["Género del registrante", "Tipo de propiedad", "Etnia del registrante", "Sistema productivo", "Gremio", "Departamento", "Municipio"];
 
   useEffect(() => {
     ProducersRepository.fetchEvents()
@@ -494,7 +494,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         <div className={styles.bottom_div}>
           <div className={styles.flex_container}>
             <div className={styles.width}>
-              <ChartCardComponent title="Familias registradas por cadena productiva" header={
+              <ChartCardComponent title="Familias registradas por sistema productivo" header={
                 <div className={styles.header_container}>
                   <ExportDropdown
                       chartId={treemapChartProducersCountId}

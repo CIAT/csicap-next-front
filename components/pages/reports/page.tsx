@@ -85,7 +85,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -110,7 +110,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     "Componente",
     "Eje",
     "Instituciones",
-    "Cadena productiva",
+    "Sistema productivo",
     "Departamento",
     "Municipio",
   ];

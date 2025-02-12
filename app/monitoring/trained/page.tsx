@@ -204,7 +204,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -252,7 +252,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const placeHolders = [
     "Género",
     "Edad",
-    "Cadena productiva",
+    "Sistema productivo",
     "Ocupación",
     "Departamento",
     "Municipio"
@@ -567,7 +567,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       <div className={styles.bottom_div}>
         <div className={styles.width}>
           <ChartCardComponent
-            title="Capacitados por cadena productiva de interés"
+            title="Capacitados por sistema productivo de interés"
             header={
               <div className={styles.header_container}>
                 {noInformationCrop > 0 && (

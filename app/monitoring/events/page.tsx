@@ -276,7 +276,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -317,7 +317,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "Componente",
     "Eje",
     "Instituciones",
-    "Cadena productiva",
+    "Sistema productivo",
     "Departamento",
     "Municipio",
   ];
