@@ -40,16 +40,10 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
   const [events, setEvents] = useState<EventsData[]>([]);
   const [tempEventData, setTempEventData] = useState<EventsData[]>(events);
-  const [filtersApplied, setFiltersApplied] = useState(false);
 
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<EventsData | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [sectionState, setSectionState] = useState<sectionStateData>({
-    axe: "",
-    crop: "",
-    city: "",
-  });
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
   const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>(
@@ -195,11 +189,22 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     );
   }, [formState]);
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        tempEventData,
+        setTempEventData,
+        filterFunctionsCalendar,
+        filterTypes
+    )
+  }
+
   return (
     <div className={styles.container}>
       {dataCalendarResp === 200 ? (
         <>
           <CustomTooltip
+            useDate={true}
             options={tooltipOptions}
             values={tooltipValues}
             onChange={(selectedValue, filterType) =>

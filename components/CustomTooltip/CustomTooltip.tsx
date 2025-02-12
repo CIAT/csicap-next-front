@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useState} from "react";
 import Select from "react-select";
-import { Button } from "@mui/material";
 import styles from "./tooltip.module.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface MultiSelectProps<T> {
   options: Array<Array<T>>;
@@ -13,6 +14,7 @@ interface MultiSelectProps<T> {
   filterTypes: Array<string>;
   getOptionLabel?: (option: T) => string;
   getOptionValue?: (option: T) => string;
+  useDate?: boolean;
 }
 
 const CustomTooltip = <T,>({
@@ -25,7 +27,14 @@ const CustomTooltip = <T,>({
   filterTypes,
   getOptionLabel = (option) => String(option),
   getOptionValue = (option) => String(option),
+  useDate = false
 }: MultiSelectProps<T>) => {
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
+
+
+  console.log(new Date(dateRange[0]!).toLocaleDateString("es"));
+
   return (
     <div className={styles.container}>
       <div style={{ display: "flex", flexDirection: "row", gap: "1vw",width:"85%" }}>
@@ -45,12 +54,26 @@ const CustomTooltip = <T,>({
               placeholder={placeholders[index]}
               isSearchable
               styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
               }}
             />
           </div>
         ))}
+        {
+          useDate && (
+              <DatePicker
+                  selectsRange={true}
+                  startDate={startDate}
+                  endDate={endDate}
+                  dateFormat={"dd/MM/YYYY"}
+                  locale={"es-"}
+                  onChange={(update) => {
+                    setDateRange(update);
+                  }}
+                  placeholderText="Fecha"
+              />
+            )
+        }
       </div>
       <div style={{width:"15%"}}>
         <button onClick={onClick} className={styles.button}>
