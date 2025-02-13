@@ -49,8 +49,6 @@ const CustomTooltip = <T,>({
     "Diciembre",
   ];
 
-  console.log(new Date(dateRange[0]!).toLocaleDateString("es"));
-
   return (
     <div className={styles.container}>
       <div style={{ display: "flex", flexDirection: "row", gap: "1vw",width:"85%" }}>
@@ -78,6 +76,7 @@ const CustomTooltip = <T,>({
         {
           useDate && (
               <DatePicker
+                  className={styles.customDatePicker}
                   renderCustomHeader={({
                                          date,
                                          changeYear,
@@ -94,7 +93,9 @@ const CustomTooltip = <T,>({
                             justifyContent: "center",
                           }}
                       >
-                        <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                        <button
+                            className={styles.calendar_button}
+                            onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
                           {"<"}
                         </button>
                         <select
@@ -121,7 +122,11 @@ const CustomTooltip = <T,>({
                           ))}
                         </select>
 
-                        <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
+                        <button
+                            className={styles.calendar_button}
+                            onClick={increaseMonth}
+                            disabled={nextMonthButtonDisabled}
+                        >
                           {">"}
                         </button>
                       </div>
@@ -130,13 +135,11 @@ const CustomTooltip = <T,>({
                   startDate={startDate}
                   endDate={endDate}
                   dateFormat={"dd/MM/YYYY"}
-                  locale={"es-"}
+                  locale={"es"}
                   onChange={(update) => {
                     setDateRange(update);
                   }}
                   placeholderText="Fecha"
-                  selectsDisabledDaysInRange
-                  inline
               />
             )
         }
