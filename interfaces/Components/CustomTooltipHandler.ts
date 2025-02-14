@@ -78,6 +78,14 @@ export const getUniqueValuesFunctionsProducers = () => [
         EventsController.getUniqueValues(events, "pr_muni"),
 ];
 
+export const filterFunctions: Record<
+    string,
+    (events: EventsData[], value: [Date | null, Date | null]) => EventsData[]
+> = {
+    date: (events: EventsData[], value: [Date | null, Date | null]) =>
+        EventsController.getEventsByStartDate(events, value[0], value[1]),
+}
+
 export const filterFunctionsEvents: Record<
     string,
     (events: EventFormat[], value: string) => EventFormat[]
@@ -143,7 +151,7 @@ export const filterFunctionsCalendar: Record<
     department: (events, value) =>
         EventsController.filterEventsByValue(events, "province", value),
     city: (events, value) =>
-        EventsController.filterEventsByValue(events, "city", value),
+        EventsController.filterEventsByValue(events, "city", value)
 };
 
 

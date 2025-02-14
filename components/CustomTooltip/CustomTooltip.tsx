@@ -1,7 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import Select from "react-select";
-import { Button } from "@mui/material";
 import styles from "./tooltip.module.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {getMonth, getYear} from "date-fns";
+import {range} from "pdf-lib";
 
 interface MultiSelectProps<T> {
   options: Array<Array<T>>;
@@ -13,6 +16,9 @@ interface MultiSelectProps<T> {
   filterTypes: Array<string>;
   getOptionLabel?: (option: T) => string;
   getOptionValue?: (option: T) => string;
+  useDate?: boolean;
+  dateRange?: [Date | null, Date | null];
+  setDateRange?: (dateRange: [Date | null, Date | null]) => void;
 }
 
 const CustomTooltip = <T,>({
@@ -25,7 +31,27 @@ const CustomTooltip = <T,>({
   filterTypes,
   getOptionLabel = (option) => String(option),
   getOptionValue = (option) => String(option),
+  useDate = false,
+  dateRange = [null, null],
+  setDateRange = () => {}
 }: MultiSelectProps<T>) => {
+  const [startDate, endDate] = dateRange;
+  const years = range(1990, getYear(new Date()) + 1);
+  const months = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
   return (
     <div className={styles.container}>
       <div style={{ display: "flex", flexDirection: "row", gap: "1vw",width:"85%" }}>
@@ -45,12 +71,81 @@ const CustomTooltip = <T,>({
               placeholder={placeholders[index]}
               isSearchable
               styles={{
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
               }}
             />
           </div>
         ))}
+        {
+          useDate && (
+              <DatePicker
+                  className={styles.customDatePicker}
+                  renderCustomHeader={({
+                                         date,
+                                         changeYear,
+                                         changeMonth,
+                                         decreaseMonth,
+                                         increaseMonth,
+                                         prevMonthButtonDisabled,
+                                         nextMonthButtonDisabled,
+                                       }) => (
+                      <div
+                          style={{
+                            margin: 10,
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                      >
+                        <button
+                            className={styles.calendar_button}
+                            onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                          {"<"}
+                        </button>
+                        <select
+                            value={getYear(date)}
+                            onChange={({ target: { value } }) => changeYear(Number(value))}
+                        >
+                          {years.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                          ))}
+                        </select>
+
+                        <select
+                            value={months[getMonth(date)]}
+                            onChange={({ target: { value } }) =>
+                                changeMonth(months.indexOf(value))
+                            }
+                        >
+                          {months.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                          ))}
+                        </select>
+
+                        <button
+                            className={styles.calendar_button}
+                            onClick={increaseMonth}
+                            disabled={nextMonthButtonDisabled}
+                        >
+                          {">"}
+                        </button>
+                      </div>
+                  )}
+                  selectsRange
+                  startDate={startDate}
+                  endDate={endDate}
+                  dateFormat={"dd/MM/YYYY"}
+                  locale={"es"}
+                  onChange={(update) => {
+                    setDateRange(update);
+                  }}
+                  placeholderText="Fecha"
+              />
+            )
+        }
       </div>
       <div style={{width:"15%"}}>
         <button onClick={onClick} className={styles.button}>

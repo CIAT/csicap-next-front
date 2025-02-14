@@ -7,6 +7,20 @@ class EventController {
         return new Intl.NumberFormat('es-ES', { useGrouping: true }).format(num);
     };
 
+    static getEventsByStartDate<T extends EventsData>(
+        events: T[],
+        startDate: Date | null,
+        endDate: Date | null,
+    ): T[] {
+        return events.filter(event => {
+            if (event.date.toString() == "nan") return false;
+            const eventDate = new Date(event.date);
+            if (!startDate && !endDate) return true;
+            if (startDate && eventDate < startDate) return false;
+            return !(endDate && eventDate > endDate);
+        });
+    }
+
     static getEventsByFormState<T extends EventsData>(
         events: T[],
         filterType: string,
