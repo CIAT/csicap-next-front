@@ -28,6 +28,7 @@
   padding: 6px 10px;
   border-radius: 4px;
   width: 100%;
+  z-index: 9999;
 }
 
 .calendar_button {

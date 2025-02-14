@@ -17,6 +17,8 @@ interface MultiSelectProps<T> {
   getOptionLabel?: (option: T) => string;
   getOptionValue?: (option: T) => string;
   useDate?: boolean;
+  dateRange?: [Date | null, Date | null];
+  setDateRange?: (dateRange: [Date | null, Date | null]) => void;
 }
 
 const CustomTooltip = <T,>({
@@ -29,9 +31,10 @@ const CustomTooltip = <T,>({
   filterTypes,
   getOptionLabel = (option) => String(option),
   getOptionValue = (option) => String(option),
-  useDate = false
+  useDate = false,
+  dateRange = [null, null],
+  setDateRange = () => {}
 }: MultiSelectProps<T>) => {
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startDate, endDate] = dateRange;
   const years = range(1990, getYear(new Date()) + 1);
   const months = [

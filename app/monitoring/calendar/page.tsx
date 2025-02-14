@@ -29,6 +29,7 @@ import {
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
+  filterFunctions,
   filterFunctionsCalendar,
   getUniqueValuesFunctionsCalendar,
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -40,6 +41,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
   const [events, setEvents] = useState<EventsData[]>([]);
   const [tempEventData, setTempEventData] = useState<EventsData[]>(events);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
 
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<EventsData | null>(null);
@@ -109,6 +112,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "crop",
     "department",
     "city",
+    "date"
   ];
   const placeHolders = [
     "Componente",
@@ -196,8 +200,16 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         setTempEventData,
         filterFunctionsCalendar,
         filterTypes
-    )
-  }
+    );
+    setShouldApplyDateFilter(true);
+  };
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setTempEventData(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [tempEventData, shouldApplyDateFilter, dateRange]);
 
   return (
     <div className={styles.container}>
@@ -205,6 +217,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         <>
           <CustomTooltip
             useDate={true}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
             options={tooltipOptions}
             values={tooltipValues}
             onChange={(selectedValue, filterType) =>
@@ -220,15 +234,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                 filterTypes
               )
             }
-            onClick={() =>
-              handleOnClick(
-                tooltipValues,
-                tempEventData,
-                setTempEventData,
-                filterFunctionsCalendar,
-                filterTypes
-              )
-            }
+            onClick={handleOnApply}
             onReset={() =>
               handleReset(
                 events,
