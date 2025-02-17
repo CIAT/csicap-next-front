@@ -73,9 +73,9 @@ export const getUniqueValuesFunctionsProducers = () => [
     (events: DataFormat[]) =>
         EventsController.getInstitutionCategories(events, "gremio", EventsController.predefinedInstitutionsProducers),
     (events: DataFormat[]) =>
-        EventsController.getUniqueValues(events, "pr_dpto"),
+        EventsController.getUniqueValues(events, "pr_dpto_farm"),
     (events: DataFormat[]) =>
-        EventsController.getUniqueValues(events, "pr_muni"),
+        EventsController.getUniqueValues(events, "pr_muni_farm"),
 ];
 
 export type FilterFunction<T, U> = (data: T[], value: U) => T[];
@@ -172,7 +172,7 @@ export const filterFunctionsProducers: Record<
     guild: (events, value) =>
         EventsController.filterEventsByInstitution(events, "gremio", value, EventsController.predefinedInstitutionsProducers),
     department: (events, value) =>
-        EventsController.filterEventsByValue(events, "pr_dpto", value),
+        EventsController.filterEventsByValue(events, "pr_dpto_farm", value),
     city: (events, value) =>
-        EventsController.filterEventsByValue(events, "pr_muni", value),
+        EventsController.filterEventsByValue(events, "pr_muni_farm", value),
 };

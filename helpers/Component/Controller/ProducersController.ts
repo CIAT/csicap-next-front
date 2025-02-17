@@ -17,17 +17,18 @@ class ProducersController {
             edad: item.edad,
             cultivo1: item.pr_primary_crop,
             cultivo2: item.pr_secundary_crop,
-            province: item.pr_dpto
+            province: item.pr_dpto_farm,
+            date: item.submitted_date
         }));
     }
 
     static extractProvinces(events: DataFormat[]): string[] {
-        const provinces = events.map(event => event.pr_dpto);
+        const provinces = events.map(event => event.pr_dpto_farm);
         return Array.from(new Set(provinces));
     }
 
-    static extractProvincesAndCities(events: { pr_dpto: string, pr_muni: string}[]): string[][]{
-        const provincesAndCities = events.map(event => [event.pr_dpto, event.pr_muni]);
+    static extractProvincesAndCities(events: { pr_dpto_farm: string, pr_muni_farm: string}[]): string[][]{
+        const provincesAndCities = events.map(event => [event.pr_dpto_farm, event.pr_muni_farm]);
         return Array.from(new Set(provincesAndCities));
     }
 
