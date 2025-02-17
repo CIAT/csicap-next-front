@@ -27,6 +27,7 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import { CustomTooltipData } from "@/interfaces/Components/CustomTooltip";
 import {
+  filterFunctions, filterFunctionsCalendar,
   filterFunctionsEvents,
   getUniqueValuesFunctionsEvents,
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -129,26 +130,6 @@ function countEjes(events: EventFormat[]) {
   return ejeCount;
 }
 
-function countInstitutionsTreeMap(events: EventFormat[]) {
-  const institutionCount: { [key: string]: number } = {};
-  let multiInstitutionCount = 0;
-
-  events.forEach((EventFormat) => {
-    if (EventFormat.institution.length >= 2) {
-      multiInstitutionCount += 1;
-    } else {
-      EventFormat.institution.forEach((institution) => {
-        institutionCount[institution] =
-          (institutionCount[institution] || 0) + 1;
-      });
-    }
-  });
-  if (multiInstitutionCount > 0) {
-    institutionCount["Multi-Institucional"] = multiInstitutionCount;
-  }
-  return institutionCount;
-}
-
 function countInstitutions(events: EventFormat[]) {
   const predefinedInstitutions = new Set([
     "CIMMYT",
@@ -206,17 +187,6 @@ function countCrop(events: EventFormat[]) {
   return cropCount;
 }
 
-// Count occurrences for cities
-function countCities(events: EventFormat[]) {
-  const cityCount: { [key: string]: number } = {};
-
-  events.forEach((EventFormat) => {
-    cityCount[EventFormat.city] = (cityCount[EventFormat.city] || 0) + 1;
-  });
-
-  return cityCount;
-}
-
 // Count occurrences of each "guest_type"
 function countGuestTypes(events: EventFormat[]) {
   const guestTypeCount: { [key: string]: number } = {};
@@ -250,6 +220,9 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   const [allEventData, setAllEventData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
   const [tempEventData, setTempEventData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
   const [fontSize, setFontSize] = useState(10); // Default font size
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
 
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
@@ -671,9 +644,30 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     setGuestTypeData(guestTypeData);
   }
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        tempEventData,
+        setTempEventData,
+        filterFunctionsEvents,
+        filterTypes
+    )
+    setShouldApplyDateFilter(true);
+  };
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setTempEventData(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [tempEventData, shouldApplyDateFilter, dateRange]);
+
   return (
     <div className={styles.event_page}>
       <CustomTooltip
+        useDate={true}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
         options={tooltipOptions}
         values={tooltipValues}
         onChange={(selectedValue, filterType) =>
@@ -689,15 +683,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             filterTypes
           )
         }
-        onClick={() =>
-          handleOnClick(
-            tooltipValues,
-            tempEventData,
-            setTempEventData,
-            filterFunctionsEvents,
-            filterTypes
-          )
-        }
+        onClick={handleOnApply}
         onReset={() =>
           handleReset(
             allEventData,
@@ -732,7 +718,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             </label>
           </CardComponent>
           <ChartCardComponent
-              title="Eventos por cultivo"
+              title="Eventos por cultivo "
               style={styles.card_tree}
               header={
                 <div className={styles.header_container}>
