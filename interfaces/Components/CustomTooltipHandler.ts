@@ -78,13 +78,15 @@ export const getUniqueValuesFunctionsProducers = () => [
         EventsController.getUniqueValues(events, "pr_muni"),
 ];
 
-export const filterFunctions: Record<
-    string,
-    (events: EventsData[], value: [Date | null, Date | null]) => EventsData[]
-> = {
-    date: (events: EventsData[], value: [Date | null, Date | null]) =>
-        EventsController.getEventsByStartDate(events, value[0], value[1]),
-}
+export type FilterFunction<T, U> = (data: T[], value: U) => T[];
+
+export const filterFunctions: Record<string, FilterFunction<any, any>> = {
+    date: <T extends { date: string | Date }>(data: T[], value: [Date | null, Date | null]) =>
+        EventsController.getEventsByStartDate<T>(data, value[0], value[1]),
+
+    category: <T extends { category: string }>(data: T[], category: string) =>
+        data.filter(item => item.category === category),
+};
 
 export const filterFunctionsEvents: Record<
     string,
