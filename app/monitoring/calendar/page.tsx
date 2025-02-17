@@ -216,7 +216,6 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       {dataCalendarResp === 200 ? (
         <>
           <CustomTooltip
-            useDate={true}
             dateRange={dateRange}
             setDateRange={setDateRange}
             options={tooltipOptions}
