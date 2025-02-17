@@ -79,12 +79,6 @@ export default function RootLayout({
                     <Footer />
                 </footer>
             )}
-
-            {/* Banner de Cookies */}
-            <CookieBanner onShowTerms={() => setShowTerms(prevState => !prevState)} />
-
-            {/* Modal de términos (solo se muestra si showTerms es true) */}
-            {showTerms && <TermsPopup onClose={() => setShowTerms(false)} />}
         </NextUIProvider>
         </body>
         </html>
