@@ -13,6 +13,7 @@ export interface DataFormat {
     pr_secundary_crop: string | null;
     conflicto: string;
     edad: string;
-    pr_dpto: string;
-    pr_muni: string;
+    pr_dpto_farm: string;
+    pr_muni_farm: string;
+    submitted_date: string;
 }

@@ -679,14 +679,14 @@ class MapController {
     }
 
     static updateCountBeneficiariesByCity(events: {
-        pr_dpto: string;
-        pr_muni: string
+        pr_dpto_farm: string;
+        pr_muni_farm: string
     }[]): NestedDictionary {
         const cityBeneficiariesCounts: NestedDictionary = {};
 
         events.forEach(event => {
-            const province = this.removeAccents(event.pr_dpto);
-            const city = this.removeAccents(event.pr_muni);
+            const province = this.removeAccents(event.pr_dpto_farm);
+            const city = this.removeAccents(event.pr_muni_farm);
 
             if (!cityBeneficiariesCounts[province]) {
                 cityBeneficiariesCounts[province] = {};
