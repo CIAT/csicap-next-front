@@ -18,8 +18,13 @@ class EventController {
             const eventDate = new Date(event.date);
             if (isNaN(eventDate.getTime())) return false;
 
-            if (!startDate && !endDate) return true;
-            if (startDate && eventDate < startDate) return false;
+            // Restar un día a startDate
+            const adjustedStartDate = startDate
+                ? new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() - 1)
+                : null;
+
+            if (!adjustedStartDate && !endDate) return true;
+            if (adjustedStartDate && eventDate < adjustedStartDate) return false;
             return !(endDate && eventDate > endDate);
         });
     }
