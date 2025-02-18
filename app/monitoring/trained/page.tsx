@@ -304,6 +304,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }, [tempTrainedData]);
 
   function processData() {
+    setCounts(MapController.updateCountTrainedByCityCodes(tempTrainedData));
     initializeTreemapData(tempTrainedData);
 
     let ageCount: { [key: string]: number } = {
