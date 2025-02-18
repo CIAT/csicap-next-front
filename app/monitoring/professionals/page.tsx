@@ -36,6 +36,7 @@ import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
+  filterFunctions,
   filterFunctionsEvents, filterFunctionsProfessionals,
   getUniqueValuesFunctionsEvents,
   getUniqueValuesFunctionsProfessionals
@@ -166,11 +167,13 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const doughnutChartProfessionalOccupationId: string = "doughnut_chart_professional_occupation";
   const doughnutProducersEthnicity: string = "doughnut_professional_ethnicity";
 
-
   const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
       events
   );
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
 
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
@@ -458,9 +461,43 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setEthnicityNumber(Object.values(ethnicityCount))
   }
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        filteredEvents,
+        setFilteredEvents,
+        filterFunctionsProfessionals,
+        filterTypes
+    )
+    setShouldApplyDateFilter(true);
+  }
+
+  const handleOnReset = () => {
+    handleReset(
+        events,
+        setTooltipOptions,
+        setTooltipValues,
+        setFilteredEvents,
+        getUniqueValuesFunctionsProfessionals(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setFilteredEvents(prevData => filterFunctions["submitted_date_tec"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [filteredEvents, shouldApplyDateFilter, dateRange]);
+
   return (
       <div className="w-full h-full flex flex-wrap">
         <CustomTooltip
+            useDate={true}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
             options={tooltipOptions}
             values={tooltipValues}
             onChange={(selectedValue, filterType) =>
@@ -476,25 +513,8 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                     filterTypes
                 )
             }
-            onClick={() =>
-                handleOnClick(
-                    tooltipValues,
-                    filteredEvents,
-                    setFilteredEvents,
-                    filterFunctionsProfessionals,
-                    filterTypes
-                )
-            }
-            onReset={() =>
-                handleReset(
-                    events,
-                    setTooltipOptions,
-                    setTooltipValues,
-                    setFilteredEvents,
-                    getUniqueValuesFunctionsProfessionals(),
-                    placeHolders
-                )
-            }
+            onClick={handleOnApply}
+            onReset={handleOnReset}
             placeholders={placeHolders}
             filterTypes={filterTypes}
             getOptionLabel={(option) => option.label}
