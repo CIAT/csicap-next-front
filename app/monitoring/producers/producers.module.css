@@ -75,6 +75,7 @@
     width: 100vw;
     height: 68vh;
     box-sizing: border-box;
+    z-index: 0;
 }
 
 .header_width {
