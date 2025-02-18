@@ -20,6 +20,7 @@ export interface TechnicalBeneficiaries {
     professional_field_last_12_months: string[]; // Mantener si es array
     age_tc: string;
     municipalities_code: string[];
+    submitted_date_tec: string;
 }
 
 export interface DataItem {

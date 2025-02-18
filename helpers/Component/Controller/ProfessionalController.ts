@@ -15,7 +15,8 @@ class ProfessionalController {
             crop: item.data.crops_worked_last_12_months,
             academicLevel: item.data.highest_educational_level,
             institution: item.data.affiliated_guild_or_organization,
-            age_tc: item.data.age_tc
+            age_tc: item.data.age_tc,
+            date: item.data.submitted_date_tec
         }));
     }
 
