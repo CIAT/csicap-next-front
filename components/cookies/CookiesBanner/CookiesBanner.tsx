@@ -26,13 +26,14 @@ const CookieBanner: React.FC<CookieBannerProps> = ({ onShowTerms }) => {
     return (
         <div className={styles.cookieBanner}>
       <span className={styles.cookieText}>
-        Usamos cookies para mejorar tu experiencia.{" "}
+        Nuestro sitio usa cookies para darte la mejor experiencia, al visitar melia.agroalimentariasostenible.co aceptas su uso.{" "}
+          Conoce nuestros{" "}
           <button onClick={onShowTerms} className={styles.cookieLink}>
-          Ver términos
+          términos y condiciones
         </button>
       </span>
             <button onClick={acceptCookies} className={styles.cookieButton}>
-                Aceptar
+                Cerrar
             </button>
         </div>
     );

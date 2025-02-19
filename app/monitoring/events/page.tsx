@@ -27,7 +27,7 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import { CustomTooltipData } from "@/interfaces/Components/CustomTooltip";
 import {
-  filterFunctions, filterFunctionsCalendar,
+  filterFunctions,
   filterFunctionsEvents,
   getUniqueValuesFunctionsEvents,
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -36,7 +36,6 @@ import {
   handleReset,
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
-import styleTechnical from "@/app/monitoring/trained/trained.module.css";
 
 Chart.register(
   Tooltip,
@@ -722,7 +721,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             </label>
           </CardComponent>
           <ChartCardComponent
-              title="Eventos por cultivo "
+              title="Eventos por sistema productivo"
               style={styles.card_tree}
               header={
                 <div className={styles.header_container}>
