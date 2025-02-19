@@ -36,7 +36,7 @@ const CustomTooltip = <T,>({
                                setDateRange = () => {},
                            }: MultiSelectProps<T>) => {
     const [startDate, endDate] = dateRange;
-    const years = range(1990, getYear(new Date()) + 1);
+    const years = range(2024, getYear(new Date()) + 1);
     const months = [
         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
     ];
