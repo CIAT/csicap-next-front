@@ -487,7 +487,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
-      setFilteredEvents(prevData => filterFunctions["submitted_date_tec"](prevData, dateRange));
+      setFilteredEvents(prevData => filterFunctions["date"](prevData, dateRange));
       setShouldApplyDateFilter(false);
     }
   }, [filteredEvents, shouldApplyDateFilter, dateRange]);
