@@ -133,6 +133,7 @@
   align-items: center;
   box-sizing: border-box;
   gap: 20px;
+  z-index: 0;
 }
 
 .bottom_div {

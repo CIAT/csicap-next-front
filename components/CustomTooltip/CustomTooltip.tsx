@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -40,6 +40,19 @@ const CustomTooltip = <T,>({
     const months = [
         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
     ];
+
+    useEffect(() => {
+        if(!dateRange[0])
+            return;
+
+        if(!dateRange[1])
+            return;
+
+        if (dateRange[0] > dateRange[1]) {
+            setDateRange([null, null]);
+            window.alert("La fecha inicial no puede ser mayor a la final");
+        }
+    }, [dateRange]);
 
     const renderDatePicker = (placeholder: string, selectsStart: boolean) => (
         <DatePicker

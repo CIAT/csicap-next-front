@@ -3,7 +3,7 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 import { EventsData } from "@/interfaces";
 import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
 import {TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 
 export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
@@ -21,17 +21,17 @@ export const getUniqueValuesFunctionsEvents = () => [
 ];
 
 export const getUniqueValuesFunctionsTrained = () => [
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "sex_complete"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getAgeRanges(events, "age"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "pr_primary_crop"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "group_ocupations"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "dep_res_complete_label"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "muni_res_complete_label"),
 ];
 
@@ -108,7 +108,7 @@ export const filterFunctionsEvents: Record<
 
 export const filterFunctionsTrained: Record<
     string,
-    (events: Trained[], value: string) => Trained[]
+    (events: MappedTrained[], value: string) => MappedTrained[]
 > = {
     gender: (events, value) =>
         EventsController.filterEventsByValue(events, "sex_complete", value),
