@@ -677,6 +677,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   return (
     <div className={styles.event_page}>
       <CustomTooltip
+        useDate={true}
         dateRange={dateRange}
         setDateRange={setDateRange}
         options={tooltipOptions}

@@ -418,6 +418,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   return (
     <div className={styles.producers}>
       <CustomTooltip
+          useDate={true}
           dateRange={dateRange}
           setDateRange={setDateRange}
           options={tooltipOptions}
