@@ -17,12 +17,16 @@ import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepos
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
-import {filterFunctionsTrained, getUniqueValuesFunctionsTrained,} from "@/interfaces/Components/CustomTooltipHandler";
+import {
+  filterFunctions,
+  filterFunctionsTrained,
+  getUniqueValuesFunctionsTrained,
+} from "@/interfaces/Components/CustomTooltipHandler";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import EventController from "@/helpers/Component/Controller/EventsController";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 import { Info } from 'lucide-react';
 
 Chart.register(
@@ -139,7 +143,7 @@ const options = {
   },
 };
 
-const countCrops = (trainedPeople: Trained[]) => {
+const countCrops = (trainedPeople: MappedTrained[]) => {
   const cropCount: { [key: string]: number } = {};
   trainedPeople.forEach((trained) => {
     const crop = trained.pr_primary_crop;
@@ -177,11 +181,15 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [occupationStats, setOccupationStats] = useState<{
     [key: string]: number;
   }>({});
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
+
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
-  const [allTrainedData, setAllTrainedData] = useState<Trained[]>([]);
-  const [tempTrainedData, setTempTrainedData] = useState<Trained[]>([]);
+  const [allTrainedData, setAllTrainedData] = useState<MappedTrained[]>([]);
+  const [tempTrainedData, setTempTrainedData] = useState<MappedTrained[]>([]);
 
   const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
   const [ageState, setAgeState] = useState<CustomTooltipData[]>([]);
@@ -260,34 +268,24 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     AssistanceRepository.getAssistanceData().then((data: Trained[]) => {
-      setCounts(MapController.updateCountTrainedByCityCodes(data));
-      setNoInformationCrop(TrainedController.countDataWithoutInformation(data, "pr_primary_crop"));
-      setNoInformationMunicipality(TrainedController.countDataWithoutInformation(data, "muni_res_complete_code"));
+      const mappedData = data.map(({ start_date, ...rest }) => ({
+        ...rest,
+        date: start_date,
+      }));
 
-      const uniqueGender = EventsController.getUniqueValues(
-          data,
-          "sex_complete"
-      );
-      const uniqueAge = EventsController.getAgeRanges(data, "age");
-      const uniqueCrop = EventController.getUniqueValues(
-          data,
-          "pr_primary_crop"
-      );
-      const uniqueOccupation = EventController.getUniqueValues(
-          data,
-          "group_ocupations"
-      );
-      const uniqueDepartments = EventsController.getUniqueValues(
-          data,
-          "dep_res_complete_label"
-      )
-      const uniqueCities = EventsController.getUniqueValues(
-          data,
-          "muni_res_complete_label"
-      )
+      setCounts(MapController.updateCountTrainedByCityCodes(mappedData));
+      setNoInformationCrop(TrainedController.countDataWithoutInformation(mappedData, "pr_primary_crop"));
+      setNoInformationMunicipality(TrainedController.countDataWithoutInformation(mappedData, "muni_res_complete_code"));
 
-      setAllTrainedData(data);
-      setTempTrainedData(data);
+      const uniqueGender = EventsController.getUniqueValues(mappedData, "sex_complete");
+      const uniqueAge = EventsController.getAgeRanges(mappedData, "age");
+      const uniqueCrop = EventController.getUniqueValues(mappedData, "pr_primary_crop");
+      const uniqueOccupation = EventController.getUniqueValues(mappedData, "group_ocupations");
+      const uniqueDepartments = EventsController.getUniqueValues(mappedData, "dep_res_complete_label");
+      const uniqueCities = EventsController.getUniqueValues(mappedData, "muni_res_complete_label");
+
+      setAllTrainedData(mappedData);
+      setTempTrainedData(mappedData);
       setGenderState([...uniqueGender]);
       setAgeState([...uniqueAge]);
       setCropState([...uniqueCrop]);
@@ -295,8 +293,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       setDepartmentState([...uniqueDepartments]);
       setCityState([...uniqueCities]);
 
-      initializeTreemapData(data);
-    })
+      initializeTreemapData(mappedData);
+    });
   }, []);
 
   useEffect(() => {
@@ -365,7 +363,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setOccupationStats(occupationCount);
   }
 
-  const initializeTreemapData = (data: Trained[]) => {
+  const initializeTreemapData = (data: MappedTrained[]) => {
     const filterData = countCrops(data);
     const mappedData = Object.keys(filterData).map(key => ({
       name: key,
@@ -453,9 +451,44 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     initializeTreemapData(tempTrainedData);
   }, [tempTrainedData, isOpen]);
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        tempTrainedData,
+        setTempTrainedData,
+        filterFunctionsTrained,
+        filterTypes
+    )
+
+    setShouldApplyDateFilter(true);
+  }
+
+  const handleOnReset = () => {
+    handleReset(
+        allTrainedData,
+        setTooltipOptions,
+        setTooltipValues,
+        setTempTrainedData,
+        getUniqueValuesFunctionsTrained(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setTempTrainedData(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [tempTrainedData, shouldApplyDateFilter, dateRange]);
+
   return (
     <div className={styles.div}>
       <CustomTooltip
+          useDate={true}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
           options={tooltipOptions}
           values={tooltipValues}
           onChange={(selectedValue, filterType) =>
@@ -471,25 +504,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                   filterTypes
               )
           }
-          onClick={() =>
-              handleOnClick(
-                  tooltipValues,
-                  tempTrainedData,
-                  setTempTrainedData,
-                  filterFunctionsTrained,
-                  filterTypes
-              )
-          }
-          onReset={() =>
-              handleReset(
-                  allTrainedData,
-                  setTooltipOptions,
-                  setTooltipValues,
-                  setTempTrainedData,
-                  getUniqueValuesFunctionsTrained(),
-                  placeHolders
-              )
-          }
+          onClick={handleOnApply}
+          onReset={handleOnReset}
           placeholders={placeHolders}
           filterTypes={filterTypes}
           getOptionLabel={(option) => option.label}

@@ -1,8 +1,8 @@
 import {TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 
 class TrainedController {
-    static extractProvincesCode(events: Trained[]): string[] {
+    static extractProvincesCode(events: MappedTrained[]): string[] {
         const uniqueCodes = new Set<string>();
 
         events.forEach(event => {

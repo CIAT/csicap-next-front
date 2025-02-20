@@ -4,7 +4,7 @@ import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 import {colors as staticColors} from "@/interfaces/Map/colors";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 import html2canvas from "html2canvas";
 
 class MapController {
@@ -566,7 +566,7 @@ class MapController {
         }).filter(feature => feature !== undefined);
     }
 
-    static updateCountTrainedByCityCodes(trainedPeople: Trained[]): NestedDictionary {
+    static updateCountTrainedByCityCodes(trainedPeople: MappedTrained[]): NestedDictionary {
         const cityCodeTrainedCounts: NestedDictionary = {};
 
         // Verificar si events es un arreglo

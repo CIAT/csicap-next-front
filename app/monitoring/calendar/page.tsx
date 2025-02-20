@@ -204,6 +204,19 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     setShouldApplyDateFilter(true);
   };
 
+  const handleOnReset = () =>{
+    handleReset(
+        events,
+        setTooltipOptions,
+        setTooltipValues,
+        setTempEventData,
+        getUniqueValuesFunctionsCalendar(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
   useEffect(() => {
     if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
       setTempEventData(prevData => filterFunctions["date"](prevData, dateRange));
@@ -234,16 +247,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
               )
             }
             onClick={handleOnApply}
-            onReset={() =>
-              handleReset(
-                events,
-                setTooltipOptions,
-                setTooltipValues,
-                setTempEventData,
-                getUniqueValuesFunctionsCalendar(),
-                placeHolders
-              )
-            }
+            onReset={handleOnReset}
             placeholders={placeHolders}
             filterTypes={filterTypes}
             getOptionLabel={(option) => option.label}
