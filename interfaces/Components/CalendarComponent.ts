@@ -42,6 +42,9 @@ export interface Event {
     event_objective: string;
     event_id: string;
     participant_count: string;
+    change_selection: string;
+    report_date: string;
+    not_assistant: string;
 }
 
 export interface DataFormat {

@@ -87,6 +87,8 @@ function calculateEventStatus(events: EventFormat[]) {
   let finishedEvents = 0;
   let inProgressEvents = 0;
   let programmedEvents = 0;
+  let canceledEvents = 0
+
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
@@ -95,18 +97,34 @@ function calculateEventStatus(events: EventFormat[]) {
       ? parseISO(EventFormat.datesEnd)
       : null;
 
-    if (EventFormat.form_state === "0") {
-      finishedEvents += 1;
-    } else if (EventFormat.form_state === "1") {
-      if (eventEndDate && eventEndDate >= currentDate) {
-        programmedEvents += 1;
-      } else {
-        inProgressEvents += 1;
-      }
+    //Cancelados
+    if (EventFormat.change_selection === "EL EVENTO HA SIDO CANCELADO") {
+      canceledEvents += 1;
+      return;
     }
+
+    //Programado
+    if (
+        eventEndDate &&
+        eventEndDate >= currentDate
+    ) {
+      programmedEvents += 1;
+      return;
+    }
+
+    //Sin cerrar
+    if (
+        EventFormat.not_assistant === "1"
+    ) {
+      inProgressEvents += 1;
+      return;
+    }
+
+    //Cerrado
+    finishedEvents += 1;
   });
 
-  return { finishedEvents, inProgressEvents, programmedEvents };
+  return { finishedEvents, inProgressEvents, programmedEvents, canceledEvents };
 }
 
 // Count occurrences of each "eje"
@@ -428,13 +446,14 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       "Eventos Finalizados",
       "Eventos sin Cerrar",
       "Eventos Programados",
+      "Eventos Cancelados"
     ],
     datasets: [
       {
         label: "EventFormat Status",
         data: eventStatusData,
-        backgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
-        hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
+        backgroundColor: ["#80C41C", "#c84e42", "#FECF00", "#b9b9b9"],
+        hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00", "#b9b9b9"],
       },
     ],
   };
@@ -609,9 +628,9 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     initializeTreemapData(tempEventData);
 
     // Calculate finished/in-progress events
-    const { finishedEvents, inProgressEvents, programmedEvents } =
+    const { finishedEvents, inProgressEvents, programmedEvents, canceledEvents } =
       calculateEventStatus(tempEventData);
-    setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
+    setEventStatusData([finishedEvents, inProgressEvents, programmedEvents, canceledEvents]);
 
     // Calculate eje counts
     const ejeCount = countEjes(tempEventData);
