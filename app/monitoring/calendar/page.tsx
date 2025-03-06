@@ -293,6 +293,10 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                         let backgroundColor;
                         let borderColor;
 
+                        if (event.event_type === "Visita de finca") {
+                          return null;
+                        }
+
                         if (
                           event.change_selection ===
                           "EL EVENTO HA SIDO CANCELADO"

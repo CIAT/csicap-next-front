@@ -7,13 +7,17 @@ class EventController {
         return new Intl.NumberFormat('es-ES', { useGrouping: true }).format(num);
     };
 
-    static getEventsByStartDate<T extends { date: string | Date }>(
+    static getEventsByStartDate<T extends { date: string | Date, event_type: string }>(
         events: T[],
         startDate: Date | null,
         endDate: Date | null
     ): T[] {
         return events.filter(event => {
             if (!event.date) return false;
+
+            if (event.event_type === "Visita de finca") {
+                return null;
+            }
 
             const eventDate = new Date(event.date);
             if (isNaN(eventDate.getTime())) return false;
