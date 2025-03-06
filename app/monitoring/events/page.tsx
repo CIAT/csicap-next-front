@@ -114,7 +114,8 @@ function calculateEventStatus(events: EventFormat[]) {
 
     //Sin cerrar
     if (
-        EventFormat.not_assistant === "1"
+        EventFormat.not_assistant === "1" ||
+        EventFormat.is_reported === "0"
     ) {
       inProgressEvents += 1;
       return;

@@ -45,6 +45,7 @@ export interface Event {
     change_selection: string;
     report_date: string;
     not_assistant: string;
+    is_reported: string;
 }
 
 export interface DataFormat {
