@@ -21,6 +21,7 @@ export interface EventsData {
     change_selection: string;
     not_assistant: string;
     age: string;
+    is_reported: string;
 }
 
 export interface Event {

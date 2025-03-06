@@ -290,38 +290,50 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                           ? parseISO(String(event.datesEnd))
                           : null;
 
-                        let backgroundColor;
-                        let borderColor;
+                        let backgroundColor = "#80C41C";
+                        let borderColor = "#80C41C";
 
                         if (event.event_type === "Visita de finca") {
                           return null;
                         }
 
-                        if (
-                          event.change_selection ===
-                          "EL EVENTO HA SIDO CANCELADO"
-                        ) {
+                        //Cancelados
+                        if (event.change_selection === "EL EVENTO HA SIDO CANCELADO") {
                           backgroundColor = "#b9b9b9";
                           borderColor = "#b9b9b9";
-                        } else if (
-                          (eventEndDate &&
-                            event.form_state === "1" &&
-                            eventEndDate < currentDate) ||
-                          event.not_assistant === "1"
+                          return {
+                            ...event,
+                            backgroundColor,
+                            borderColor,
+                          };
+                        }
+
+                        //Programados
+                        if (
+                            eventEndDate &&
+                            eventEndDate >= currentDate
+                        ) {
+                          backgroundColor = "#FECF00";
+                          borderColor = "#FECF00";
+                          return {
+                            ...event,
+                            backgroundColor,
+                            borderColor,
+                          };
+                        }
+
+                        //Sin cerrar
+                        if (
+                            event.not_assistant === "1" ||
+                            event.is_reported === "0"
                         ) {
                           backgroundColor = "#c84e42";
                           borderColor = "#c84e42";
-                        } else if (event.form_state === "0" && event.not_assistant === "0") {
-                          // Eventos que están completamente finalizados (form_state = 0)
-                          backgroundColor = "#80C41C";
-                          borderColor = "#80C41C";
-                        } else if (
-                          eventEndDate &&
-                          eventEndDate >= currentDate
-                        ) {
-                          // Si el evento aún no ha terminado o es hoy
-                          backgroundColor = "#FECF00";
-                          borderColor = "#FECF00";
+                          return {
+                            ...event,
+                            backgroundColor,
+                            borderColor,
+                          };
                         }
 
                         return {
