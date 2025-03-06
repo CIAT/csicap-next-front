@@ -81,7 +81,7 @@ export const getUniqueValuesFunctionsProducers = () => [
 export type FilterFunction<T, U> = (data: T[], value: U) => T[];
 
 export const filterFunctions: Record<string, FilterFunction<any, any>> = {
-    date: <T extends { date: string | Date }>(data: T[], value: [Date | null, Date | null]) =>
+    date: <T extends { date: string | Date, event_type: string }>(data: T[], value: [Date | null, Date | null]) =>
         EventsController.getEventsByStartDate<T>(data, value[0], value[1]),
 
     category: <T extends { category: string }>(data: T[], category: string) =>
