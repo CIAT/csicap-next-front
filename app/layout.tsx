@@ -3,15 +3,13 @@
 import { Inter } from "next/font/google";
 import { NextUIProvider } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-import { useState } from "react"; // Nuevo
+import { useState } from "react";
 import "./globals.css";
 import "../components/static/static.module.css";
 import Header from "@/components/static/Header";
 import Footer from "@/components/static/Footer";
 import { metadata } from "@/components/Metadata/Metadata";
 import Script from "next/script";
-import CookieBanner from "@/components/cookies/CookiesBanner/CookiesBanner";
-import TermsPopup from "@/components/cookies/TermsPopup/TermsPopup";
 
 const inter = Inter({ subsets: ["latin"] });
 

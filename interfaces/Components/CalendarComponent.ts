@@ -21,6 +21,7 @@ export interface EventsData {
     change_selection: string;
     not_assistant: string;
     age: string;
+    is_reported: string;
 }
 
 export interface Event {
@@ -42,6 +43,10 @@ export interface Event {
     event_objective: string;
     event_id: string;
     participant_count: string;
+    change_selection: string;
+    report_date: string;
+    not_assistant: string;
+    is_reported: string;
 }
 
 export interface DataFormat {

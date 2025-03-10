@@ -55,7 +55,8 @@ class CalendarController {
             institution: event.institution || [],
             event_type: event.event_type,
             form_state: event.form_state,
-            email: event.email
+            email: event.email,
+            change_selection: event.change_selection
         }));
     }
 

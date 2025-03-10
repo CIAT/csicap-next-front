@@ -7,13 +7,17 @@ class EventController {
         return new Intl.NumberFormat('es-ES', { useGrouping: true }).format(num);
     };
 
-    static getEventsByStartDate<T extends { date: string | Date }>(
+    static getEventsByStartDate<T extends { date: string | Date, event_type: string }>(
         events: T[],
         startDate: Date | null,
         endDate: Date | null
     ): T[] {
         return events.filter(event => {
             if (!event.date) return false;
+
+            if (event.event_type === "Visita de finca") {
+                return null;
+            }
 
             const eventDate = new Date(event.date);
             if (isNaN(eventDate.getTime())) return false;
@@ -42,29 +46,23 @@ class EventController {
                 ? parseISO(String(event.datesEnd))
                 : null;
 
+            const canceledCondition = event.change_selection === "EL EVENTO HA SIDO CANCELADO";
+            const onGoingCondition = eventEndDate && eventEndDate >= currentDate;
+            const notClosedCondition = event.not_assistant === "1" || event.is_reported === "0";
+
             if (filterType === "Cancelados") {
-                return event.change_selection === "EL EVENTO HA SIDO CANCELADO";
-            }
-
-            if (filterType === "Sin Cerrar") {
-                return (
-                    event.change_selection !== "EL EVENTO HA SIDO CANCELADO" && (
-                        (eventEndDate &&
-                            event.form_state === "1" &&
-                            eventEndDate < currentDate) ||
-                        event.not_assistant === "1")
-                );
-            }
-
-            if (filterType === "Finalizados") {
-                return event.form_state === "0" && event.not_assistant === "0";
+                return canceledCondition;
             }
 
             if (filterType === "Programados") {
-                return eventEndDate && eventEndDate >= currentDate;
+                return !canceledCondition && onGoingCondition;
             }
 
-            return false;
+            if (filterType === "Sin Cerrar") {
+                return !canceledCondition && !onGoingCondition && notClosedCondition;
+            }
+
+            return !canceledCondition && !onGoingCondition && !notClosedCondition;
         });
     }
 
