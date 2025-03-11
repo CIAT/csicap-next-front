@@ -145,18 +145,17 @@ const options = {
 
 const countCrops = (trainedPeople: MappedTrained[]) => {
   const cropCount: { [key: string]: number } = {};
+
   trainedPeople.forEach((trained) => {
-    const crop = trained.pr_primary_crop;
+    let crop = trained.pr_primary_crop;
 
-    if (crop === "nan") return;
-    if (crop === null) return;
-
-    if (cropCount[crop]) {
-      cropCount[crop]++;
-      return;
+    // Normalizar valores NaN, null o cadenas de "nan"
+    if (!crop || crop.toLowerCase() === "nan") {
+      crop = "No disponible";
     }
 
-    cropCount[crop] = 1;
+    // Incrementar el contador
+    cropCount[crop] = (cropCount[crop] || 0) + 1;
   });
 
   return cropCount;
@@ -197,7 +196,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
   const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
-  const [noInformationCrop, setNoInformationCrop] = useState<number>(0);
   const [noInformationMunicipality, setNoInformationMunicipality] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -274,7 +272,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       }));
 
       setCounts(MapController.updateCountTrainedByCityCodes(mappedData));
-      setNoInformationCrop(TrainedController.countDataWithoutInformation(mappedData, "pr_primary_crop"));
       setNoInformationMunicipality(TrainedController.countDataWithoutInformation(mappedData, "muni_res_complete_code"));
 
       const uniqueGender = EventsController.getUniqueValues(mappedData, "sex_complete");
@@ -587,11 +584,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
             title="Capacitados por sistema productivo de interés"
             header={
               <div className={styles.header_container}>
-                {noInformationCrop > 0 && (
-                    <div className={styles.important_text}>
-                      <div className={styles.important}>*</div>No se tiene información para el {Math.round((noInformationCrop / allTrainedData.length) * 100)}% de los capacitados.
-                    </div>
-                )}
                 <ExportDropdown
                     chartId={treemapChartAssistantsCountId}
                     chartData={treeData}

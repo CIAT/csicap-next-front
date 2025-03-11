@@ -24,7 +24,11 @@ class TrainedController {
         let count: number = 0;
 
         events.forEach(event => {
-            if (event[key] === null) {
+            if (
+                event[key] === null ||
+                event[key] === "Nan" ||
+                event[key] === "nan"
+            ) {
                 count++;
             }
         })

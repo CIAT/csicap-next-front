@@ -167,7 +167,7 @@ function countInstitutions(events: EventFormat[]) {
     "FEDECAFE",
   ]);
 
-  const institutionCount: { [key: string]: number } = {
+  let institutionCount: { [key: string]: number } = {
     Otras: 0,
   };
 
@@ -181,6 +181,10 @@ function countInstitutions(events: EventFormat[]) {
       }
     });
   });
+
+  institutionCount = Object.fromEntries(
+      Object.entries(institutionCount).sort(([, valueA], [, valueB]) => valueB - valueA)
+  );
 
   return institutionCount;
 }
