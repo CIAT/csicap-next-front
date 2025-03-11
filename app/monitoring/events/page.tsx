@@ -165,6 +165,7 @@ function countInstitutions(events: EventFormat[]) {
     "ASBAMA",
     "CENICAÑA",
     "FEDECAFE",
+    "ASOHOFRUCOL"
   ]);
 
   let institutionCount: { [key: string]: number } = {
