@@ -149,6 +149,7 @@ const countCrops = (trainedPeople: MappedTrained[]) => {
     const crop = trained.pr_primary_crop;
 
     if (crop === "nan") return;
+    if (crop === "Nan") return;
     if (crop === null) return;
 
     if (cropCount[crop]) {

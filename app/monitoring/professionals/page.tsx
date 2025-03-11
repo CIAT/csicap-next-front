@@ -225,7 +225,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
         const formattedEvents = ProfessionalController.formatEvents(data);
-
+        console.log(formattedEvents)
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
