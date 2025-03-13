@@ -147,7 +147,10 @@ function countOrganizations(events: TechnicalBeneficiaries[]) {
   };
 
   events.forEach((event) => {
-    event.affiliated_guild_or_organization.forEach((organization) => {
+    const institutions = event.affiliated_guild_or_organization;
+    if(institutions === null) return;
+
+    institutions.forEach((organization) => {
       if (predefinedInstitutions.has(organization)) {
         organizations[organization] = (organizations[organization] || 0) + 1;
       } else {
@@ -225,7 +228,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
         const formattedEvents = ProfessionalController.formatEvents(data);
-        console.log(formattedEvents)
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
@@ -237,9 +239,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         setGenderState([...uniqueGender]);
         setCropState([...uniqueCrop]);
         setInstitutionState([...uniqueInstitutions]);
-
-        setEvents(formattedEvents);
-        setFilteredEvents(formattedEvents);
 
         processChartData();
       })

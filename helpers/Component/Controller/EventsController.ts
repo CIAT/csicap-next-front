@@ -244,10 +244,9 @@ class EventController {
         isArray: boolean = false,
     ): CustomTooltipData[] {
         const categoryCounts: { [key: string]: number } = {};
-
         events.forEach(event => {
             const institutions = event[key];
-
+            if (institutions === null) return;
             const institutionList = isArray
                 ? (institutions as unknown as string[])
                 : [institutions as unknown as string];
