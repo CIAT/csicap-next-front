@@ -98,25 +98,19 @@ function countEthnicity(data: TechnicalBeneficiaries[]) {
   const ethnicityCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const ethnicity = item.ethnic_affiliation_group;
+    let ethnicity = item.ethnic_affiliation_group;
+    if(
+        !ethnicity ||
+        ethnicity === "N.n" ||
+        ethnicity === "."
+    ) {
+      ethnicity = "No disponible";
+    }
+
     ethnicityCount[ethnicity] = (ethnicityCount[ethnicity] || 0) + 1;
   });
 
   return ethnicityCount;
-}
-
-function countCrops(data: DataFormat): { [key: string]: number } {
-  const cropCount: { [key: string]: number } = {};
-
-  data.forEach(item => {
-    const crops = item.data.crops_worked_last_12_months.split(', ').map(crop => crop.trim());
-
-    crops.forEach(crop => {
-      cropCount[crop] = (cropCount[crop] || 0) + 1;
-    });
-  });
-
-  return cropCount;
 }
 
 function countOrganizations(events: TechnicalBeneficiaries[]) {
