@@ -93,7 +93,12 @@ function countTypeOfHousing(data: { type_property: string }[]) {
   const housingCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const house = item.type_property;
+    let house = item.type_property;
+
+    if (!house) {
+      house = "No disponible";
+    }
+
     housingCount[house] = (housingCount[house] || 0) + 1;
   });
 
