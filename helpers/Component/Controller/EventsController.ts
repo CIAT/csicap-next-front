@@ -240,8 +240,8 @@ class EventController {
     static getInstitutionCategories<T>(
         events: T[],
         key: keyof T,
-        predefinedInstitutions: Set<String>,
         isArray: boolean = false,
+        predefinedInstitutions?: Set<String>,
     ): CustomTooltipData[] {
         const categoryCounts: { [key: string]: number } = {};
         events.forEach(event => {
@@ -252,9 +252,13 @@ class EventController {
                 : [institutions as unknown as string];
 
             institutionList.forEach(institution => {
-                const category = predefinedInstitutions.has(institution)
-                    ? institution
-                    : "Otras";
+                let category = institution;
+
+                if(predefinedInstitutions){
+                    category = predefinedInstitutions.has(institution)
+                        ? institution
+                        : "Otras";
+                }
 
                 if (!categoryCounts[category]) {
                     categoryCounts[category] = 0;

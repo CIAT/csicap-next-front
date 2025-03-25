@@ -336,8 +336,8 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       const uniqueInstitutions = EventsController.getInstitutionCategories(
         formattedEvents,
         "institution",
+          true,
           EventsController.predefinedInstitutions,
-          true
       );
       const uniqueCrops = EventsController.getUniqueValues(
         formattedEvents,

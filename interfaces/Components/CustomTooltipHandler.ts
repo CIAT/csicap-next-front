@@ -11,7 +11,7 @@ export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "eje", true),
     (events: EventFormat[]) =>
-        EventsController.getInstitutionCategories(events, "institution", EventsController.predefinedInstitutions, true),
+        EventsController.getInstitutionCategories(events, "institution", true, EventsController.predefinedInstitutions),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "crop", true),
     (events: EventFormat[]) =>
@@ -43,7 +43,7 @@ export const getUniqueValuesFunctionsProfessionals = () => [
     (events: TechnicalBeneficiaries[]) =>
         EventsController.getUniqueValues(events, "crops_worked_last_12_months", true),
     (events: TechnicalBeneficiaries[]) =>
-        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true),
+        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", true, EventsController.predefinedInstitutions),
 ];
 
 export const getUniqueValuesFunctionsCalendar = () => [
@@ -52,7 +52,7 @@ export const getUniqueValuesFunctionsCalendar = () => [
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "eje", true),
     (events: EventsData[]) =>
-        EventsController.getInstitutionCategories(events, "institution", EventsController.predefinedInstitutions, true),
+        EventsController.getInstitutionCategories(events, "institution", true, EventsController.predefinedInstitutions),
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "crop", true),
     (events: EventsData[]) =>
@@ -71,7 +71,7 @@ export const getUniqueValuesFunctionsProducers = () => [
     (events: DataFormat[]) =>
         EventsController.getUniqueValues(events, "pr_primary_crop"),
     (events: DataFormat[]) =>
-        EventsController.getInstitutionCategories(events, "gremio", EventsController.predefinedInstitutionsProducers),
+        EventsController.getInstitutionCategories(events, "gremio", false, EventsController.predefinedInstitutionsProducers),
     (events: DataFormat[]) =>
         EventsController.getUniqueValues(events, "pr_dpto_farm"),
     (events: DataFormat[]) =>

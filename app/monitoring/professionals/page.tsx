@@ -114,42 +114,14 @@ function countEthnicity(data: TechnicalBeneficiaries[]) {
 }
 
 function countOrganizations(events: TechnicalBeneficiaries[]) {
-  const predefinedInstitutions = new Set([
-    "AGROSAVIA",
-    "AUGURA",
-    "ASBAMA",
-    "ASOHOFRUCOL",
-    "CENICAFE",
-    "CENICAÑA",
-    "CIAT (Alianza Bioversity-CIAT)",
-    "CIPAV",
-    "CIMMYT",
-    "FEDEARROZ",
-    "FEDEGAN",
-    "FEDEPANELA",
-    "FEDEPAPA",
-    "FENALCE",
-    "FEDECAFE",
-    "ASOCAÑA",
-    "MADR",
-    "ADR",
-    "Todas"
-  ]);
-
-  const organizations: { [key: string]: number } = {
-    Otras: 0,
-  };
+  const organizations: { [key: string]: number } = {};
 
   events.forEach((event) => {
     const institutions = event.affiliated_guild_or_organization;
     if(institutions === null) return;
 
     institutions.forEach((organization) => {
-      if (predefinedInstitutions.has(organization)) {
-        organizations[organization] = (organizations[organization] || 0) + 1;
-      } else {
-        organizations["Otras"] += 1;
-      }
+      organizations[organization] = (organizations[organization] || 0) + 1;
     });
   });
 
@@ -225,7 +197,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
-        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true);
+        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", true);
 
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);

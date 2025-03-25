@@ -216,7 +216,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueProperty = EventsController.getUniqueValues(formattedEvents, "type_property");
         const uniqueEthnic = EventsController.getUniqueValues(formattedEvents, "pr_ethnic_group");
         const uniquePrimaryCrop = EventsController.getUniqueValues(formattedEvents, "pr_primary_crop");
-        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", EventsController.predefinedInstitutionsProducers);
+        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", false, EventsController.predefinedInstitutionsProducers);
         const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "pr_dpto_farm");
         const uniqueCities = EventsController.getUniqueValues(formattedEvents, "pr_muni_farm");
 
