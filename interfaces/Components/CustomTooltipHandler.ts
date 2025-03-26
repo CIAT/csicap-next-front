@@ -3,7 +3,7 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 import { EventsData } from "@/interfaces";
 import {DataFormat} from "@/interfaces/Components/BeneficiariesComponent";
 import {TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 
 export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
@@ -11,7 +11,7 @@ export const getUniqueValuesFunctionsEvents = () => [
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "eje", true),
     (events: EventFormat[]) =>
-        EventsController.getInstitutionCategories(events, "institution", EventsController.predefinedInstitutions, true),
+        EventsController.getInstitutionCategories(events, "institution", true, EventsController.predefinedInstitutions),
     (events: EventFormat[]) =>
         EventsController.getUniqueValues(events, "crop", true),
     (events: EventFormat[]) =>
@@ -21,19 +21,19 @@ export const getUniqueValuesFunctionsEvents = () => [
 ];
 
 export const getUniqueValuesFunctionsTrained = () => [
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "sex_complete"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getAgeRanges(events, "age"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "pr_primary_crop"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "group_ocupations"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "dep_res_complete_label"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "muni_res_complete_label"),
-    (events: Trained[]) =>
+    (events: MappedTrained[]) =>
         EventsController.getUniqueValues(events, "organization_affiliation_complete", true),
 ];
 
@@ -45,7 +45,7 @@ export const getUniqueValuesFunctionsProfessionals = () => [
     (events: TechnicalBeneficiaries[]) =>
         EventsController.getUniqueValues(events, "crops_worked_last_12_months", true),
     (events: TechnicalBeneficiaries[]) =>
-        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true),
+        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", true, EventsController.predefinedInstitutions),
 ];
 
 export const getUniqueValuesFunctionsCalendar = () => [
@@ -54,7 +54,7 @@ export const getUniqueValuesFunctionsCalendar = () => [
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "eje", true),
     (events: EventsData[]) =>
-        EventsController.getInstitutionCategories(events, "institution", EventsController.predefinedInstitutions, true),
+        EventsController.getInstitutionCategories(events, "institution", true, EventsController.predefinedInstitutions),
     (events: EventsData[]) =>
         EventsController.getUniqueValues(events, "crop", true),
     (events: EventsData[]) =>
@@ -73,12 +73,22 @@ export const getUniqueValuesFunctionsProducers = () => [
     (events: DataFormat[]) =>
         EventsController.getUniqueValues(events, "pr_primary_crop"),
     (events: DataFormat[]) =>
-        EventsController.getInstitutionCategories(events, "gremio", EventsController.predefinedInstitutionsProducers),
+        EventsController.getInstitutionCategories(events, "gremio", false, EventsController.predefinedInstitutionsProducers),
     (events: DataFormat[]) =>
-        EventsController.getUniqueValues(events, "pr_dpto"),
+        EventsController.getUniqueValues(events, "pr_dpto_farm"),
     (events: DataFormat[]) =>
-        EventsController.getUniqueValues(events, "pr_muni"),
+        EventsController.getUniqueValues(events, "pr_muni_farm"),
 ];
+
+export type FilterFunction<T, U> = (data: T[], value: U) => T[];
+
+export const filterFunctions: Record<string, FilterFunction<any, any>> = {
+    date: <T extends { date: string | Date, event_type: string }>(data: T[], value: [Date | null, Date | null]) =>
+        EventsController.getEventsByStartDate<T>(data, value[0], value[1]),
+
+    category: <T extends { category: string }>(data: T[], category: string) =>
+        data.filter(item => item.category === category),
+};
 
 export const filterFunctionsEvents: Record<
     string,
@@ -100,7 +110,7 @@ export const filterFunctionsEvents: Record<
 
 export const filterFunctionsTrained: Record<
     string,
-    (events: Trained[], value: string) => Trained[]
+    (events: MappedTrained[], value: string) => MappedTrained[]
 > = {
     gender: (events, value) =>
         EventsController.filterEventsByValue(events, "sex_complete", value),
@@ -147,7 +157,7 @@ export const filterFunctionsCalendar: Record<
     department: (events, value) =>
         EventsController.filterEventsByValue(events, "province", value),
     city: (events, value) =>
-        EventsController.filterEventsByValue(events, "city", value),
+        EventsController.filterEventsByValue(events, "city", value)
 };
 
 
@@ -166,7 +176,7 @@ export const filterFunctionsProducers: Record<
     guild: (events, value) =>
         EventsController.filterEventsByInstitution(events, "gremio", value, EventsController.predefinedInstitutionsProducers),
     department: (events, value) =>
-        EventsController.filterEventsByValue(events, "pr_dpto", value),
+        EventsController.filterEventsByValue(events, "pr_dpto_farm", value),
     city: (events, value) =>
-        EventsController.filterEventsByValue(events, "pr_muni", value),
+        EventsController.filterEventsByValue(events, "pr_muni_farm", value),
 };

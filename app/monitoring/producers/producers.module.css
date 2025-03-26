@@ -46,6 +46,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    z-index: 0;
 }
 
 .top_card {
@@ -74,6 +75,7 @@
     width: 100vw;
     height: 68vh;
     box-sizing: border-box;
+    z-index: 0;
 }
 
 .header_width {

@@ -23,6 +23,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ id, polygons, filterData, d
           style: "mapbox://styles/ciatkm/ckhgfstwq018818o06dqero91",
           center: [-74.297333, 4.570868],
           zoom: 5,
+          preserveDrawingBuffer: true,
         });
 
         map.dragRotate.disable();

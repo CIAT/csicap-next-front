@@ -27,6 +27,7 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import { CustomTooltipData } from "@/interfaces/Components/CustomTooltip";
 import {
+  filterFunctions,
   filterFunctionsEvents,
   getUniqueValuesFunctionsEvents,
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -35,7 +36,6 @@ import {
   handleReset,
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
-import styleTechnical from "@/app/monitoring/trained/trained.module.css";
 
 Chart.register(
   Tooltip,
@@ -83,35 +83,49 @@ const colors = [
   "#569aaf",
 ];
 
-// Calculate finished, in-progress, and programmed events based on form_state and datesEnd
 function calculateEventStatus(events: EventFormat[]) {
   let finishedEvents = 0;
   let inProgressEvents = 0;
   let programmedEvents = 0;
+  let canceledEvents = 0
+
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
   events.forEach((EventFormat) => {
-    // Validar si datesEnd es válido antes de parsearlo
     const eventEndDate = EventFormat.datesEnd
       ? parseISO(EventFormat.datesEnd)
       : null;
 
-    if (EventFormat.form_state === "0") {
-      // Si form_state es 0, cuenta como finalizado
-      finishedEvents += 1;
-    } else if (EventFormat.form_state === "1") {
-      // Si form_state es 1, revisar la fecha si está presente
-      if (eventEndDate && eventEndDate >= currentDate) {
-        programmedEvents += 1;
-      } else {
-        // Eventos sin cerrar o sin fecha válida
-        inProgressEvents += 1;
-      }
+    //Cancelados
+    if (EventFormat.change_selection === "EL EVENTO HA SIDO CANCELADO") {
+      canceledEvents += 1;
+      return;
     }
+
+    //Programado
+    if (
+        eventEndDate &&
+        eventEndDate >= currentDate
+    ) {
+      programmedEvents += 1;
+      return;
+    }
+
+    //Sin cerrar
+    if (
+        EventFormat.not_assistant === "1" ||
+        EventFormat.is_reported === "0"
+    ) {
+      inProgressEvents += 1;
+      return;
+    }
+
+    //Cerrado
+    finishedEvents += 1;
   });
 
-  return { finishedEvents, inProgressEvents, programmedEvents };
+  return { finishedEvents, inProgressEvents, programmedEvents, canceledEvents };
 }
 
 // Count occurrences of each "eje"
@@ -134,27 +148,6 @@ function countEjes(events: EventFormat[]) {
   return ejeCount;
 }
 
-function countInstitutionsTreeMap(events: EventFormat[]) {
-  const institutionCount: { [key: string]: number } = {};
-  let multiInstitutionCount = 0;
-
-  events.forEach((EventFormat) => {
-    if (EventFormat.institution.length >= 2) {
-      multiInstitutionCount += 1;
-    } else {
-      EventFormat.institution.forEach((institution) => {
-        institutionCount[institution] =
-          (institutionCount[institution] || 0) + 1;
-      });
-    }
-  });
-  if (multiInstitutionCount > 0) {
-    institutionCount["Multi-Institucional"] = multiInstitutionCount;
-  }
-  return institutionCount;
-}
-
-// Count occurrences of each "institution"
 function countInstitutions(events: EventFormat[]) {
   const predefinedInstitutions = new Set([
     "CIMMYT",
@@ -172,9 +165,10 @@ function countInstitutions(events: EventFormat[]) {
     "ASBAMA",
     "CENICAÑA",
     "FEDECAFE",
+    "ASOHOFRUCOL"
   ]);
 
-  const institutionCount: { [key: string]: number } = {
+  let institutionCount: { [key: string]: number } = {
     Otras: 0,
   };
 
@@ -188,6 +182,10 @@ function countInstitutions(events: EventFormat[]) {
       }
     });
   });
+
+  institutionCount = Object.fromEntries(
+      Object.entries(institutionCount).sort(([, valueA], [, valueB]) => valueB - valueA)
+  );
 
   return institutionCount;
 }
@@ -210,17 +208,6 @@ function countCrop(events: EventFormat[]) {
     cropCount["Multi-Cultivos"] = multicultivoCount;
   }
   return cropCount;
-}
-
-// Count occurrences for cities
-function countCities(events: EventFormat[]) {
-  const cityCount: { [key: string]: number } = {};
-
-  events.forEach((EventFormat) => {
-    cityCount[EventFormat.city] = (cityCount[EventFormat.city] || 0) + 1;
-  });
-
-  return cityCount;
 }
 
 // Count occurrences of each "guest_type"
@@ -257,6 +244,9 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   const [tempEventData, setTempEventData] = useState<EventFormat[]>([]); // Store all EventFormat data once fetched
   const [fontSize, setFontSize] = useState(10); // Default font size
 
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
+
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
   const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>(
@@ -282,7 +272,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -323,7 +313,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "Componente",
     "Eje",
     "Instituciones",
-    "Cadena productiva",
+    "Sistema productivo",
     "Departamento",
     "Municipio",
   ];
@@ -346,8 +336,8 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       const uniqueInstitutions = EventsController.getInstitutionCategories(
         formattedEvents,
         "institution",
+          true,
           EventsController.predefinedInstitutions,
-          true
       );
       const uniqueCrops = EventsController.getUniqueValues(
         formattedEvents,
@@ -462,13 +452,14 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       "Eventos Finalizados",
       "Eventos sin Cerrar",
       "Eventos Programados",
+      "Eventos Cancelados"
     ],
     datasets: [
       {
         label: "EventFormat Status",
         data: eventStatusData,
-        backgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
-        hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00"],
+        backgroundColor: ["#80C41C", "#c84e42", "#FECF00", "#b9b9b9"],
+        hoverBackgroundColor: ["#80C41C", "#c84e42", "#FECF00", "#b9b9b9"],
       },
     ],
   };
@@ -643,9 +634,9 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     initializeTreemapData(tempEventData);
 
     // Calculate finished/in-progress events
-    const { finishedEvents, inProgressEvents, programmedEvents } =
+    const { finishedEvents, inProgressEvents, programmedEvents, canceledEvents } =
       calculateEventStatus(tempEventData);
-    setEventStatusData([finishedEvents, inProgressEvents, programmedEvents]);
+    setEventStatusData([finishedEvents, inProgressEvents, programmedEvents, canceledEvents]);
 
     // Calculate eje counts
     const ejeCount = countEjes(tempEventData);
@@ -677,9 +668,43 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     setGuestTypeData(guestTypeData);
   }
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        tempEventData,
+        setTempEventData,
+        filterFunctionsEvents,
+        filterTypes
+    )
+    setShouldApplyDateFilter(true);
+  };
+
+  const handleOnReset = () => {
+    handleReset(
+        allEventData,
+        setTooltipOptions,
+        setTooltipValues,
+        setTempEventData,
+        getUniqueValuesFunctionsEvents(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setTempEventData(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [tempEventData, shouldApplyDateFilter, dateRange]);
+
   return (
     <div className={styles.event_page}>
       <CustomTooltip
+        useDate={true}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
         options={tooltipOptions}
         values={tooltipValues}
         onChange={(selectedValue, filterType) =>
@@ -695,25 +720,8 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             filterTypes
           )
         }
-        onClick={() =>
-          handleOnClick(
-            tooltipValues,
-            tempEventData,
-            setTempEventData,
-            filterFunctionsEvents,
-            filterTypes
-          )
-        }
-        onReset={() =>
-          handleReset(
-            allEventData,
-            setTooltipOptions,
-            setTooltipValues,
-            setTempEventData,
-            getUniqueValuesFunctionsEvents(),
-            placeHolders
-          )
-        }
+        onClick={handleOnApply}
+        onReset={handleOnReset}
         placeholders={placeHolders}
         filterTypes={filterTypes}
         getOptionLabel={(option) => option.label}
@@ -729,16 +737,16 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
               {eventStatusData.
               reduce((accumulateValue, currentValue) =>
                   accumulateValue + currentValue, 0) > 0 ? (
-                  eventStatusData.
+                  EventsController.formatNumber(eventStatusData.
                   reduce((accumulateValue, currentValue) =>
-                      accumulateValue + currentValue, 0)
+                      accumulateValue + currentValue, 0))
               ) : (
                   <LoadingAnimation />
               )}
             </label>
           </CardComponent>
           <ChartCardComponent
-              title="Eventos por cultivo"
+              title="Eventos por sistema productivo"
               style={styles.card_tree}
               header={
                 <div className={styles.header_container}>

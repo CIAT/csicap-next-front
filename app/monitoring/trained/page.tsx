@@ -17,12 +17,16 @@ import AssistanceRepository from "@/helpers/Component/Repository/AssistanceRepos
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
-import {filterFunctionsTrained, getUniqueValuesFunctionsTrained,} from "@/interfaces/Components/CustomTooltipHandler";
+import {
+  filterFunctions,
+  filterFunctionsTrained,
+  getUniqueValuesFunctionsTrained,
+} from "@/interfaces/Components/CustomTooltipHandler";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {CustomTooltipData} from "@/interfaces/Components/CustomTooltip";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 import EventController from "@/helpers/Component/Controller/EventsController";
-import {Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 import { Info } from 'lucide-react';
 
 Chart.register(
@@ -139,20 +143,19 @@ const options = {
   },
 };
 
-const countCrops = (trainedPeople: Trained[]) => {
+const countCrops = (trainedPeople: MappedTrained[]) => {
   const cropCount: { [key: string]: number } = {};
+
   trainedPeople.forEach((trained) => {
-    const crop = trained.pr_primary_crop;
+    let crop = trained.pr_primary_crop;
 
-    if (crop === "nan") return;
-    if (crop === null) return;
-
-    if (cropCount[crop]) {
-      cropCount[crop]++;
-      return;
+    // Normalizar valores NaN, null o cadenas de "nan"
+    if (!crop || crop.toLowerCase() === "nan") {
+      crop = "No disponible";
     }
 
-    cropCount[crop] = 1;
+    // Incrementar el contador
+    cropCount[crop] = (cropCount[crop] || 0) + 1;
   });
 
   return cropCount;
@@ -177,11 +180,15 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [occupationStats, setOccupationStats] = useState<{
     [key: string]: number;
   }>({});
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
+
   const [treemapData, setTreemapData] = useState<
     { name: string; value: number }[]
   >([]);
-  const [allTrainedData, setAllTrainedData] = useState<Trained[]>([]);
-  const [tempTrainedData, setTempTrainedData] = useState<Trained[]>([]);
+  const [allTrainedData, setAllTrainedData] = useState<MappedTrained[]>([]);
+  const [tempTrainedData, setTempTrainedData] = useState<MappedTrained[]>([]);
 
   const [genderState, setGenderState] = useState<CustomTooltipData[]>([]);
   const [ageState, setAgeState] = useState<CustomTooltipData[]>([]);
@@ -191,7 +198,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
   const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
 
-  const [noInformationCrop, setNoInformationCrop] = useState<number>(0);
   const [noInformationMunicipality, setNoInformationMunicipality] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -206,7 +212,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -261,7 +267,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const placeHolders = [
     "Género",
     "Edad",
-    "Cadena productiva",
+    "Sistema productivo",
     "Ocupación",
     "Departamento",
     "Municipio",
@@ -270,39 +276,24 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     AssistanceRepository.getAssistanceData().then((data: Trained[]) => {
-      setCounts(MapController.updateCountTrainedByCityCodes(data));
-      setNoInformationCrop(TrainedController.countDataWithoutInformation(data, "pr_primary_crop"));
-      setNoInformationMunicipality(TrainedController.countDataWithoutInformation(data, "muni_res_complete_code"));
+      const mappedData = data.map(({ start_date, ...rest }) => ({
+        ...rest,
+        date: start_date,
+      }));
 
-      const uniqueGender = EventsController.getUniqueValues(
-          data,
-          "sex_complete"
-      );
-      const uniqueAge = EventsController.getAgeRanges(data, "age");
-      const uniqueCrop = EventController.getUniqueValues(
-          data,
-          "pr_primary_crop"
-      );
-      const uniqueOccupation = EventController.getUniqueValues(
-          data,
-          "group_ocupations"
-      );
-      const uniqueDepartments = EventsController.getUniqueValues(
-          data,
-          "dep_res_complete_label"
-      )
-      const uniqueCities = EventsController.getUniqueValues(
-          data,
-          "muni_res_complete_label"
-      )
-      const uniqueInstitutions = EventsController.getUniqueValues(
-          data,
-          "organization_affiliation_complete",
-          true
-      )
+      setCounts(MapController.updateCountTrainedByCityCodes(mappedData));
+      setNoInformationMunicipality(TrainedController.countDataWithoutInformation(mappedData, "muni_res_complete_code"));
 
-      setAllTrainedData(data);
-      setTempTrainedData(data);
+      const uniqueGender = EventsController.getUniqueValues(mappedData, "sex_complete");
+      const uniqueAge = EventsController.getAgeRanges(mappedData, "age");
+      const uniqueCrop = EventController.getUniqueValues(mappedData, "pr_primary_crop");
+      const uniqueOccupation = EventController.getUniqueValues(mappedData, "group_ocupations");
+      const uniqueDepartments = EventsController.getUniqueValues(mappedData, "dep_res_complete_label");
+      const uniqueCities = EventsController.getUniqueValues(mappedData, "muni_res_complete_label");
+      const uniqueInstitutions = EventsController.getUniqueValues(data, "organization_affiliation_complete", true);
+
+      setAllTrainedData(mappedData);
+      setTempTrainedData(mappedData);
       setGenderState([...uniqueGender]);
       setAgeState([...uniqueAge]);
       setCropState([...uniqueCrop]);
@@ -311,8 +302,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       setCityState([...uniqueCities]);
       setInstitutionState([...uniqueInstitutions]);
 
-      initializeTreemapData(data);
-    })
+      initializeTreemapData(mappedData);
+    });
   }, []);
 
   useEffect(() => {
@@ -320,6 +311,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   }, [tempTrainedData]);
 
   function processData() {
+    setCounts(MapController.updateCountTrainedByCityCodes(tempTrainedData));
     initializeTreemapData(tempTrainedData);
 
     let ageCount: { [key: string]: number } = {
@@ -329,12 +321,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       "No disponible": 0,
     };
 
-    let occupationCount: { [key: string]: number } = {
-      "Productor(a) agropecuario(a)": 0,
-      "Técnicos/profesionales": 0,
-      "Investigador(a)": 0,
-      "Otro": 0,
-    };
+    let occupationCount: { [key: string]: number } = {};
 
     let menCount = 0;
     let womenCount = 0;
@@ -354,11 +341,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       }
 
       // Count occupation
-      if(occupation in occupationCount){
-        occupationCount[occupation]++;
-      } else {
-        occupationCount["Otro"]++;
-      }
+      occupationCount[occupation] = (occupationCount[occupation] || 0 ) + 1;
 
       // Count age
       if (age !== null && age !== 0) {
@@ -380,7 +363,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setOccupationStats(occupationCount);
   }
 
-  const initializeTreemapData = (data: Trained[]) => {
+  const initializeTreemapData = (data: MappedTrained[]) => {
     const filterData = countCrops(data);
     const mappedData = Object.keys(filterData).map(key => ({
       name: key,
@@ -468,9 +451,44 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     initializeTreemapData(tempTrainedData);
   }, [tempTrainedData, isOpen]);
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        tempTrainedData,
+        setTempTrainedData,
+        filterFunctionsTrained,
+        filterTypes
+    )
+
+    setShouldApplyDateFilter(true);
+  }
+
+  const handleOnReset = () => {
+    handleReset(
+        allTrainedData,
+        setTooltipOptions,
+        setTooltipValues,
+        setTempTrainedData,
+        getUniqueValuesFunctionsTrained(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setTempTrainedData(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [tempTrainedData, shouldApplyDateFilter, dateRange]);
+
   return (
     <div className={styles.div}>
       <CustomTooltip
+          useDate={true}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
           options={tooltipOptions}
           values={tooltipValues}
           onChange={(selectedValue, filterType) =>
@@ -486,25 +504,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                   filterTypes
               )
           }
-          onClick={() =>
-              handleOnClick(
-                  tooltipValues,
-                  tempTrainedData,
-                  setTempTrainedData,
-                  filterFunctionsTrained,
-                  filterTypes
-              )
-          }
-          onReset={() =>
-              handleReset(
-                  allTrainedData,
-                  setTooltipOptions,
-                  setTooltipValues,
-                  setTempTrainedData,
-                  getUniqueValuesFunctionsTrained(),
-                  placeHolders
-              )
-          }
+          onClick={handleOnApply}
+          onReset={handleOnReset}
           placeholders={placeHolders}
           filterTypes={filterTypes}
           getOptionLabel={(option) => option.label}
@@ -518,7 +519,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
         >
           <label className={styles.top_card_label}>
             {tempTrainedData.length > 0 ? (
-                tempTrainedData.length
+                EventsController.formatNumber(tempTrainedData.length)
             ) : (
               <LoadingAnimation />
             )}
@@ -583,14 +584,9 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       <div className={styles.bottom_div}>
         <div className={styles.width}>
           <ChartCardComponent
-            title="Capacitados por cadena productiva de interés"
+            title="Capacitados por sistema productivo de interés"
             header={
               <div className={styles.header_container}>
-                {noInformationCrop > 0 && (
-                    <div className={styles.important_text}>
-                      <div className={styles.important}>*</div>No se tiene información para el {Math.round((noInformationCrop / allTrainedData.length) * 100)}% de los capacitados.
-                    </div>
-                )}
                 <ExportDropdown
                     chartId={treemapChartAssistantsCountId}
                     chartData={treeData}

@@ -29,6 +29,7 @@ import {
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
+  filterFunctions,
   filterFunctionsCalendar,
   getUniqueValuesFunctionsCalendar,
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -40,16 +41,12 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
   const [events, setEvents] = useState<EventsData[]>([]);
   const [tempEventData, setTempEventData] = useState<EventsData[]>(events);
-  const [filtersApplied, setFiltersApplied] = useState(false);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
 
   const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<EventsData | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [sectionState, setSectionState] = useState<sectionStateData>({
-    axe: "",
-    crop: "",
-    city: "",
-  });
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
   const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>(
@@ -77,7 +74,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -115,12 +112,13 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     "crop",
     "department",
     "city",
+    "date"
   ];
   const placeHolders = [
     "Componente",
     "Eje",
     "Institución",
-    "Cadena productiva",
+    "Sistema productivo",
     "Departamento",
     "Municipio",
   ];
@@ -153,8 +151,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         const uniqueInstitutions = EventsController.getInstitutionCategories(
           formattedEvents,
           "institution",
-            EventsController.predefinedInstitutions,
-            true
+            true,
+            EventsController.predefinedInstitutions
         );
         const uniqueCrops = EventsController.getUniqueValues(
           formattedEvents,
@@ -195,11 +193,45 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
     );
   }, [formState]);
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        tempEventData,
+        setTempEventData,
+        filterFunctionsCalendar,
+        filterTypes
+    );
+    setShouldApplyDateFilter(true);
+  };
+
+  const handleOnReset = () =>{
+    handleReset(
+        events,
+        setTooltipOptions,
+        setTooltipValues,
+        setTempEventData,
+        getUniqueValuesFunctionsCalendar(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setTempEventData(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [tempEventData, shouldApplyDateFilter, dateRange]);
+
   return (
     <div className={styles.container}>
       {dataCalendarResp === 200 ? (
         <>
           <CustomTooltip
+            useDate={true}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
             options={tooltipOptions}
             values={tooltipValues}
             onChange={(selectedValue, filterType) =>
@@ -215,25 +247,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                 filterTypes
               )
             }
-            onClick={() =>
-              handleOnClick(
-                tooltipValues,
-                tempEventData,
-                setTempEventData,
-                filterFunctionsCalendar,
-                filterTypes
-              )
-            }
-            onReset={() =>
-              handleReset(
-                events,
-                setTooltipOptions,
-                setTooltipValues,
-                setTempEventData,
-                getUniqueValuesFunctionsCalendar(),
-                placeHolders
-              )
-            }
+            onClick={handleOnApply}
+            onReset={handleOnReset}
             placeholders={placeHolders}
             filterTypes={filterTypes}
             getOptionLabel={(option) => option.label}
@@ -275,34 +290,50 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                           ? parseISO(String(event.datesEnd))
                           : null;
 
-                        let backgroundColor;
-                        let borderColor;
+                        let backgroundColor = "#80C41C";
+                        let borderColor = "#80C41C";
 
-                        if (
-                          event.change_selection ===
-                          "EL EVENTO HA SIDO CANCELADO"
-                        ) {
+                        if (event.event_type === "Visita de finca") {
+                          return null;
+                        }
+
+                        //Cancelados
+                        if (event.change_selection === "EL EVENTO HA SIDO CANCELADO") {
                           backgroundColor = "#b9b9b9";
                           borderColor = "#b9b9b9";
-                        } else if (
-                          (eventEndDate &&
-                            event.form_state === "1" &&
-                            eventEndDate < currentDate) ||
-                          event.not_assistant === "1"
+                          return {
+                            ...event,
+                            backgroundColor,
+                            borderColor,
+                          };
+                        }
+
+                        //Programados
+                        if (
+                            eventEndDate &&
+                            eventEndDate >= currentDate
+                        ) {
+                          backgroundColor = "#FECF00";
+                          borderColor = "#FECF00";
+                          return {
+                            ...event,
+                            backgroundColor,
+                            borderColor,
+                          };
+                        }
+
+                        //Sin cerrar
+                        if (
+                            event.not_assistant === "1" ||
+                            event.is_reported === "0"
                         ) {
                           backgroundColor = "#c84e42";
                           borderColor = "#c84e42";
-                        } else if (event.form_state === "0" && event.not_assistant === "0") {
-                          // Eventos que están completamente finalizados (form_state = 0)
-                          backgroundColor = "#80C41C";
-                          borderColor = "#80C41C";
-                        } else if (
-                          eventEndDate &&
-                          eventEndDate >= currentDate
-                        ) {
-                          // Si el evento aún no ha terminado o es hoy
-                          backgroundColor = "#FECF00";
-                          borderColor = "#FECF00";
+                          return {
+                            ...event,
+                            backgroundColor,
+                            borderColor,
+                          };
                         }
 
                         return {

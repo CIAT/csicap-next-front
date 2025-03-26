@@ -85,7 +85,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     },
     {
       value: "",
-      label: "Cadena productiva",
+      label: "Sistema productivo",
     },
     {
       value: "",
@@ -110,7 +110,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     "Componente",
     "Eje",
     "Instituciones",
-    "Cadena productiva",
+    "Sistema productivo",
     "Departamento",
     "Municipio",
   ];
@@ -138,8 +138,8 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
         const uniqueInstitutions = EventsController.getInstitutionCategories(
           formattedEvents,
           "institution",
+            true,
             EventsController.predefinedInstitutions,
-            true
         );
         const uniqueCrops = EventsController.getUniqueValues(
           formattedEvents,

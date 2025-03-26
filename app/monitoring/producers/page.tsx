@@ -32,6 +32,7 @@ import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
+  filterFunctions, filterFunctionsCalendar,
   filterFunctionsProducers,
   getUniqueValuesFunctionsProducers
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -92,7 +93,12 @@ function countTypeOfHousing(data: { type_property: string }[]) {
   const housingCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const house = item.type_property;
+    let house = item.type_property;
+
+    if (!house) {
+      house = "No disponible";
+    }
+
     housingCount[house] = (housingCount[house] || 0) + 1;
   });
 
@@ -133,13 +139,14 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [filteredEvents, setFilteredEvents] = useState<DataFormat[]>(
     events
   );
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
   const [counts, setCounts] = useState<NestedDictionary>({});
 
   const [selectedFilter, setSelectedFilter] = useState<string>("crop");
   const [allEventsData, setAllEventsData] = useState<DataFormat[]>([]);
 
-  const [selectedEvent, setSelectedEvent] = useState<DataFormat | null>(null);
-  const [dataCalendarResp, setDataCalendarResp] = useState<number>(0);
   const [totalData, setTotalData] = useState<number>(0);
   const [totalProducersData, setTotalProducersData] = useState<number>(0);
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
@@ -179,7 +186,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cadena productiva"
+      label: "Sistema productivo"
     },
     {
       value: "",
@@ -197,20 +204,21 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const tooltipOptions: Array<CustomTooltipData[]> = [genderState, propertyState, ethnicState, primaryCropState, guildState, departmentState, cityState];
   const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setGenderState, setPropertyState, setEthnicState, setPrimaryCropState, setGuildState, setDepartmentState, setCityState];
   const filterTypes = ["gender", "property", "ethnic", "primaryCrop", "guild", "department", "city"];
-  const placeHolders = ["Género del registrante", "Tipo de propiedad", "Etnia del registrante", "Cadena productiva", "Gremio", "Departamento", "Municipio"];
+  const placeHolders = ["Género del registrante", "Tipo de propiedad", "Etnia del registrante", "Sistema productivo", "Gremio", "Departamento", "Municipio"];
 
   useEffect(() => {
     ProducersRepository.fetchEvents()
       .then((data: DataFormat[]) => {
+
         const formattedEvents = ProducersController.formatEvents(data);
 
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gen_name");
         const uniqueProperty = EventsController.getUniqueValues(formattedEvents, "type_property");
         const uniqueEthnic = EventsController.getUniqueValues(formattedEvents, "pr_ethnic_group");
         const uniquePrimaryCrop = EventsController.getUniqueValues(formattedEvents, "pr_primary_crop");
-        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", EventsController.predefinedInstitutionsProducers);
-        const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "pr_dpto");
-        const uniqueCities = EventsController.getUniqueValues(formattedEvents, "pr_muni");
+        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", false, EventsController.predefinedInstitutionsProducers);
+        const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "pr_dpto_farm");
+        const uniqueCities = EventsController.getUniqueValues(formattedEvents, "pr_muni_farm");
 
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
@@ -226,7 +234,6 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
       })
       .catch(error => {
         console.error("Error fetching events:", error);
-        setDataCalendarResp(-1);
       });
   }, []);
 
@@ -381,9 +388,44 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setTreemapData(RegisteredController.processTreemapData(selectedFilter));
   }
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        filteredEvents,
+        setFilteredEvents,
+        filterFunctionsProducers,
+        filterTypes
+    );
+
+    setShouldApplyDateFilter(true);
+  };
+
+  const handleOnReset = () => {
+    handleReset(
+        events,
+        setTooltipOptions,
+        setTooltipValues,
+        setFilteredEvents,
+        getUniqueValuesFunctionsProducers(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setFilteredEvents(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [filteredEvents, shouldApplyDateFilter, dateRange]);
+
   return (
     <div className={styles.producers}>
       <CustomTooltip
+          useDate={true}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
           options={tooltipOptions}
           values={tooltipValues}
           onChange={(selectedValue, filterType) =>
@@ -398,23 +440,8 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   getUniqueValuesFunctionsProducers(),
                   filterTypes,
               )}
-          onClick={() =>
-              handleOnClick(
-                  tooltipValues,
-                  filteredEvents,
-                  setFilteredEvents,
-                  filterFunctionsProducers,
-                  filterTypes
-              )}
-          onReset={() =>
-              handleReset(
-                  events,
-                  setTooltipOptions,
-                  setTooltipValues,
-                  setFilteredEvents,
-                  getUniqueValuesFunctionsProducers(),
-                  placeHolders
-              )}
+          onClick={handleOnApply}
+          onReset={handleOnReset}
           placeholders={placeHolders}
           filterTypes={filterTypes}
           getOptionLabel={(option) => option.label}
@@ -426,9 +453,9 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
           <CardComponent styles={styleBeneficiaries} title={"Total familias registradas"}>
             {treemapData.length > 0 ? (
                 <div className={styles.top_div_division}>
-                  <label className={styles.top_card_label}>{totalData}</label>
+                  <label className={styles.top_card_label}>{EventsController.formatNumber(totalData)}</label>
                   <label className={styles.title_card_label}>Total de personas, incluyendo núcleo familiar:</label>
-                  <label className={styles.other_card_label}>{totalProducersData}</label>
+                  <label className={styles.other_card_label}>{EventsController.formatNumber(totalProducersData)}</label>
                 </div>
             ) : (
                 <LoadingAnimation/>
@@ -497,7 +524,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         <div className={styles.bottom_div}>
           <div className={styles.flex_container}>
             <div className={styles.width}>
-              <ChartCardComponent title="Familias registradas por cadena productiva" header={
+              <ChartCardComponent title="Familias registradas por sistema productivo" header={
                 <div className={styles.header_container}>
                   <ExportDropdown
                       chartId={treemapChartProducersCountId}

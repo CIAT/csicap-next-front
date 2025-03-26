@@ -36,6 +36,7 @@ import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
+  filterFunctions,
   filterFunctionsEvents, filterFunctionsProfessionals,
   getUniqueValuesFunctionsEvents,
   getUniqueValuesFunctionsProfessionals
@@ -97,61 +98,30 @@ function countEthnicity(data: TechnicalBeneficiaries[]) {
   const ethnicityCount: { [key: string]: number } = {};
 
   data.forEach((item) => {
-    const ethnicity = item.ethnic_affiliation_group;
+    let ethnicity = item.ethnic_affiliation_group;
+    if(
+        !ethnicity ||
+        ethnicity === "N.n" ||
+        ethnicity === "."
+    ) {
+      ethnicity = "No disponible";
+    }
+
     ethnicityCount[ethnicity] = (ethnicityCount[ethnicity] || 0) + 1;
   });
 
   return ethnicityCount;
 }
 
-function countCrops(data: DataFormat): { [key: string]: number } {
-  const cropCount: { [key: string]: number } = {};
-
-  data.forEach(item => {
-    const crops = item.data.crops_worked_last_12_months.split(', ').map(crop => crop.trim());
-
-    crops.forEach(crop => {
-      cropCount[crop] = (cropCount[crop] || 0) + 1;
-    });
-  });
-
-  return cropCount;
-}
-
 function countOrganizations(events: TechnicalBeneficiaries[]) {
-  const predefinedInstitutions = new Set([
-    "AGROSAVIA",
-    "AUGURA",
-    "ASBAMA",
-    "ASOHOFRUCOL",
-    "CENICAFE",
-    "CENICAÑA",
-    "CIAT (Alianza Bioversity-CIAT)",
-    "CIPAV",
-    "CIMMYT",
-    "FEDEARROZ",
-    "FEDEGAN",
-    "FEDEPANELA",
-    "FEDEPAPA",
-    "FENALCE",
-    "FEDECAFE",
-    "ASOCAÑA",
-    "MADR",
-    "ADR",
-    "Todas"
-  ]);
-
-  const organizations: { [key: string]: number } = {
-    Otras: 0,
-  };
+  const organizations: { [key: string]: number } = {};
 
   events.forEach((event) => {
-    event.affiliated_guild_or_organization.forEach((organization) => {
-      if (predefinedInstitutions.has(organization)) {
-        organizations[organization] = (organizations[organization] || 0) + 1;
-      } else {
-        organizations["Otras"] += 1;
-      }
+    const institutions = event.affiliated_guild_or_organization;
+    if(institutions === null) return;
+
+    institutions.forEach((organization) => {
+      organizations[organization] = (organizations[organization] || 0) + 1;
     });
   });
 
@@ -166,11 +136,13 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const doughnutChartProfessionalOccupationId: string = "doughnut_chart_professional_occupation";
   const doughnutProducersEthnicity: string = "doughnut_professional_ethnicity";
 
-
   const [events, setEvents] = useState<TechnicalBeneficiaries[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<TechnicalBeneficiaries[]>(
       events
   );
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [shouldApplyDateFilter, setShouldApplyDateFilter] = useState(false);
 
   const [genderNumber, setGenderNumber] = useState<number[]>([]);
   const [genderLabel, setGenderLabel] = useState<string[]>([]);
@@ -179,7 +151,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [ethnicityNumber, setEthnicityNumber] = useState<number[]>([]);
   const [ethnicityLabel, setEthnicityLabel] = useState<string[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
-  const [treemapTitle, setTreemapTitle] = useState("Número de profesionales");
+  const [treemapTitle, setTreemapTitle] = useState("Profesionales por institución");
   const [counts, setCounts] = useState<Record<string, string>>({});
 
   const [treemapData, setTreemapData] = useState<
@@ -206,7 +178,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     },
     {
       value: "",
-      label: "Cadena productiva"
+      label: "Sistema productivo"
     },
     {
       value: "",
@@ -216,17 +188,16 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const tooltipOptions: Array<CustomTooltipData[]> = [educationalLevelState, genderState, cropState, institutionState];
   const setTooltipOptions: Array<React.Dispatch<React.SetStateAction<CustomTooltipData[]>>> = [setEducationalLevelState, setGenderState, setCropState, setInstitutionState];
   const filterTypes = ["educationLevel", "gender", "crop", "institution"];
-  const placeHolders = ["Nivel educativo", "Género", "Cadena productiva", "Institución"];
+  const placeHolders = ["Nivel educativo", "Género", "Sistema productivo", "Institución"];
 
   useEffect(() => {
     TechnicalRepository.fetchEvents()
       .then((data: DataFormat) => {
         const formattedEvents = ProfessionalController.formatEvents(data);
-
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
-        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true);
+        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", true);
 
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
@@ -234,9 +205,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         setGenderState([...uniqueGender]);
         setCropState([...uniqueCrop]);
         setInstitutionState([...uniqueInstitutions]);
-
-        setEvents(formattedEvents);
-        setFilteredEvents(formattedEvents);
 
         processChartData();
       })
@@ -458,9 +426,43 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
     setEthnicityNumber(Object.values(ethnicityCount))
   }
 
+  const handleOnApply = () => {
+    handleOnClick(
+        tooltipValues,
+        filteredEvents,
+        setFilteredEvents,
+        filterFunctionsProfessionals,
+        filterTypes
+    )
+    setShouldApplyDateFilter(true);
+  }
+
+  const handleOnReset = () => {
+    handleReset(
+        events,
+        setTooltipOptions,
+        setTooltipValues,
+        setFilteredEvents,
+        getUniqueValuesFunctionsProfessionals(),
+        placeHolders
+    )
+
+    setDateRange([null, null]);
+  }
+
+  useEffect(() => {
+    if (shouldApplyDateFilter && dateRange[0] !== null && dateRange[1] !== null) {
+      setFilteredEvents(prevData => filterFunctions["date"](prevData, dateRange));
+      setShouldApplyDateFilter(false);
+    }
+  }, [filteredEvents, shouldApplyDateFilter, dateRange]);
+
   return (
       <div className="w-full h-full flex flex-wrap">
         <CustomTooltip
+            useDate={true}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
             options={tooltipOptions}
             values={tooltipValues}
             onChange={(selectedValue, filterType) =>
@@ -476,25 +478,8 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                     filterTypes
                 )
             }
-            onClick={() =>
-                handleOnClick(
-                    tooltipValues,
-                    filteredEvents,
-                    setFilteredEvents,
-                    filterFunctionsProfessionals,
-                    filterTypes
-                )
-            }
-            onReset={() =>
-                handleReset(
-                    events,
-                    setTooltipOptions,
-                    setTooltipValues,
-                    setFilteredEvents,
-                    getUniqueValuesFunctionsProfessionals(),
-                    placeHolders
-                )
-            }
+            onClick={handleOnApply}
+            onReset={handleOnReset}
             placeholders={placeHolders}
             filterTypes={filterTypes}
             getOptionLabel={(option) => option.label}
@@ -508,9 +493,9 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Total profesionales registrados"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.top_div_division}>
-                    <label className={styles.top_card_label}>{totalData}</label>
+                    <label className={styles.top_card_label}>{EventsController.formatNumber(totalData)}</label>
                   </div>
               ) : (
                   <LoadingAnimation/>
@@ -524,7 +509,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Género"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut
                         id={doughnutChartProfessionalGenreId}
@@ -544,7 +529,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Nivel educativo"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut
                         id={doughnutChartProfessionalOccupationId}
@@ -564,7 +549,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                 title="Etnia"
                 styles={styleTechnical}
             >
-              {treemapData.length > 0 ? (
+              {events.length > 0 ? (
                   <div className={styles.doughnut_chart}>
                     <Doughnut
                         id={doughnutProducersEthnicity}
@@ -591,7 +576,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                     />
                   </div>
                 }>
-                  {treemapData.length > 0 ? (
+                  {events.length > 0 ? (
                       <ReactChart
                           id={treemapChartProfessionalCountId}
                           type="treemap"
@@ -606,7 +591,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
               <div className={styles.width}>
                 {/* Mapa de Colombia */}
                 <ChartCardComponent
-                    title="Profesionales por departamento"
+                    title="Profesionales por departamento donde trabajan"
                     header={
                       <div className={styles.header_container}>
                         <ExportDropdown
@@ -614,7 +599,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                       </div>
                     }
                 >
-                  {treemapData.length > 0 && filteredEvents && counts ? (
+                  {(events.length > 0 && counts) ? (
                       <div className="w-full h-full">
                         <MapComponent
                             polygons={ProfessionalController.extractProvincesCode(filteredEvents)}

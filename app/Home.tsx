@@ -13,7 +13,7 @@ export default function Home() {
 
     const cards = [
         {
-            icon: "/chart_icon.png",
+            icon: "/Web_Monitoreo.png",
             alt: "chart-icon",
             mainText: "El Monitoreo es un proceso continuo de recolección y análisis de información rutinaria sobre indicadores específicos, con el fin de evaluar el progreso de las actividades relacionadas a unas metas específicas. ",
             additionalText: "En esta sección podrás consultar información detallada sobre las actividades del proyecto CSICAP y su avance en tiempo real. Accede a un calendario interactivo que muestra las actividades distribuidas por municipio, cultivo y eje, con la posibilidad de aplicar filtros según tus necesidades. Además, encontrarás estadísticas de los eventos registrados, información sobre los asistentes y reportes consolidados por evento, lo que te permitirá realizar un seguimiento completo del progreso y los beneficiarios en diferentes niveles. ",
@@ -21,7 +21,7 @@ export default function Home() {
             buttonLink: "/monitoring/calendar",
         },
         {
-            icon: "/list_icon.png",
+            icon: "/Web_Impacto.png",
             alt: "list-icon",
             mainText: "La Evaluación determina la relevancia y pertinencia del proyecto por medio del logro de los objetivos que inicialmente se plantearon. De esta manera, se intenta establecer el grado de atribución y causalidad de las intervenciones. ",
             additionalText: "En esta sección podrás consultar la evolución de los indicadores clave del proyecto, que reflejan el impacto en áreas como la adopción de prácticas agroambientales, el fortalecimiento de capacidades, la mejora en la productividad de los cultivos, y la sostenibilidad económica y ambiental. A través de visualizaciones claras, podrás seguir el progreso de estos objetivos y el impacto en los beneficiarios, basados en la información recopilada durante el proyecto. ",
@@ -65,7 +65,7 @@ export default function Home() {
                 <div className={`${styles.spacing} ${styles.card_container}`}>
                     {cards.map((card, index) => (
                         <div key={index} className={`${styles.spacing} ${styles.card}`}>
-                            <div className={`${styles.shadow} ${styles.chart_icon}`}>
+                            <div className={`${styles.chart_icon}`}>
                                 <img src={card.icon} alt={card.alt} />
                             </div>
                             <div className={`${styles.spacing} ${styles.text} ${styles.text_left}`}>
