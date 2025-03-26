@@ -466,8 +466,23 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
   const ejeCounts: { [key: string]: number } = {};
   tempEventData.forEach((EventFormat) => {
+    const componentOne = "Componente 1";
+    const componentThree = "Componente 3";
+
     if (EventFormat.eje && Array.isArray(EventFormat.eje)) {
       EventFormat.eje.forEach((eje) => {
+        const ejeNumber = eje.split("-")[0].trim();
+
+        if(ejeNumber === "1" || ejeNumber === "2"){
+          ejeCounts[componentOne] = (ejeCounts[componentOne] || 0) + 1;
+          return;
+        }
+
+        if(ejeNumber === "5" || ejeNumber === "6"){
+          ejeCounts[componentThree] = (ejeCounts[componentThree] || 0) + 1;
+          return;
+        }
+
         ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
       });
     }
@@ -490,20 +505,20 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   }
 
   for (let key in replacedEjeCounts) {
-    if (replacedEjeCounts.hasOwnProperty(key)) {
-      labelsDoughnutEvent.push(key);
-      dataDoughnutEvent.push(replacedEjeCounts[key]);
-    }
+    if (!replacedEjeCounts.hasOwnProperty(key)) return;
+
+    labelsDoughnutEvent.push(key);
+    dataDoughnutEvent.push(replacedEjeCounts[key]);
   }
 
   const ejesChartData = {
-    labels: labelsDoughnutEvent, // Use shortened labels for both display and tooltips
+    labels: labelsDoughnutEvent,
     datasets: [
       {
         label: "Eje Count",
         data: dataDoughnutEvent,
-        backgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for background
-        hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for hover
+        backgroundColor: colors.slice(0, dataDoughnutEvent.length),
+        hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length),
       },
     ],
   };
