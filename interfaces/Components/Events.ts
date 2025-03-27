@@ -20,4 +20,5 @@ export interface EventFormat {
     report_date: string;
     not_assistant: string;
     is_reported: string;
+    municipality_code: string;
 }

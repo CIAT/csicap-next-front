@@ -36,6 +36,7 @@ import {
   handleReset,
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import MapController from "@/helpers/Component/Controller/MapController";
 
 Chart.register(
   Tooltip,
@@ -744,22 +745,36 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       />
       <div className={styles.container}>
         <div className={styles.side_card}>
-          <CardComponent
-              title="Total eventos"
-              style={styles.card}
-          >
-            <label className={styles.side_card_label}>
-              {eventStatusData.
-              reduce((accumulateValue, currentValue) =>
-                  accumulateValue + currentValue, 0) > 0 ? (
-                  EventsController.formatNumber(eventStatusData.
-                  reduce((accumulateValue, currentValue) =>
-                      accumulateValue + currentValue, 0))
-              ) : (
-                  <LoadingAnimation />
-              )}
-            </label>
-          </CardComponent>
+          <div className={styles.message_container}>
+            <CardComponent
+                title="Total eventos"
+                style={styles.card}
+            >
+              <label className={styles.side_card_label}>
+                {eventStatusData.
+                reduce((accumulateValue, currentValue) =>
+                    accumulateValue + currentValue, 0) > 0 ? (
+                    EventsController.formatNumber(eventStatusData.
+                    reduce((accumulateValue, currentValue) =>
+                        accumulateValue + currentValue, 0))
+                ) : (
+                    <LoadingAnimation />
+                )}
+              </label>
+            </CardComponent>
+            <CardComponent
+                title="Impacto"
+                style={styles.card_variant}
+            >
+              <label className={styles.side_card_label_variant}>
+                {eventStatusData.length > 0 ? (
+                    `${tempEventData.length} eventos distribuídos en ${MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))} departamentos y ${MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))} municipios`
+                ) : (
+                    <LoadingAnimation />
+                )}
+              </label>
+            </CardComponent>
+          </div>
           <ChartCardComponent
               title="Eventos por sistema productivo"
               style={styles.card_tree}
