@@ -758,6 +758,7 @@ class MapController {
         let departmentsCount = 0;
 
         municipality_codes.forEach((code) => {
+            if(!code) return;
             const departmentCode = code.substring(0, 2);
             departmentCodes.push(departmentCode);
         })
