@@ -4,7 +4,7 @@ import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 import {colors as staticColors} from "@/interfaces/Map/colors";
-import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained} from "@/interfaces/Components/AssistanceComponent";
 import html2canvas from "html2canvas";
 
 class MapController {
@@ -749,6 +749,30 @@ class MapController {
         const regex = new RegExp(`${label}: (\\d+)`);
         const match = text.match(regex);
         return match ? Number(match[1]) : 0;
+    }
+
+    static getDepartmentCount(
+        municipality_codes: string[]
+    ): number {
+        const departmentCodes: string[] = [];
+        let departmentsCount = 0;
+
+        municipality_codes.forEach((code) => {
+            const departmentCode = code.substring(0, 2);
+            departmentCodes.push(departmentCode);
+        })
+
+        departmentsCount = Array.from(new Set(departmentCodes)).length;
+
+        return departmentsCount;
+    }
+
+    static getMunicipalitiesCount(
+        municipality_codes: string[]
+    ): number {
+        let municipalitiesCount = 0;
+        municipalitiesCount = Array.from(new Set(municipality_codes)).length;
+        return municipalitiesCount;
     }
 }
 

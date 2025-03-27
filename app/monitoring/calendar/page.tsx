@@ -353,6 +353,10 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                   title="Eventos por municipio"
                   header={
                     <div className={styles.header_container}>
+                      <div className={styles.text_header}>
+                        <div className={styles.red_point}>*</div>
+                        {tempEventData.length} eventos distribuídos en {MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))} departamento y {MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))} municipios
+                      </div>
                       <ExportDropdown
                           mapImageName={"calendario_map.png"}
                       />
