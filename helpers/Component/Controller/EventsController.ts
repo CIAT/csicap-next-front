@@ -15,10 +15,6 @@ class EventController {
         return events.filter(event => {
             if (!event.date) return false;
 
-            if (event.event_type === "Visita de finca") {
-                return null;
-            }
-
             const eventDate = new Date(event.date);
             if (isNaN(eventDate.getTime())) return false;
 
