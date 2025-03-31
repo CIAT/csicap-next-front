@@ -594,6 +594,11 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                     title="Profesionales por departamento donde trabajan"
                     header={
                       <div className={styles.header_container}>
+                        <div className={styles.text_header}>
+                          <div className={styles.red_point}>*</div>
+                          {EventsController.formatNumber(filteredEvents.length)} eventos distribuídos
+                          en {MapController.getDepartmentCount(filteredEvents.map(event => event.municipalities_code).reduce((acc, current) => acc.concat(current), []))} departamentos
+                        </div>
                         <ExportDropdown
                             mapImageName={"profesionales_map.png"}/>
                       </div>
