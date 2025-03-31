@@ -768,7 +768,7 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
             >
               <label className={styles.side_card_label_variant}>
                 {eventStatusData.length > 0 ? (
-                    `${tempEventData.length} eventos distribuídos en ${MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))} departamentos y ${MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))} municipios`
+                    `${EventsController.formatNumber(tempEventData.length)} eventos distribuídos en ${MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))} departamentos y ${MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))} municipios`
                 ) : (
                     <LoadingAnimation />
                 )}

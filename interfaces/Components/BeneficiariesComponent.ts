@@ -16,4 +16,5 @@ export interface DataFormat {
     pr_dpto_farm: string;
     pr_muni_farm: string;
     submitted_date: string;
+    id_farm_muni: string;
 }

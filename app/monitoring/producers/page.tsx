@@ -549,6 +549,12 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                   title="Familias registradas por municipio"
                   header={
                     <div className={styles.header_container}>
+                      <div className={styles.text_header}>
+                        <div className={styles.red_point}>*</div>
+                        {EventsController.formatNumber(filteredEvents.length)} eventos distribuídos
+                        en {MapController.getDepartmentCount(filteredEvents.map(event => event.id_farm_muni))} departamentos
+                        y {MapController.getMunicipalitiesCount(filteredEvents.map(event => event.id_farm_muni))} municipios
+                      </div>
                       <ExportDropdown
                           mapImageName={"productores_map.png"}/>
                     </div>
