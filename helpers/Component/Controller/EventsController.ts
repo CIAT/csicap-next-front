@@ -287,7 +287,7 @@ class EventController {
         events: T[],
         key: keyof T,
         selectedCategory: string,
-        predefinedInstitutions: Set<String>,
+        predefinedInstitutions?: Set<String>,
         isArray: boolean = false,
     ): T[] {
         return events.filter(event => {
@@ -297,14 +297,17 @@ class EventController {
                 ? (institutions as unknown as string[])
                 : [institutions as unknown as string];
 
-            return institutionList.some(institution =>
-                predefinedInstitutions.has(institution)
-                    ? institution === selectedCategory
-                    : selectedCategory === "Otras"
-            );
+            if(predefinedInstitutions) {
+                return institutionList.some(institution =>
+                    predefinedInstitutions.has(institution)
+                        ? institution === selectedCategory
+                        : selectedCategory === "Otras"
+                );
+            }
+
+            return institutionList.some(institution => institution === selectedCategory);
         });
     }
-
 }
 
 export default EventController;

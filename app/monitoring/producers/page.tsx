@@ -15,7 +15,6 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ReactChart } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import React, { useEffect, useState } from "react";
-import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import ProducersRepository from "@/helpers/Component/Repository/ProducersRepository";
 import { DataFormat } from "@/interfaces/Components/BeneficiariesComponent";
 import ProducersController from "@/helpers/Component/Controller/ProducersController";
@@ -25,14 +24,13 @@ import MapController from "@/helpers/Component/Controller/MapController";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import LoadingAnimation from "@/components/loadingAnimation";
 import ChartCardComponent from "@/components/events/chartCard";
-import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import RegisteredController from "@/helpers/Component/Controller/RegisteredController";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
-  filterFunctions, filterFunctionsCalendar,
+  filterFunctions,
   filterFunctionsProducers,
   getUniqueValuesFunctionsProducers
 } from "@/interfaces/Components/CustomTooltipHandler";
@@ -216,7 +214,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueProperty = EventsController.getUniqueValues(formattedEvents, "type_property");
         const uniqueEthnic = EventsController.getUniqueValues(formattedEvents, "pr_ethnic_group");
         const uniquePrimaryCrop = EventsController.getUniqueValues(formattedEvents, "pr_primary_crop");
-        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", false, EventsController.predefinedInstitutionsProducers);
+        const uniqueGuild = EventsController.getInstitutionCategories(formattedEvents, "gremio", false);
         const uniqueDepartments = EventsController.getUniqueValues(formattedEvents, "pr_dpto_farm");
         const uniqueCities = EventsController.getUniqueValues(formattedEvents, "pr_muni_farm");
 
