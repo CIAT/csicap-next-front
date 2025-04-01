@@ -50,7 +50,12 @@
     width: 12vw;
     font-size: 0.7vw;
     display: flex;
+    flex-wrap: wrap;
     gap: 3px;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 .red_point {

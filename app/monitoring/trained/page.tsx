@@ -616,7 +616,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                 <div className={styles.header_container}>
                   {noInformationMunicipality > 0 && (
                       <div className={styles.important_text}>
-                        <div className={styles.important}>*</div>{EventsController.formatNumber(tempTrainedData.length)} eventos distribuídos en {MapController.getDepartmentCount(tempTrainedData.map(event => event.muni_res_complete_code))} departamentos y {MapController.getMunicipalitiesCount(tempTrainedData.map(event => event.muni_res_complete_code))} municipios. No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
+                        <div className={styles.important}>*</div>
+                        <div className={styles.bold}>{EventsController.formatNumber(tempTrainedData.length)}</div> capacitados en <div className={styles.bold}>{MapController.getDepartmentCount(tempTrainedData.map(event => event.muni_res_complete_code))}</div> departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(tempTrainedData.map(event => event.muni_res_complete_code))}</div> municipios. No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
                       </div>
                   )}
                   <ExportDropdown

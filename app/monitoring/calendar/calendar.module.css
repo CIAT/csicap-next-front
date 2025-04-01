@@ -5,6 +5,10 @@
   min-height: 100vh;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .card {
   padding-bottom: 20px;
   justify-content: center;
@@ -41,6 +45,7 @@
   width: 12vw;
   font-size: 0.7vw;
   display: flex;
+  flex-wrap: wrap;
   gap: 3px;
 }
 
