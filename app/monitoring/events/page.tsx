@@ -754,23 +754,22 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                 {eventStatusData.
                 reduce((accumulateValue, currentValue) =>
                     accumulateValue + currentValue, 0) > 0 ? (
-                    EventsController.formatNumber(eventStatusData.
-                    reduce((accumulateValue, currentValue) =>
-                        accumulateValue + currentValue, 0))
+                    <div className={styles.header_container}>
+                      <div>
+                        {
+                          EventsController.formatNumber(eventStatusData.reduce((accumulateValue, currentValue) =>
+                              accumulateValue + currentValue, 0))
+                        }
+                      </div>
+                      <div className={styles.text_header}>
+                        en
+                        <div className={styles.bold}>{MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))}</div> departamentos
+                        y
+                        <div className={styles.bold}>{MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))}</div> municipios
+                      </div>
+                    </div>
                 ) : (
-                    <LoadingAnimation />
-                )}
-              </label>
-            </CardComponent>
-            <CardComponent
-                title="Impacto"
-                style={styles.card_variant}
-            >
-              <label className={styles.side_card_label_variant}>
-                {tempEventData.length > 0 ? (
-                    `${EventsController.formatNumber(tempEventData.length)} eventos distribuídos en ${MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))} departamentos y ${MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))} municipios`
-                ) : (
-                    <LoadingAnimation />
+                    <LoadingAnimation/>
                 )}
               </label>
             </CardComponent>
