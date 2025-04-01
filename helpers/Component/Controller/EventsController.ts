@@ -7,6 +7,30 @@ class EventController {
         return new Intl.NumberFormat('es-ES', { useGrouping: true }).format(num);
     };
 
+    static getMunicipalitiesCodes = (events: any, column: string, isArray: boolean = false): string[] => {
+        const codes = events.flatMap((event: any) => {
+            const code = event[column];
+
+            if (!code) return [];
+
+            if (isArray) {
+                return code.map((value: string) => this.addZero(value));
+            }
+
+            return [this.addZero(code)];
+        });
+
+        return Array.from(new Set(codes));
+    }
+
+    static addZero = (number: string): string => {
+        if (number.length === 4) {
+            return "0" + number;
+        }
+
+        return number;
+    }
+
     static getEventsByStartDate<T extends { date: string | Date, event_type: string }>(
         events: T[],
         startDate: Date | null,

@@ -355,7 +355,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                     <div className={styles.header_container}>
                       <div className={styles.text_header}>
                         <div className={styles.red_point}>*</div>
-                        <div className={styles.bold}>{EventsController.formatNumber(tempEventData.length)}</div> eventos en <div className={styles.bold}>{MapController.getDepartmentCount(tempEventData.map(event => event.municipality_code))}</div> departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(tempEventData.map(event => event.municipality_code))}</div> municipios
+                        <div className={styles.bold}>{EventsController.formatNumber(tempEventData.length)}</div> eventos en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> municipios
                       </div>
                       <ExportDropdown
                           mapImageName={"calendario_map.png"}
