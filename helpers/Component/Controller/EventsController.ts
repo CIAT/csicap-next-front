@@ -114,12 +114,23 @@ class EventController {
             if (isArray) {
                 const values = event[key] as unknown as string[];
                 return values?.some(val => {
-                    if(val !== "nan"){
-                       return value === val
-                    }
+                    if(
+                        val === "nan" ||
+                        val === null
+                    ) return false;
+
+                    return value === val
                 });
             }
-            return event[key] === value;
+
+            const val = event[key];
+
+            if(
+                val === "nan" ||
+                val === null
+            ) return false;
+
+            return val === value;
         });
     }
 

@@ -372,14 +372,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setTreemapData(mappedData);
   };
 
-  const occupationBackgroundColors = Object.keys(occupationStats).map(
-    (_, index) => colors[index % colors.length]
-  );
-
-  const occupationBorderColors = Object.keys(occupationStats).map(
-    (_, index) => borderColors[index % borderColors.length]
-  );
-
   const treeData = {
     datasets: [
       {
@@ -417,8 +409,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       {
         label: "Distribución de Edad",
         data: Object.values(ageStats),
-        backgroundColor: occupationBackgroundColors,
-        borderColor: occupationBorderColors,
+        backgroundColor: TrainedController.generateBackgroundColors(Object.keys(ageStats)),
+        borderColor: TrainedController.generateBorderColors(Object.keys(ageStats)),
       },
     ],
   };
@@ -429,8 +421,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       {
         label: "Distribución de Ocupaciones",
         data: Object.values(occupationStats),
-        backgroundColor: occupationBackgroundColors,
-        borderColor: occupationBorderColors,
+        backgroundColor: TrainedController.generateBackgroundColors(Object.keys(occupationStats)),
+        borderColor: TrainedController.generateBorderColors(Object.keys(occupationStats)),
       },
     ],
   };
@@ -441,8 +433,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       {
         label: "Distribución de Género",
         data: [genderStats.men, genderStats.women, genderStats.other],
-        backgroundColor: occupationBackgroundColors,
-        borderColor: occupationBorderColors,
+        backgroundColor: TrainedController.generateBackgroundColors(Object.keys(genderStats)),
+        borderColor: TrainedController.generateBorderColors(Object.keys(genderStats)),
       },
     ],
   };
