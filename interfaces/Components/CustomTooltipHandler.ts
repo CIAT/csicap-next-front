@@ -45,7 +45,7 @@ export const getUniqueValuesFunctionsProfessionals = () => [
     (events: TechnicalBeneficiaries[]) =>
         EventsController.getUniqueValues(events, "crops_worked_last_12_months", true),
     (events: TechnicalBeneficiaries[]) =>
-        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", true, EventsController.predefinedInstitutions),
+        EventsController.getInstitutionCategories(events, "affiliated_guild_or_organization", true),
 ];
 
 export const getUniqueValuesFunctionsCalendar = () => [
@@ -139,7 +139,7 @@ export const filterFunctionsProfessionals: Record<
     crop: (events, value) =>
         EventsController.filterEventsByValue(events, "crops_worked_last_12_months", value, true),
     institution: (events, value) =>
-        EventsController.filterEventsByInstitution(events, "affiliated_guild_or_organization", value, EventsController.predefinedInstitutions, true),
+        EventsController.filterEventsByInstitution(events, "affiliated_guild_or_organization", value, undefined, true),
 };
 
 export const filterFunctionsCalendar: Record<

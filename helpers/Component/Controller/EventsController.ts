@@ -253,7 +253,9 @@ class EventController {
         const categoryCounts: { [key: string]: number } = {};
         events.forEach(event => {
             const institutions = event[key];
-            if (institutions === null) return;
+
+            if (!institutions) return null;
+
             const institutionList = isArray
                 ? (institutions as unknown as string[])
                 : [institutions as unknown as string];
@@ -292,6 +294,8 @@ class EventController {
     ): T[] {
         return events.filter(event => {
             const institutions = event[key];
+
+            if (!institutions) return null;
 
             const institutionList = isArray
                 ? (institutions as unknown as string[])

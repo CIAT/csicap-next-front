@@ -21,24 +21,15 @@ import React, { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
 import {DataFormat, FormattedBeneficiary, TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
 import ProfessionalController from "@/helpers/Component/Controller/ProfessionalController";
-import {
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
-import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
   filterFunctions,
-  filterFunctionsEvents, filterFunctionsProfessionals,
-  getUniqueValuesFunctionsEvents,
+  filterFunctionsProfessionals,
   getUniqueValuesFunctionsProfessionals
 } from "@/interfaces/Components/CustomTooltipHandler";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
