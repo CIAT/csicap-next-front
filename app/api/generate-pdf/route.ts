@@ -8,11 +8,11 @@ import path from "path";
 async function getReportData(reportId: string) {
   const dataset = await ReportsRepository.fetchEventById(reportId);
 
-  if (!dataset || !dataset.data || dataset.data.length === 0) {
+  if (!dataset || !dataset.data) {
     throw new Error("Report data not found");
   }
 
-  return dataset.data[0];
+  return dataset.data;
 }
 
 // Function to wrap text if it's longer than the allowed width

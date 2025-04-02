@@ -1,7 +1,7 @@
 export interface ReportFormat {
     id: string;
     created_at: string;
-    data: Report[];
+    data: Report;
 }
 
 export interface Report {
