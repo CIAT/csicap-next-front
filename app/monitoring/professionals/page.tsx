@@ -399,6 +399,8 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
   const processChartData = () => {
     setCounts(MapController.updateCountProfessionalsByProvince(filteredEvents));
 
+    console.log(MapController.updateCountProfessionalsByProvince(filteredEvents))
+
     initializeTreemapData(filteredEvents);
 
     const totalDataRecord = countTotalRecords(filteredEvents);

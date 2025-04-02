@@ -21,6 +21,7 @@ export interface TechnicalBeneficiaries {
     age_tc: string;
     municipalities_code: string[];
     submitted_date_tec: string;
+    muni_res_tec: string;
 }
 
 export interface DataItem {
