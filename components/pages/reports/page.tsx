@@ -29,6 +29,9 @@ import EventsController from "@/helpers/Component/Controller/EventsController";
 const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   const [allData, setAllData] = useState<EventFormat[]>([]);
   const [tempEventData, setTempEventData] = useState<EventFormat[]>([]);
+
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+
   const [componentState, setComponentState] = useState<CustomTooltipData[]>([]);
   const [axisState, setAxisState] = useState<CustomTooltipData[]>([]);
   const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>(
@@ -261,6 +264,11 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
       return acc;
     }, {} as { [key: string]: string });
 
+    if (dateRange[0] && dateRange[1]) {
+      filters["dateStart"] = EventsController.getFormattedDate(dateRange[0]);
+      filters["dateEnd"] = EventsController.getFormattedDate(dateRange[1]);
+    }
+
     // Fetch filtered reports and update the dropdown
     await fetchReports(filters);
 
@@ -280,6 +288,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
 
     await fetchReports();
     setSelectedReport(null);
+    setDateRange([null, null]);
   }
 
   const handleReportSelection = (
@@ -315,6 +324,9 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   return (
     <div className={styles.reports}>
       <CustomTooltip
+        useDate={true}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
         options={tooltipOptions}
         values={tooltipValues}
         onChange={(selectedValue, filterType) =>
