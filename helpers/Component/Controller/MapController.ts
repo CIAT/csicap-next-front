@@ -676,7 +676,7 @@ class MapController {
             if (!rawProvince) return;
 
             const province: string = this.removeAccents(this.getDepartmentNameByDepartmentCode(rawProvince.substring(0, 2)) ?? "no data");
-            console.log(province)
+
             if (province === "no data") return;
 
             if (provinceProfessionalsCounts[province]) {
