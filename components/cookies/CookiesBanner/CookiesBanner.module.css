@@ -13,6 +13,12 @@
     height: 8vh;
 }
 
+.buttons_container {
+    display: flex;
+    flex-direction: row;
+    gap: 2vw;
+}
+
 .cookieText {
     margin-right: 1rem;
 }

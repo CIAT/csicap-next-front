@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, SetStateAction, Dispatch} from "react";
 import styles from "./CookiesBanner.module.css";
 
 interface CookieBannerProps {
     onShowTerms: () => void;
+    showTerms: boolean;
+    setAcceptedTerms: Dispatch<SetStateAction<boolean>>;
 }
 
-const CookieBanner: React.FC<CookieBannerProps> = ({ onShowTerms }) => {
+const CookieBanner: React.FC<CookieBannerProps> = ({ onShowTerms, showTerms, setAcceptedTerms }) => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -15,9 +17,17 @@ const CookieBanner: React.FC<CookieBannerProps> = ({ onShowTerms }) => {
         }
     }, []);
 
-    const acceptCookies = () => {
-        localStorage.setItem("cookiesAccepted", "true");
-        onShowTerms();
+    const acceptCookies = (choice: boolean) => {
+        localStorage.setItem("cookiesAccepted", `${choice}`);
+
+        if (showTerms) {
+            onShowTerms();
+        }
+
+        if (choice) {
+            setAcceptedTerms(true);
+        }
+
         setIsVisible(false);
     };
 
@@ -32,9 +42,14 @@ const CookieBanner: React.FC<CookieBannerProps> = ({ onShowTerms }) => {
           términos y condiciones
         </button>
       </span>
-            <button onClick={acceptCookies} className={styles.cookieButton}>
-                Cerrar
-            </button>
+            <div className={styles.buttons_container}>
+                <button onClick={() => acceptCookies(true)} className={styles.cookieButton}>
+                    Aceptar
+                </button>
+                <button onClick={() => acceptCookies(false)} className={styles.cookieButton}>
+                    Rechazar
+                </button>
+            </div>
         </div>
     );
 };
