@@ -28,6 +28,13 @@ export default function RootLayout({
     const [showTerms, setShowTerms] = useState(false);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
 
+    useEffect(() => {
+        const cookiesAccepted = localStorage.getItem("cookiesAccepted");
+        if (cookiesAccepted) {
+            setAcceptedTerms(true);
+        }
+    }, []);
+
     return (
         <html lang="en">
         <head>
