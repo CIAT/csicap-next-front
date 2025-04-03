@@ -276,7 +276,6 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
 
     // Ensure the dropdown updates (derived from allEventData)
     setSelectedReport(null);
-    console.log(hasTooltipData())
 
     if (hasTooltipData()) {
       notify("Filtros aplicados");
@@ -296,7 +295,7 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     await fetchReports();
     setSelectedReport(null);
     setDateRange([null, null]);
-    console.log(hasTooltipData())
+
     if (hasTooltipData()) {
       notify("Filtros restaurados");
     }
