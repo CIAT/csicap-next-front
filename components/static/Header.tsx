@@ -88,7 +88,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                       onMouseLeave={handleMouseLeave}
                       onClick={() => handleDropdown("contact")}
                   >
-                    <Link href={getLink("/monitoring/calendar")} onClick={closeMenu}>
+                    <Link className={`${styles.padding}`} href={getLink("/monitoring/calendar")} onClick={closeMenu}>
                       Monitoreo
                     </Link>
                   </li>
@@ -98,7 +98,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                       onMouseLeave={handleMouseLeave}
                       onClick={() => handleDropdown("about")}
                   >
-                    <Link href={getLink("/evaluation/impact")} onClick={closeMenu}>
+                    <Link className={`${styles.padding}`} href={getLink("/evaluation/impact")} onClick={closeMenu}>
                       Evaluación de impacto
                     </Link>
                   </li>
@@ -108,7 +108,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
             {(isMonitoringPage) && (
                 <>
                   <li
-                      className={styles.header_nav_item}
+                      className={`${styles.padding} ${styles.header_nav_item}`}
                       onMouseEnter={() => handleMouseEnter("Seguimiento de eventos")}
                       onMouseLeave={handleMouseLeave}
                       onClick={() => handleDropdown("Seguimiento de eventos")}
@@ -117,22 +117,22 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                     {activeDropdown === "Seguimiento de eventos" && (
                         <ul className={styles.dropdownMenu}>
                           <li>
-                            <Link href={getLink("/monitoring/calendar")} onClick={closeMenu}>
+                            <Link className={`${styles.dropdown_padding}`} href={getLink("/monitoring/calendar")} onClick={closeMenu}>
                               Programa
                             </Link>
                           </li>
                           <li>
-                            <Link href={getLink("/monitoring/events")} onClick={closeMenu}>
+                            <Link className={`${styles.dropdown_padding}`} href={getLink("/monitoring/events")} onClick={closeMenu}>
                               Resumen
                             </Link>
                           </li>
                           <li>
-                            <Link href={getLink("/monitoring/trained")} onClick={closeMenu}>
+                            <Link className={`${styles.dropdown_padding}`} href={getLink("/monitoring/trained")} onClick={closeMenu}>
                               Capacitados
                             </Link>
                           </li>
                           <li>
-                            <Link href={getLink("/monitoring/reports")} onClick={closeMenu}>
+                            <Link className={`${styles.dropdown_padding}`} href={getLink("/monitoring/reports")} onClick={closeMenu}>
                               Reportes
                             </Link>
                           </li>
@@ -141,7 +141,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                   </li>
 
                   <li
-                      className={styles.header_nav_item}
+                      className={`${styles.padding} ${styles.header_nav_item}`}
                       onMouseEnter={() => handleMouseEnter("registro")}
                       onMouseLeave={handleMouseLeave}
                       onClick={() => handleDropdown("registro")}
@@ -150,12 +150,12 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                     {activeDropdown === "registro" && (
                         <ul className={styles.dropdownMenu}>
                           <li>
-                            <Link href={getLink("/monitoring/producers")} onClick={closeMenu}>
+                            <Link className={`${styles.dropdown_padding}`} href={getLink("/monitoring/producers")} onClick={closeMenu}>
                               Familias registradas
                             </Link>
                           </li>
                           <li>
-                            <Link href={getLink("/monitoring/professionals")} onClick={closeMenu}>
+                            <Link className={`${styles.dropdown_padding}`} href={getLink("/monitoring/professionals")} onClick={closeMenu}>
                               Profesionales
                             </Link>
                           </li>
@@ -168,7 +168,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
             {/* Render 'Indicadores' only if the URL contains 'evaluation' */}
             {isEvaluationPage && (
                 <li
-                    className={styles.header_nav_item}
+                    className={`${styles.padding} ${styles.header_nav_item}`}
                     onMouseEnter={() => handleMouseEnter("Indicadores")}
                     onMouseLeave={handleMouseLeave}
                     onClick={() => handleDropdown("Indicadores")}
@@ -177,17 +177,17 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                   {activeDropdown === "Indicadores" && (
                       <ul className={styles.dropdownMenu}>
                         <li>
-                          <Link href={getLink("/evaluation/impact")} onClick={closeMenu}>
+                          <Link className={`${styles.dropdown_padding}`} href={getLink("/evaluation/impact")} onClick={closeMenu}>
                             Impacto
                           </Link>
                         </li>
                         <li>
-                          <Link href={getLink("/evaluation/outcomes")} onClick={closeMenu}>
+                          <Link className={`${styles.dropdown_padding}`} href={getLink("/evaluation/outcomes")} onClick={closeMenu}>
                             Resultados
                           </Link>
                         </li>
                         <li>
-                          <Link href={getLink("/evaluation/performance")} onClick={closeMenu}>
+                          <Link className={`${styles.dropdown_padding}`} href={getLink("/evaluation/performance")} onClick={closeMenu}>
                             Ejecución
                           </Link>
                         </li>
@@ -196,7 +196,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                 </li>
             )}
             <li
-                className={styles.header_nav_item}
+                className={`${styles.padding} ${styles.header_nav_item}`}
                 onMouseEnter={() => handleMouseEnter("contact")}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleDropdown("contact")}
@@ -206,7 +206,7 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
               </Link>
             </li>
             <li
-                className={styles.header_nav_item}
+                className={`${styles.padding} ${styles.header_nav_item}`}
                 onMouseEnter={() => handleMouseEnter("about")}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleDropdown("about")}
