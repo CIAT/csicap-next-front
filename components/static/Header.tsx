@@ -196,22 +196,22 @@ const Header: FC<HeaderProps> = ({ showHeader }) => {
                 </li>
             )}
             <li
-                className={`${styles.padding} ${styles.header_nav_item}`}
+                className={styles.header_nav_item}
                 onMouseEnter={() => handleMouseEnter("contact")}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleDropdown("contact")}
             >
-              <Link href={getLink("/contact")} onClick={closeMenu}>
+              <Link className={styles.padding} href={getLink("/contact")} onClick={closeMenu}>
                 Contacto
               </Link>
             </li>
             <li
-                className={`${styles.padding} ${styles.header_nav_item}`}
+                className={styles.header_nav_item}
                 onMouseEnter={() => handleMouseEnter("about")}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleDropdown("about")}
             >
-              <Link href={getLink("/about")} onClick={closeMenu}>
+              <Link className={styles.padding} href={getLink("/about")} onClick={closeMenu}>
                 Acerca
               </Link>
             </li>
