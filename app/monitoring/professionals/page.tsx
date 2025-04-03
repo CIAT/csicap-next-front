@@ -587,7 +587,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                       <div className={styles.header_container}>
                         <div className={styles.text_header}>
                           <div className={styles.red_point}>*</div>
-                          <div className={styles.bold}>{EventsController.formatNumber(filteredEvents.length)}</div> profesionales
+                          <div className={styles.bold}>{EventsController.formatNumber(filteredEvents.length)}</div> profesionales registrados
                           en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(filteredEvents, "municipalities_code", true))}</div> departamentos
                         </div>
                         <ExportDropdown
