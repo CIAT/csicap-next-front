@@ -31,7 +31,7 @@ export default function RootLayout({
     useEffect(() => {
         const cookiesAccepted = localStorage.getItem("cookiesAccepted");
         if (cookiesAccepted) {
-            setAcceptedTerms(true);
+            setAcceptedTerms(JSON.parse(cookiesAccepted));
         }
     }, []);
 
