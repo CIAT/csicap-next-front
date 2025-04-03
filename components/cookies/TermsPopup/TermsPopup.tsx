@@ -11,514 +11,482 @@ const TermsPopup: FC<TermsPopupProps> = ({ onClose }) => {
         <div className={styles.container}>
             <div className={styles.content}>
                 {/* Main Title */}
-                <div className={styles.main_title}>POLÍTICA DE PRIVACIDAD</div>
+                <div className={styles.main_title}>PRIVACY POLICY</div>
 
                 {/* Terms of Use Section */}
-                <div className={styles.terms_title}>Términos de Uso – https://alliancebioversityciat.org/</div>
-                <div className={styles.title}>Fecha de vigencia:</div>
-                <p>Enero 2025</p>
+                <div className={styles.terms_title}>Terms of Use – https://agroalimentariasostenible.co/</div>
+                <div className={styles.title}>Effective date:</div>
+                <p>January 2025</p>
                 <p>
-                    Estos términos y condiciones (“Términos”) rigen su acceso y uso del sitio web{' '}
-                    <strong>alliancebioversityciat.org</strong> (“Sitio”), el sitio de la Alianza de Bioversity
-                    International y el Centro Internacional de Agricultura Tropical (CIAT), una organización de
-                    investigación para el desarrollo con sede en Italia, y miembro de{' '}
-                    <a href="https://www.cgiar.org/">CGIAR</a>.
+                    These terms and conditions (“Terms”) govern your access to and use of{' '}
+                    <a className={styles.link}
+                       href="https://agroalimentariasostenible.co/" data-linktype="external">https://agroalimentariasostenible.co/</a> (“Site”),
+                    Site hosted by the Alliance of Bioversity
+                    International and the International Center for Tropical Agriculture (CIAT), a
+                    research-for-development organization with headquarters in Italy and Colombia, and a member of{' '}
+                    <a href="https://www.cgiar.org/" data-linktype="external">CGIAR</a>.
                 </p>
                 <p>
-                    Al acceder o usar el Sitio, usted acepta estar sujeto a estos Términos. Además, pueden aplicarse
-                    leyes regionales, nacionales o locales al acceso y uso de este Sitio, y usted es responsable de
-                    cumplirlas.
+                    By accessing or using the Site, you agree to be bound by these Terms. In addition, regional,
+                    national or local laws may apply to the access and use of this Site and you are responsible to
+                    comply with them.
                 </p>
                 <p>
-                    Si no está de acuerdo con estos Términos, por favor salga del Sitio de inmediato. Además, pueden
-                    aplicarse términos de uso específicos para ciertos materiales, datos o información disponible a
-                    través del Sitio, en cuyo caso su acceso a dichos materiales se regirá por estos Términos, sujeto a
-                    dichos términos de uso específicos.
+                    If you do not agree to be bound by these Terms, please promptly exit the Site. In addition, specific
+                    terms of use may apply to specific materials, data or information available through the Site, in
+                    which case your access to such materials shall be governed by these Terms, subject to such specific
+                    terms of use.
                 </p>
                 <p>
-                    La Alianza se reserva el derecho de modificar estos Términos a su discreción en cualquier momento,
-                    siendo efectivas dichas modificaciones al publicarlas.
+                    The Alliance reserves the right to modify these Terms in its discretion at any time, such
+                    modifications being effective when posted.
                 </p>
                 <p>
-                    Si tiene alguna pregunta o inquietud sobre estos Términos, que incluyen nuestra Política de
-                    Privacidad y Protección de Datos y el Uso del Sitio, por favor contáctenos por correo postal a la
-                    dirección abajo indicada o por correo electrónico a{' '}
-                    <a className={styles.link} href="mailto:bioversity-ds-requests@cgiar.org">bioversity-ds-requests@cgiar.org</a>.
+                    If you have any questions or concerns about these Terms, which include our Privacy and Data
+                    Protection Policy and Use of the Site, please contact us by post at the below address or by email
+                    at {' '}
+                    <a className={styles.link} data-linktype="external"
+                       href="mailto:bioversity-ds-requests@cgiar.org">bioversity-ds-requests@cgiar.org</a>.
                 </p>
-                <p>Via di San Domenico 1, 00153 Roma, Italia</p>
-                <div className={styles.title}>Enlaces relacionados</div>
-                <ul>
-                    <li>
-                        <a className={styles.link} href="https://ciat.cgiar.org/legal/#Privacy-Data-Protection-Policy">
-                            Política de Privacidad y Protección de Datos
-                        </a>
-                    </li>
-                    <li>
-                        <a className={styles.link} href="https://ciat.cgiar.org/legal/#use-of-site">Uso del Sitio</a>
-                    </li>
-                </ul>
+                <p>Via di San Domenico 1, 00153 Rome, Italy</p>
 
                 {/* Privacy Policy Section */}
-                <h4>Política de Privacidad y Protección de Datos</h4>
-                <div className={styles.title}>Aspectos generales</div>
+                <h4>Privacy and Data Protection Policy</h4>
+                <div className={styles.title}>General aspects</div>
                 <p>
-                    La Alianza de Bioversity International y CIAT tiene como objetivo abrir y compartir ampliamente los
-                    resultados y productos de las investigaciones para el desarrollo. En el proceso de una mejor
-                    comunicación con los usuarios, la Alianza, a través de algunas funciones ofrecidas en este Sitio,
-                    recopila, almacena, protege, maneja y utiliza ciertos tipos de información como el nombre, apellido
-                    y correo electrónico para usuarios editores.
+                    The Alliance of Bioversity International and CIAT aims at opening up and widely sharing the results
+                    and products of research for development endeavors. In the process of better communicating with
+                    users, the Alliance, through some features offered through this Site, collects, handles and
+                    otherwise uses certain types of information such as Name, Surname, telephone and email.
                 </p>
                 <p>
-                    Los estándares de integridad, transparencia y equidad de la Alianza guiarán toda la información
-                    recopilada. Haremos todo lo razonable para proteger la Información de Identificación Personal o los
-                    Datos Personales que usted nos proporcione y manejaremos la información recopilada de manera
-                    adecuada.
+                    The Alliance’s standards for integrity, transparency and equity will guide all collected
+                    information. We will make every reasonable effort to protect Personally Identifiable Information or
+                    Personal Data provided by you and handle collected information appropriately.
                 </p>
                 <p>
-                    Lea esta Política cuidadosamente antes de proporcionar cualquier Dato Personal o Información de
-                    Identificación Personal. Por favor, proceda solo si encuentra aceptables los siguientes términos. De
-                    lo contrario, siempre puede navegar por nuestro Sitio sin compartir sus Datos Personales con
-                    nosotros.
+                    Read this Policy carefully before you provide any Personal Data or Personally Identifiable
+                    Information to us. Please proceed if you find the following terms agreeable. Otherwise, you are
+                    always welcome to peruse our Site without sharing your Personal Data with us.
                 </p>
-                <div className={styles.title}>Algunas definiciones</div>
-                <p>Estos son los términos clave utilizados en esta Política:</p>
+                <div className={styles.title}>Some definitions</div>
+                <p>These are key terms used in this Policy:</p>
                 <ul>
                     <li>
-                        <strong>Información de Identificación Personal (IIP)</strong>: Información relacionada con una
-                        persona natural identificable.
+                        <strong>Personally Identifiable Information (PII):</strong> Information relating to an
+                        identifiable natural person.
                     </li>
                     <li>
-                        <strong>Controlador de Datos</strong>: Entidad que determina los fines y medios del
-                        procesamiento de datos personales.
+                        <strong>Data Controller:</strong> Entity that determines the purposes and means of processing
+                        personal data.
                     </li>
                     <li>
-                        <strong>Procesador de Datos</strong>: Entidad que procesa datos personales en nombre del
+                        <strong>Data Processor:</strong> Entidad que procesa datos personales en nombre del
                         Controlador de Datos.
                     </li>
                     <li>
-                        <strong>Sujeto de Datos</strong>: Individuo cuyos datos personales son recopilados o procesados.
+                        <strong>Data Subject:</strong> Individual whose personal data is collected or processed.
                     </li>
                 </ul>
-                <h6>¿Qué tipo de Datos Personales recopilamos de los usuarios?</h6>
+                <h6>What type of Personal Data do we collect from users?</h6>
                 <p>
-                    Todos los visitantes pueden navegar y acceder a la información disponible públicamente en nuestro
-                    Sitio, sin necesidad de proporcionar ninguna Información de Identificación Personal.
+                    All visitors are free to peruse and access the publicly available information on our Site, without
+                    providing any Personally Identifiable Information.
                 </p>
                 <p>
-                    Además, tenemos acceso y usamos datos recopilados por Google Analytics, como la dirección IP de su
-                    computadora, la URL/dominio de cualquier sitio web que lo refiera, la fecha y hora de su visita al
-                    Sitio.
+                    In addition, we have access to and use data collected by Google Analytics such as your computer’s IP
+                    address, the URL/domain name of any referring website, the time and date of your visit to the Site,
+                    your devices location, operating system, and heat map.
                 </p>
-                <h6>¿Cómo se recopila la información?</h6>
+                <h6>How is the information collected?</h6>
                 <p>
-                    La Alianza utiliza plataformas de terceros para mejorar la experiencia del usuario. Estas
-                    plataformas permiten que usted interactúe y comparta nuestro contenido con sus redes, y nos permiten
-                    conocer sus preferencias para mejorar su experiencia. Estas plataformas incluyen Google Analytics,
-                    Google Tag Manager, Twitter, Facebook, LinkedIn, Instagram y ShareThis.
-                </p>
-                <p>
-                    Google Analytics utiliza cookies, que son pequeños archivos transferidos al disco duro de su
-                    computadora a través de su navegador (si usted lo permite) y que permiten a los sistemas del sitio o
-                    del proveedor de servicios reconocer su navegador y capturar y recordar cierta información (ver
-                    sección anterior). Consulte la política de privacidad de Google Analytics para más información sobre
-                    qué hacen con la información recopilada. Si desea saber más sobre las cookies utilizadas por Google
-                    Analytics, consulte esta página. En caso de que haya optado por desactivar las cookies de Google
-                    Analytics, puede instalar un complemento de exclusión para su navegador haciendo clic aquí.
+                    The Alliance uses third-party platforms to improve the experience of the user. These third-party
+                    platforms allow you to interact with and share our content with your networks, and allow us to know
+                    your preferences in order to improve your experience. These third-party platforms include Google
+                    Analytics and Clarity .
                 </p>
                 <p>
-                    Mejoramos nuestros productos y publicidad utilizando Microsoft Clarity para ver cómo usa nuestro
-                    sitio web. Al usar nuestro sitio, usted acepta que nosotros y Microsoft podamos recopilar y usar
-                    estos datos.
+                    Google Analytics uses cookies, which are small files transferred to your computer’s hard drive
+                    through your web browser (if you allow it) that enable the site’s or service provider’s systems to
+                    recognize your browser and capture and remember certain information (see section above). Please see
+                    Google Analytics’ privacy policy for information on what they do with information collected. If you
+                    are interested in getting to know more about the cookies used by Google Analytics, consult this
+                    page. In case you opted to prevent Google Analytics cookies altogether, you can install an opt-out
+                    add-on for your browser by clicking here.
                 </p>
                 <p>
-                    Nos asociamos con Microsoft Clarity y Microsoft Advertising para capturar cómo usa e interactúa con
-                    nuestro sitio web mediante métricas de comportamiento, mapas de calor y repetición de sesiones para
-                    mejorar y comercializar nuestros productos/servicios. Los datos de uso del sitio se capturan
-                    utilizando cookies de primera y tercera parte y otras tecnologías de seguimiento para determinar la
-                    popularidad de productos/servicios y la actividad en línea. Además, usamos esta información para la
-                    optimización del sitio, fines de seguridad/prevención de fraudes y publicidad. Para obtener más
-                    información sobre cómo Microsoft recopila y utiliza sus datos, visite el{' '}
+                    We improve our products and advertising by using Microsoft Clarity to see how you use our website.
+                    By using our site, you agree that we and Microsoft can collect and use this data.
+                </p>
+                <p>
+                    We partner with Microsoft Clarity and Microsoft Advertising to capture how you use and interact with
+                    our website through behavioral metrics, heatmaps, and session replay to improve and market our
+                    products/services. Website usage data is captured using first and third-party cookies and other
+                    tracking technologies to determine the popularity of products/services and online activity.
+                    Additionally, we use this information for site optimization, fraud/security purposes, and
+                    advertising. For more information about how Microsoft collects and uses your data, visit
+                    theMicrosoft Privacy Statement: {' '}
                     <a href="https://privacy.microsoft.com/privacystatement" data-linktype="external">
-                        Aviso de Privacidad de Microsoft
-                    </a>.
+                        https://privacy.microsoft.com/privacystatement
+                    </a>
                 </p>
                 <p>
-                    Le informaremos si y cuando se utilicen otras plataformas de terceros para la recopilación de datos
-                    en el futuro.
+                    We will let you know if and when other data-collecting third party platforms are used in the future.
                 </p>
                 <p>
-                    La información se recopila mediante cookies, plugins sociales y plataformas de terceros (por
-                    ejemplo, Google Analytics, Microsoft Clarity). La información recopilada se utiliza para:
-                </p>
-                <ul>
-                    <li>Mejorar la experiencia del usuario.</li>
-                    <li>Analizar el tráfico y el comportamiento de los usuarios.</li>
-                    <li>Personalizar la entrega de contenido.</li>
-                    <li>Diagnosticar y resolver problemas del sitio.</li>
-                </ul>
-                <h6>¿Cómo utilizamos la información recopilada?</h6>
-                <p>
-                    Tanto como Controlador de Datos como Procesador de Datos, podemos utilizar la información que
-                    recopilamos de usted como Sujeto de Datos de las siguientes maneras:
+                    Information is collected through cookies, social plugins, and third-party platforms (e.g., Google
+                    Analytics, Microsoft Clarity). The collected information is used to:
                 </p>
                 <ul>
-                    <li>Personalizar su experiencia y permitirnos ofrecerle el tipo de contenido que más le interesa.
-                    </li>
-                    <li>Mantenernos en contacto con usted y proporcionarle actualizaciones.</li>
-                    <li>Ayudar a diagnosticar y resolver problemas del sitio para mejorarlo y servirle mejor.</li>
-                    <li>
-                        Hacer seguimiento después de la correspondencia (consultas por correo electrónico), enviar
-                        información, responder a consultas y/o otras solicitudes o preguntas.
-                    </li>
+                    <li>Improve user experience.</li>
+                    <li>Analyze traffic and user behavior.</li>
+                    <li>Personalize content delivery.</li>
+                    <li>Diagnose and solve site issues.</li>
                 </ul>
+                <h6>How do we use the collected information?</h6>
                 <p>
-                    Al hacer lo anterior, su información de contacto y preferencias se comparte entre unos pocos
-                    miembros específicos y seleccionados del personal de la Alianza, quienes tienen la responsabilidad y
-                    obligación de adherirse a las políticas de privacidad de la Alianza.
-                </p>
-                <h6>¿Qué son las cookies?</h6>
-                <p>
-                    Una cookie es un pequeño archivo de texto que un sitio web guarda en su computadora o dispositivo
-                    móvil cuando lo visita. Permite que el sitio recuerde sus acciones y preferencias (como el idioma,
-                    el tamaño de la fuente y otras preferencias de visualización) durante un período de tiempo, de modo
-                    que se mantengan los mismos ajustes cuando regrese al sitio o navegue de una página a otra.
-                </p>
-                <h6>¿Utilizamos cookies? ¿Y para qué?</h6>
-                <p>Sí, el Sitio utiliza cookies proporcionadas por Google Analytics para rastrear y analizar información
-                    sobre:</p>
-                <ul>
-                    <li>cómo usan el sitio nuestros visitantes</li>
-                    <li>la distribución geográfica de los visitantes y la tecnología utilizada para acceder al Sitio;
-                    </li>
-                    <li>las preferencias de los usuarios, lo que nos permite ofrecerle servicios mejorados;</li>
-                    <li>el tráfico y la interacción en el Sitio para que en el futuro podamos ofrecerle mejores
-                        experiencias y herramientas; y
-                    </li>
-                    <li>el uso de funciones de redes sociales para contar el contenido visto y compartido.</li>
-                </ul>
-                <p>
-                    Puede optar por que su computadora le advierta cada vez que se envíe una cookie, o puede optar por
-                    desactivar todas las cookies. Esto se hace a través de la configuración de su navegador. Dado que
-                    cada navegador es un poco diferente, consulte el menú de ayuda de su navegador para aprender la
-                    forma correcta de modificar las cookies, y como se mencionó anteriormente, puede instalar un
-                    complemento para excluir las cookies de Google Analytics por completo, si es lo que ha decidido
-                    hacer.
-                </p>
-                <h6>¿Cómo se comparte la información recopilada?</h6>
-                <p>
-                    La Alianza utiliza la información internamente, principalmente entre miembros específicos y
-                    seleccionados del equipo de Comunicaciones y Alianzas, para realizar las tareas mencionadas
-                    anteriormente. No vendemos, intercambiamos ni transferimos de otra forma la Información de
-                    Identificación Personal a terceros, a menos que solicitemos específicamente el consentimiento del
-                    Sujeto de Datos y este lo haya proporcionado. Podemos contratar socios y otras partes para ayudarnos
-                    en la operación de nuestro sitio web, en la realización de nuestro negocio o en el servicio a
-                    nuestros usuarios. Si para estas actividades dichos terceros necesitan algunos Datos Personales, se
-                    lo compartiremos siempre y cuando acepten mantener esta información confidencial.
-                </p>
-                <p>
-                    Podemos revelar información cuando sea necesario para cumplir con la ley, hacer cumplir las
-                    políticas de nuestro Sitio o proteger nuestros derechos, propiedades o la seguridad de otros. En
-                    este sentido, la Alianza se reserva el derecho de divulgar Datos Personales en caso de que una
-                    autoridad gubernamental, nacional o internacional, lo solicite, o para investigar actos ilegales o
-                    fraudulentos cometidos contra terceros o contra la Alianza.
-                </p>
-                <h6>¿Cómo almacenamos y protegemos su información?</h6>
-                <p>
-                    En algunos de nuestros sistemas internos, su información personal se encuentra protegida detrás de
-                    redes seguras y solo es accesible por un número limitado de personas que tienen derechos especiales
-                    de acceso a dichos sistemas y están obligadas a mantener la confidencialidad de la información.
-                    Además, toda la información sensible que usted suministra se cifra mediante tecnología SSL (Secure
-                    Socket Layer).
-                </p>
-                <p>
-                    Implementamos diversas medidas de seguridad cuando un usuario ingresa, envía o accede a su
-                    información para mantener la seguridad de sus datos personales. Todas las transacciones se procesan
-                    a través de un proveedor de pasarela y no se almacenan ni procesan en nuestros servidores.
-                </p>
-                <p>
-                    La información personal que es recopilada y almacenada por servicios de terceros se protege de
-                    acuerdo con las políticas de privacidad de cada uno de estos proveedores. Cualquier información
-                    personal a la que acceda el Sitio de la Alianza de proveedores de servicios de terceros puede
-                    almacenarse en plataformas de Microsoft Office 365. La información no personal se protege por Google
-                    de acuerdo con sus políticas de privacidad y acuerdos de servicio.
-                </p>
-                <h6>Aplicación a enlaces de terceros</h6>
-                <p>
-                    Ocasionalmente, a nuestra discreción, podemos incluir enlaces a servicios o proveedores de terceros
-                    en nuestro sitio web, o mostrar contenido de sitios de terceros. Esta Política de Privacidad solo se
-                    aplica a este Sitio. Los sitios de terceros tienen políticas de privacidad separadas e
-                    independientes. En la medida permitida por la ley, no asumimos ninguna responsabilidad por el
-                    contenido y las actividades de esos sitios enlazados, ni garantizamos sus propios métodos de manejo
-                    de datos e información.
-                </p>
-                <h6>¿Cuánto tiempo retenemos la Información de Identificación Personal?</h6>
-                <p>
-                    De acuerdo con nuestra política de retención de datos, conservaremos sus Datos Personales solo
-                    durante el tiempo razonablemente necesario para lograr los fines para los cuales se recopilan y para
-                    cumplir con nuestras obligaciones legales e intereses comerciales legítimos.
-                </p>
-                <p>
-                    La información recopilada por terceros, como la dirección IP, la información recopilada a través de
-                    cookies, la URL/dominio de cualquier sitio web que lo refiera, etc., se mantiene de acuerdo con las
-                    políticas de dichos terceros.
-                </p>
-                <h6>¿Cómo puede un Sujeto de Datos acceder a sus datos, actualizarlos, eliminarlos, retirar su
-                    consentimiento, presentar una queja o expresar sus inquietudes?</h6>
-                <p>
-                    Si tiene preguntas sobre sus derechos de privacidad, desea revisar cualquier Dato Personal que
-                    mantengamos sobre usted, corregir, retirar su consentimiento, eliminar sus Datos Personales,
-                    presentar una queja o expresar alguna inquietud, puede contactarnos directamente en primera
-                    instancia para que podamos atender su reclamo.
+                    Whether as a Data Controller or as a Data Processor, we may use the information we collect from you
+                    as a Data Subject in the following ways:
                 </p>
                 <ul>
                     <li>
-                        Contáctenos por correo electrónico a{' '}
+                        To personalize your experience and to allow us to deliver the type of content you are most
+                        interested in.
+                    </li>
+                    <li>To stay in touch with you and provide updates.</li>
+                    <li>
+                        To help diagnose and solve issues with the site in order to improve it and better serve you.
+                    </li>
+                    <li>
+                        To follow up with you after correspondence (email inquiries), send information, respond to
+                        inquiries, and/or other requests or questions.
+                    </li>
+                </ul>
+                <p>
+                    In doing any of the above, your contact information and preferences are shared among specific and
+                    selected few Alliance staff, who have a responsibility and obligation to adhere to Alliance privacy
+                    policies.
+                </p>
+                <h6>What are cookies?</h6>
+                <p>
+                    A cookie is a small text file that a website saves on your computer or mobile device when you visit
+                    the site. It enables the website to remember your actions and preferences (such as language, font
+                    size and other display preferences) over a period of time, in order to keep the same settings
+                    whenever you come back to the site or browse from one page to another.
+                </p>
+                <h6>Do we use cookies? If so, what for?</h6>
+                <p>Yes, the Site uses cookies provided by Google Analytics  to track and analyze information about:</p>
+                <ul>
+                    <li>how our visitors use the site;</li>
+                    <li>
+                        the geographical distribution of visitors and the technology used to access the Site;
+                    </li>
+                    <li>user’s preferences, which enables us to provide you with improved services;</li>
+                    <li>
+                        the Site traffic and Site interaction so that we can offer you better experiences and tools in the future; and
+                    </li>
+                    <li>the use of the functions of social media to count seen and shared content.</li>
+                </ul>
+                <p>
+                    You can choose to have your computer warn you each time a cookie is being sent, or you can choose to
+                    turn off all cookies. You do this through your browser settings. Since each browser is a little
+                    different, look at your browser’s Help Menu to learn the correct way to modify your cookies, and as
+                    mentioned above, you can install an add-on to opt out of Google Analytics’ cookies altogether, if
+                    that is what you chose to do.
+                </p>
+                <h6>How is the collected information shared?</h6>
+                <p>
+                    The Alliance uses the information internally, mostly among selected and specific members of the
+                    Communications and Partnerships team to perform the tasks mentioned above (see section 4). We do not
+                    sell, trade, or otherwise transfer Personally Identifiable Information to outside parties unless we
+                    specifically ask Data Subjects for their consent to do it and you as a Data Subject have provided
+                    it. We may engage partners and other parties to assist us in operating our website, conducting our
+                    business, or serving our users. If for these activities, such parties needed some Personal Data, we
+                    would share it with them so long as they agree to keep this information confidential.
+                </p>
+                <p>
+                    We may release information when it is necessary to comply with the law, enforce our Site policies,
+                    or protect ours or others’ rights, property or safety. In this line, the Alliance reserves the right
+                    to disclose Personal Data in case of a request by a national or international government authority,
+                    to investigate illegal or fraudulent acts committed against third parties or against the Alliance.
+                </p>
+                <h6>How do we store and safeguard your information?</h6>
+                <p>
+                    For some of our internal systems, your personal information is contained behind secured networks and
+                    is only accessible by a limited number of persons who have special access rights to such systems,
+                    and are required to keep the information confidential. In addition, all sensitive information you
+                    supply is encrypted via Secure Socket Layer (SSL) technology .
+                </p>
+                <p>
+                    We implement a variety of security measures when a user enters, submits, or accesses their
+                    information to maintain the safety of your personal information. All transactions are processed
+                    through a gateway provider and are not stored or processed on our servers.
+                </p>
+                <p>
+                    Personal information that is collected and stored by third party services is protected according to
+                    the privacy policies of each of these providers. Any personal information that is accessed by the
+                    Alliance’s Site from third-party service providers may be stored in Microsoft Office 365 platforms.
+                    Non-personal information is safeguarded by Google according to their privacy and terms of service
+                    agreements.
+                </p>
+                <h6>Application to third-party links</h6>
+                <p>
+                    Occasionally, at our discretion, we may include links to third-party services or providers on our
+                    website, or feature content from third-party sites. This Privacy Policy only applies to this Site.
+                    Third-party sites have separate and independent privacy policies. To the extent permitted by law, we
+                    assume neither responsibility for the content and activities of those linked sites, nor give
+                    warranties about their own data and information handling.
+                </p>
+                <h6>How long do we retain Personally Identifiable Information?</h6>
+                <p>
+                    In accordance with our data retention policy, we will retain your Personal Data only for as long as
+                    is reasonably necessary to achieve the purposes for which it is collected and for our legal
+                    entitlements and legitimate business interests.
+                </p>
+                <p>
+                    Information collected by external parties, such as IP address, information collected through
+                    cookies, the URL/domain name of any referring website, and so on is maintained according to their
+                    policies.
+                </p>
+                <h6>How can a Data Subject access her/his data, update it, delete it, withdraw consent, lodge a complaint, or raise concerns?</h6>
+                <p>
+                    If you have questions about your privacy rights, want to review any Personal Data that we maintain
+                    about you, correct, withdraw your consent, delete your Personal Data, lodge a complaint, or raise a
+                    concern, you can contact us directly in the first instance so that we can address your complaint.
+                </p>
+                <ul>
+                    <li>
+                        Contact us by email at {' '}
                         <a className={styles.link} href="mailto:bioversity-ds-requests@cgiar.org">
                             bioversity-ds-requests@cgiar.org
                         </a>
                     </li>
                 </ul>
                 <p>
-                    <strong>Alianza de Bioversity International y CIAT</strong>
+                    <strong>Alliance of Bioversity International and CIAT</strong>
                 </p>
                 <p>
-                    Via di San Domenico 1, 00153 Roma, Italia. Sin embargo, también puede comunicarse con la Autoridad
-                    Italiana de Protección de Datos a través de su sitio web en{' '}
-                    <a className={styles.link} href="https://www.garanteprivacy.it/web/guest/home_en">
-                        https://www.garanteprivacy.it/web/guest/home_en
+                    Km 17 recta Cali- Palmira, Valle del Cauca, Colombia. However, you can also contact the Italian Data
+                    Protection Authority via their website at{' '}
+                    <a className={styles.link} href="mailto:contactenos@sic.gov.co">
+                        contactenos@sic.gov.co
+                    </a>
+                </p>
+                <p>
+                    Kindly notice that as long as permitted by law, a request for deletion of Personal Data or the
+                    revocation of an authorization to hold Personal Data may not proceed if the Data Subject has a legal
+                    or contractual duty to remain in the data files managed by the Alliance.
+                </p>
+                <h6>Availability of the Privacy Policy and updates</h6>
+                <p>
+                    This Privacy Policy is effective as of January 1, 2025 and available to you through our website at
+                    the {' '}
+                    <a className={styles.link} href="https://agroalimentariasostenible.co/">
+                        https://agroalimentariasostenible.co/
                     </a>{' '}
-                    o escribirles a:
-                </p>
-                <p>Piazza di Monte Citorio, 121 – 00186 Roma, Italia</p>
-                <p>
-                    Tenga en cuenta que, en la medida permitida por la ley, una solicitud para eliminar Datos Personales
-                    o revocar una autorización para conservar Datos Personales puede no proceder si el Sujeto de Datos
-                    tiene un deber legal o contractual de permanecer en los archivos de datos gestionados por la
-                    Alianza.
-                </p>
-                <h6>Disponibilidad de la Política de Privacidad y actualizaciones</h6>
-                <p>
-                    Esta Política de Privacidad es efectiva a partir del 1 de septiembre de 2021 y está disponible para
-                    usted en nuestro sitio web en la URL{' '}
-                    <a className={styles.link} href="https://alliancebioversityciat.org/privacy-policy">
-                        https://alliancebioversityciat.org/privacy-policy
-                    </a>{' '}
-                    para ser consultada, impresa o descargada.
+                    and its subdomains. viewing, printing or downloading.
                 </p>
                 <p>
-                    La Alianza se reserva el derecho de enmendar los términos de esta Política en cualquier momento.
-                    Publicaremos una nota informándole sobre cualquier actualización o enmienda a nuestra Política en el
-                    sitio web{' '}
-                    <a className={styles.link} href="https://alliancebioversityciat.org/privacy-policy">
-                        https://alliancebioversityciat.org/privacy-policy
-                    </a>.
+                    The Alliance reserves the right to amend the terms of this Policy at any time. We will post a note informing about any updates or amendments to our Policy at{' '}
+                    <a className={styles.link} href="https://agroalimentariasostenible.co/">
+                        https://agroalimentariasostenible.co/
+                    </a> and its subdomains.
                 </p>
-                <p>Última edición: 2021-09-01</p>
+                <p>Last Edited on February, 2025</p>
 
                 {/* Use of the Site Section */}
-                <div className={styles.title}>Uso del Sitio</div>
-                <h6>Aspectos generales</h6>
+                <div className={styles.title}>Use of the Site</div>
+                <h6>General aspects</h6>
                 <p>
-                    Estos Términos abordan las condiciones aplicables a materiales, datos o información específica
-                    disponibles a través del Sitio de la Alianza de Bioversity International y el Centro Internacional
-                    de Agricultura Tropical (CIAT) en{' '}
-                    <a className={styles.link} href="https://alliancebioversityciat.org/privacy-policy">
-                        https://alliancebioversityciat.org/privacy-policy
+                    These Terms address the conditions applicable to specific materials, data or information available
+                    through the Site{' '}
+                    <a className={styles.link} href="https://agroalimentariasostenible.co/">
+                        https://agroalimentariasostenible.co/
                     </a>
-                    . En caso de que el acceso y uso de dichos materiales, datos o información se rijan por términos
-                    específicos, estos Términos se aplicarán, sujetos a dichos términos de uso específicos.
+                    and its subdomains, hosted by the Alliance of Bioversity International and the International Center
+                    for Tropical Agriculture (CIAT), and Amplify, a service provides by Amazon Web Services (AWS). In
+                    case, access and use to those materials, data or information is governed by specific terms, these
+                    Terms shall apply, subject to such specific terms of use.
                 </p>
                 <p>
-                    Al acceder y usar este Sitio, usted acepta estar sujeto a estos Términos, a todas las leyes y
-                    regulaciones aplicables, y acepta que es responsable de cumplir con cualquier ley local aplicable.
+                    By accessing and using this Site, you are agreeing to be bound by these Terms, all applicable laws
+                    and regulations, and agree that you are responsible for compliance with any applicable local laws.
                 </p>
                 <p>
-                    Si no está de acuerdo con estos Términos, absténgase de acceder y usar este sitio.
+                    If you do not agree with these Terms, refrain from accessing and using this site.
                 </p>
                 <p>
-                    Los materiales contenidos en este Sitio están protegidos por la ley de derechos de autor y marcas
-                    registradas aplicables.
+                    The materials contained in this Site are protected by applicable copyright and trademark law.
                 </p>
-                <h6 className={styles.title}>Derechos de autor</h6>
-                <h5 className={styles.autor_rights}>Derechos de autor © Alianza de Bioversity y CIAT (Centro Internacional de Agricultura Tropical)</h5>
+                <h6 className={styles.title}>Copyright</h6>
+                <h5 className={styles.autor_rights}>Copyright © CIAT (International Center for Tropical
+                    Agriculture)</h5>
                 <p>
-                    A excepción del contenido de terceros, la Alianza de Bioversity y CIAT (la Alianza) posee el título
-                    del recurso en línea y los materiales y contenido subidos y publicados en el Sitio.
+                    Except for third party content, CIAT (the Alliance) holds the title to the online resource and the
+                    materials and content uploaded and posted on the Site.
                 </p>
-                <div className={styles.title}>Licencia de Uso</div>
+                <div className={styles.title}>Use License</div>
                 <h6>Software</h6>
                 <p>
-                    El software detrás de este Sitio es Drupal, un software libre (libre como en libertad) licenciado
-                    bajo la Licencia Pública General GNU versión 2.0 (GPL-2) o posterior, como la versión 3.0 (GPL-3).
-                    Para ver los términos completos de la licencia: para la versión 2.0 vea aquí, y para la versión 3.0
-                    vea aquí.
+                    The software behind this Site is built using Next.js, a React framework for server-rendered applications and static site generation.
                 </p>
-                <p>De acuerdo con la GPL-3 usted puede:</p>
+                <p>According to the GPL-3 you may:</p>
                 <ul>
-                    <li>Utilizarlo para fines personales, educativos, institucionales o comerciales;</li>
+                    <li>use it for personal, educational, institutional or commercial purposes;</li>
                     <li>
-                        Copiar, utilizar, redistribuir, modificar y/o vender, siempre que utilice la Licencia Pública
-                        General GNU publicada por la Free Software Foundation;
+                        copy, use, redistribute, modify, and/or sell as long as you use the GNU General Public License
+                        as published by the Free Software Foundation;
                     </li>
-                    <li>Instalarlo en tantas computadoras como desee.</li>
-                </ul>
-                <p>Además, según esta licencia, debe:</p>
-                <ul>
-                    <li>Mantener los derechos de autor u otras notificaciones de propiedad que acompañen a los
-                        materiales;
+                    <li>install it in as many computers as you wish.</li>
+                    <li>
+                        maintain the copyright or other proprietary notations coming with the materials;
                     </li>
-                    <li>Incluir una copia literal de la GPL para el software original y para las versiones modificadas
-                        del mismo;
+                    <li>
+                        include a verbatim copy of the GPL for the original software and for modified versions of it;
                     </li>
-                    <li>Indicar los cambios realizados, en caso de que los haga;</li>
-                    <li>Divulgar el código fuente y una versión modificada del mismo si distribuye una versión
-                        modificada.
+                    <li>state the changes as such if you make them;</li>
+                    <li>
+                        disclose the source code and a modified version of the code if you distribute a modified version of it.
                     </li>
                 </ul>
                 <p>
-                    Esta licencia se terminará automáticamente si viola alguna de estas restricciones y podrá ser
-                    terminada por CIAT en cualquier momento. Tras la terminación de esta licencia, deberá destruir
-                    cualquier material descargado en su posesión, ya sea en formato electrónico o impreso.
+                    This license shall automatically terminate if you violate any of these restrictions and may be
+                    terminated by CIAT at any time. Upon termination of this license, you must destroy any downloaded
+                    materials in your possession whether in electronic or printed format.
                 </p>
-                <h6>Contenido</h6>
+                <h6>Content</h6>
                 <p>
-                    En general, todos los productos informativos a nivel CGIAR están regulados por los Principios de
-                    CGIAR sobre la Gestión de Activos Intelectuales (<a className={styles.link}
-                    href="https://cgspace.cgiar.org/bitstream/handle/10947/4486/CGIAR%2520IA%2520Principles.pdf?sequence=5">Microsoft
-                    Word - Principios de IA de CGIAR</a>) y por la Política de Acceso Abierto de CGIAR (<a className={styles.link}
-                    href="https://cgspace.cgiar.org/bitstream/handle/10947/2875/CGIAR%2520OA%2520Policy%2520-%2520October%25202%25202013%2520-%2520Approved%2520by%2520Consortium%2520Board.pdf?sequence=4">Política
-                    de Acceso Abierto y Gestión de Datos de CGIAR (aprobada por el Consortium Board en octubre de
-                    2013)</a>).
-                </p>
-                <p>
-                    El contenido o materiales a los que se accede a través del Sitio, incluyen, pero no se limitan a,
-                    datos en bruto, datos anotados o de otro modo analizados, información, informes, videos, imágenes,
-                    presentaciones, documentos escritos como informes, artículos (incluyendo artículos arbitrados),
-                    materiales de cursos y servicios (denominados en conjunto “Materiales”) que sean generados, creados
-                    o desarrollados ya sea (i) por la Alianza (“Materiales de la Alianza”); (ii) por personas que pueden
-                    incluir al personal o colaboradores asociados con los Programas de Investigación de CGIAR,
-                    Plataformas de CGIAR y otros Centros de CGIAR (“Materiales Contribuidos”); o (iii) pertenecientes a
-                    terceros, puestos a disposición a través del sitio de la Plataforma mediante enlaces o por citación
-                    o agregación (“Materiales de Terceros”).
-                </p>
-                <p className={styles.third_title}>(i) Materiales de la Alianza</p>
-                <p>
-                    A menos que se indique lo contrario de forma explícita, los Materiales de la Alianza están
-                    disponibles bajo la Licencia Creative Commons Atribución-NoComercial 4.0 Internacional (CC-BY-NC
-                    4.0), que le permite descargar, copiar, reproducir, modificar, remezclar, construir a partir de,
-                    difundir y publicar sin necesidad de solicitar permiso al titular, siempre y cuando sea para fines
-                    no comerciales, se le dé crédito a los autores/titulares según se indique en la citación
-                    correspondiente, y el aviso de derechos de autor y esta licencia se mantengan con los Materiales de
-                    la Alianza, incluso si forman parte de trabajos derivados. Los términos completos de la licencia
-                    están disponibles aquí.
-                </p>
-                <p className={styles.third_title}>(ii) Materiales Contribuidos</p>
-                <p>
-                    Como contribuyente de Materiales Contribuidos, debe tener el derecho de hacer tal contribución. Como
-                    titular de los Materiales Contribuidos, usted o la organización que representa, según corresponda,
-                    conservará los derechos de autor. Si los Materiales Contribuidos son propiedad de un tercero, debe
-                    asegurarse de tener los derechos para conceder a la Alianza la licencia especificada en este
-                    documento. Al contribuir, usted acepta otorgar a CIAT, a sus sucesores y cesionarios, una licencia
-                    gratuita, sin cargos de acceso, libre de regalías, perpetua, mundial, no exclusiva y sublicenciable
-                    para utilizar, copiar, modificar, ejecutar, publicar y difundir dichos Materiales Contribuidos en el
-                    Sitio y a través de trabajos derivados. Los contribuyentes deberán garantizar, en la medida de lo
-                    posible, que los Materiales Contribuidos no infrinjan los derechos de terceros, incluidos los
-                    derechos de autor, la protección de la privacidad, el consentimiento informado y/o los derechos de
-                    acceso y distribución de beneficios relacionados con la biodiversidad. En caso de duda, el
-                    contribuyente deberá abstenerse de aportar Materiales Contribuidos al Sitio o, si ya han sido
-                    aportados, retirar dichos Materiales Contribuidos. El contribuyente defenderá, indemnizará y
-                    mantendrá indemne a la Alianza de cualquier reclamo, daño o costo (incluidos los honorarios
-                    razonables de abogados) que resulte de información falsa o engañosa o de negligencia.
+                    In general, all informational products at CGIAR level are regulated by the CGIAR Principles on the
+                    Management of Intellectual Assets (<a className={styles.link}
+                                                          href="https://cgspace.cgiar.org/bitstream/handle/10947/4486/CGIAR%2520IA%2520Principles.pdf?sequence=5">Microsoft
+                    Word - CGIAR IA Principlesvp</a>) and the CGIAR Open Access Policy (<a
+                    className={styles.link}
+                    href="https://cgspace.cgiar.org/bitstream/handle/10947/2875/CGIAR%2520OA%2520Policy%2520-%2520October%25202%25202013%2520-%2520Approved%2520by%2520Consortium%2520Board.pdf?sequence=4">CGIAR
+                    Open Access and Data Management Policy (approved by Consortium Board October 2013</a>).
                 </p>
                 <p>
-                    Si elimina un Material Contribuido, la Alianza no garantiza que podrá o asumirá la responsabilidad
-                    de eliminar las contribuciones eliminadas del Sitio, incluyendo, pero no limitándose a, aquellas que
-                    estén fuera de su control razonable o a las que usted o terceros hayan reenviado su Material
-                    Contribuido.
+                    The content or materials accessed through the Site, include but are not limited to raw data,
+                    annotated or otherwise analyzed data, information, reports, videos, images, presentations, written
+                    documents such as reports, articles (including peer-reviewed articles), course materials, and
+                    services (referred all as “Materials”) that are generated, created or developed either (i) by the
+                    Alliance (“Alliance Materials”); (ii) by people who may include staff of or personnel associated
+                    with CGIAR Research Programs, CGIAR Platforms and other CGIAR Centers (“Contributed Materials”); or
+                    (iii) belonging to or originated by third parties, made available through the Platform site through
+                    links or by citation or aggregation (“Third Party Materials”).
+                </p>
+                <p className={styles.third_title}>(i) Alliance Materials</p>
+                <p>
+                    Unless otherwise and explicitly stated, the Alliance Materials are available under the Creative
+                    Commons Attribution NonCommercial License 4.0 International (CC-BY-NC 4.0), that allows you to
+                    download, copy, reproduce, modify, remix, build upon, disseminate, publish without seeking
+                    permission from the owner as long as it is for non-commercial purposes, you give credit to
+                    authors/owner as provided in the respective citation, and the copyright notice and this license
+                    remain with the Alliance Materials, even if they become part of derived works. Full terms of the
+                    license are available here.
+                </p>
+                <p className={styles.third_title}>(ii) Contributed Materials</p>
+                <p>
+                    As a contributor of Contributed Materials you must have the right to make such a contribution. As
+                    the owner of Contributed Materials, you or the organization you represent, as applicable, shall
+                    retain copyright. If Contributed Materials are owned by a third party, you must make sure that you
+                    have the rights to confer upon the Alliance the license hereby specified. As a contributor you agree
+                    to grant CIAT, its successors and assigns a free of access charges, royalty free, perpetual,
+                    worldwide, non-exclusive, and sublicensable license to use, copy, modify, perform, publish and
+                    disseminate such Contributed Materials in the Site and through derivative works. Contributors must
+                    warrant to the best of their knowledge that the Contributed Materials do not infringe the rights of
+                    any third party, including copyrights, privacy protection, informed consent and/or
+                    biodiversity-related access and benefit-sharing rights. In case of doubt, a contributor shall
+                    abstain from providing Contributed Materials to the Site or if already contributed, withdraw such
+                    Contributed Materials. The contributor shall defend, indemnify, and holdthe Alliance harmless from
+                    any resulting claims, damages or costs (including reasonable attorney fees) in case of false or
+                    misleading information or negligence.
                 </p>
                 <p>
-                    CIAT podría, pero no está obligado a, revisar su Material Contribuido. La Alianza puede, a su
-                    exclusivo criterio, eliminar su Material Contribuido si establece que viola estos Términos. La
-                    aceptación de Materiales Contribuidos no constituye un endoso o patrocinio por parte de la Alianza.
-                </p>
-                <p className={styles.third_title}>(iii) Materiales de Terceros</p>
-                <p>
-                    Los Materiales de Terceros se rigen por los términos aplicables y contenidos en los sitios web de
-                    terceros. La Alianza no es responsable ni tiene control sobre dichos Materiales de Terceros. La
-                    Alianza proporciona acceso a dichos Materiales de Terceros únicamente para conveniencia. La Alianza
-                    hace todo lo posible, pero no garantiza la revisión de los Materiales de Terceros y no hace
-                    representaciones ni garantías sobre el material, la información, los productos o los servicios
-                    ofrecidos por terceros. La exhibición de Materiales de Terceros no constituye un endoso o patrocinio
-                    por parte de la Alianza de dichos Materiales de Terceros. El uso de cualquier Material de Terceros
-                    es bajo el riesgo del usuario.
-                </p>
-                <h6>Exactitud de los Materiales</h6>
-                <p>
-                    Los Materiales que aparecen en el Sitio de la Alianza pueden incluir errores técnicos, tipográficos
-                    o fotográficos. La Alianza no garantiza que cualquiera de dichos Materiales en sus Sitios sea
-                    exacto, completo o actual. La Alianza puede realizar cambios en cualquiera de los Materiales
-                    contenidos en su sitio en cualquier momento sin previo aviso. No obstante, la Alianza no se
-                    compromete a actualizar los Materiales. Los usuarios y contribuyentes del Sitio de la Alianza son
-                    completamente responsables de la exactitud del contenido que suben.
-                </p>
-                <h6>Descargo de responsabilidad</h6>
-                <p>
-                    El software de la Alianza y los materiales de la Alianza en el Sitio se proporcionan “tal cual”. La
-                    Alianza no ofrece garantías, ya sean expresas o implícitas, incluyendo, sin limitación, garantías de
-                    comerciabilidad, idoneidad para un propósito particular, no infracción de derechos de propiedad
-                    intelectual u otras violaciones de derechos. Además, la Alianza no garantiza ni hace
-                    representaciones sobre la exactitud, integridad, resultados probables, oportunidad o confiabilidad
-                    del uso del código fuente o código objeto del software, de los datos, información, contenido o
-                    cualquier otro material en el sitio web, o de otro modo relacionado con dichos materiales, o en
-                    otros sitios web vinculados a este Sitio.
-                </p>
-                <h6>Limitaciones</h6>
-                <p>
-                    Salvo lo prohibido por la ley, en ningún caso la Alianza o sus proveedores serán responsables por
-                    daños (incluyendo, sin limitación, daños especiales, indirectos, punitivos o consecuentes o daños
-                    por pérdida de datos o ganancias, o debido a interrupciones en el negocio) que surjan del acceso,
-                    uso o confianza, o de la imposibilidad de acceder, usar o confiar en el Sitio de CIAT y el contenido
-                    o cualquier otro material en el Sitio.
-                </p>
-                <h6>Uso prohibido</h6>
-                <p>
-                    Usted se compromete a no utilizar el Sitio de la Alianza, incluidos los Materiales, para ningún
-                    propósito ilegal o de cualquier forma que viole los derechos de terceros, incluidos los derechos de
-                    propiedad intelectual. Además, usted acepta no utilizar los logotipos y el nombre de la Alianza sin
-                    la autorización previa y por escrito de la Alianza.
-                </p>
-                <h6>Modificaciones</h6>
-                <p>
-                    La Alianza puede revisar estos Términos en cualquier momento sin previo aviso. La versión más actual
-                    de los Términos se puede consultar haciendo clic en el enlace o enlaces ubicados en el Sitio. Por
-                    favor, revise estos Términos periódicamente para ver si han cambiado. Al utilizar el sitio web de la
-                    Alianza, usted acepta estar sujeto a la versión vigente de estos Términos.
-                </p>
-                <h6>No renuncia</h6>
-                <p>
-                    El hecho de que alguna de las partes no exija o haga cumplir estrictamente alguna de las
-                    disposiciones de estos Términos no se interpretará como una renuncia de ningún derecho o
-                    disposición. Nada de lo aquí establecido se considerará como una renuncia de ninguno de los
-                    privilegios e inmunidades de CIAT y Bioversity International.
-                </p>
-                <h6>Ley aplicable</h6>
-                <p>
-                    Estos Términos se rigen e interpretan de acuerdo con los principios generales y reconocidos del
-                    derecho internacional, excluyéndose cualquier sistema jurídico nacional. Se entenderá que los
-                    principios generales del derecho incluyen los Principios UNIDROIT para los Contratos Comerciales
-                    Internacionales de 2016. Usted y la Alianza se esforzarán por resolver cualquier disputa,
-                    controversia o reclamación que surja de o se relacione con estos Términos o el Sitio mediante
-                    negociación.
+                    If you delete a Contributed Material,the Alliance does not warrant that it will be able to or will
+                    take responsibility for removing deleted contributions from the Site, including but not limited to
+                    those outside of its reasonable control or those to whom you or others may have forwarded your
+                    Contributed Material.
                 </p>
                 <p>
-                    En caso de que no se alcance un acuerdo amistoso dentro de los sesenta (60) días posteriores a la
-                    notificación por escrito de dicha disputa, controversia o reclamación por una de las partes a la
-                    otra, la disputa, controversia o reclamación se resolverá mediante arbitraje de acuerdo con las
-                    Reglas de Arbitraje de la UNCITRAL vigentes en la fecha de este contrato. Se designará un árbitro
-                    por mutuo acuerdo de las partes, o, en su defecto, por el Secretario General del Tribunal Permanente
-                    de Arbitraje. El lugar del arbitraje, propuesto por la Alianza, será un lugar neutral donde las
-                    partes puedan esperar un resultado justo. El idioma que se utilizará en el procedimiento arbitral
-                    será el inglés.
+                    CIAT might, but it is no obligation to, review your Contributed Material.the Alliance may, at its
+                    sole discretion, remove your Contributed Material if it establishes that it violates these Terms.
+                    Acceptance of Contributed Material does not constitute an endorsement or sponsorship of the
+                    Contributed Material bythe Alliance.
+                </p>
+                <p className={styles.third_title}>(iii) Third Party Materials</p>
+                <p>
+                    Third Party Materials are governed by the terms applicable and contained in third party websites.
+                    the Alliance is not responsible for or has no control over such Third Party Materials.the Alliance
+                    provides access to such Third Party Materials for convenience only.the Alliance makes every effort
+                    but does not ensure revision of Third Party Material and makes no warranties or representations
+                    about the material, information, products, or services offered by third parties. Display of Third
+                    Party Materials does not constitute endorsement or sponsorship bythe Alliance of any Third Party
+                    Materials. Use of any such Third Party Material is at the user’s own risk.
+                </p>
+                <h6>Accuracy of Materials</h6>
+                <p>
+                    Materials appearing onthe Alliance’s Site could include technical, typographical, or photographic
+                    errors. The Alliancedoes not warrant that any of such Materials on its Sites are accurate, complete
+                    or current.The Alliance may make changes to any Materials contained on its site at any time without
+                    notice. Nevertheless the Alliance does not make any commitment to update the Materials. Users of and
+                    contributors to the the Alliance Site are completely responsible for the accuracy of the content
+                    uploaded by them.
+                </p>
+                <h6>Disclaimer</h6>
+                <p>
+                    The Alliance’s software and the Alliance's materials on the Site are provided on an “as is” basis.
+                    CThe Alliance makes no warranties, either expressed or implied, including, without limitation, as to
+                    the merchantability, fitness for a particular purpose, non-infringement of intellectual property
+                    rights or any other violation of rights.
+                    Further, the Alliance does not warrant or make any representations concerning the accuracy,
+                    completeness, likely results, timeliness, or reliability of the use of the source code or object
+                    code of the software, of the data, information, content or any other materials on the website, or
+                    otherwise relating to such materials, or on any other sites or websites linked to this Site.
+                </p>
+                <h6>Limitations</h6>
+                <p>
+                    Except as prohibited by law, in no event shall the Alliance or its suppliers be liable for any
+                    damages (including, without limitation, special, indirect, punitive or consequential damages or
+                    damages for any loss of data or profit, or due to business interruption) arising out of the access,
+                    use or reliance, or of the inability to access, use or rely on CIAT’s Site and the content or any
+                    other materials on the Site.
+                </p>
+                <h6>Prohibited use</h6>
+                <p>
+                    You agree not to use the Alliances’s Site, including the Materials, for any unlawful purpose or in
+                    any way that would violate the rights of others, including intellectual property rights. Further,
+                    you agree to not use the Alliance's logos and its name without the Alliance’s prior written
+                    authorization.
+                </p>
+                <h6>Modifications</h6>
+                <p>
+                    The Alliance may review these Terms at any time without notice. The most current version of the
+                    Terms can be reviewed by clicking on the link or links located on the Site. Please check these Terms
+                    periodically to see whether they have changed. By using The Alliance’s website you are agreeing to
+                    be bound by the then current version of these Terms.
+                </p>
+                <h6>No waiver</h6>
+                <p>
+                    Either party’s failure to insist on or enforce strict performance of any of the Terms shall not be
+                    construed as a waiver of any provision or right. Nothing herein shall be deemed a waiver of any of
+                    the privileges and immunities of CIAT and Bioversity International.
+                </p>
+                <h6>Governing law</h6>
+                <p>
+                    These Terms are governed by and construed in accordance with recognized and general principles of
+                    international law, to the exclusion of any single national system of law. General principles of law
+                    shall be deemed to include the UNIDROIT Principles of International Commercial Contracts of 2016.
+                    You and the Alliance will use their best efforts to resolve any dispute, controversy or claim
+                    arising out of or relating to these Terms or the Site by negotiation.
+                </p>
+                <p>
+                    In the case an amicable settlement is not reached within sixty (60) days of such dispute,
+                    controversy or claim having been notified by one party to the other in writing, the dispute,
+                    controversy or claim will be settled by arbitration in accordance with the UNCITRAL Arbitration
+                    Rules in effect on the date of this contract. There will be one arbitrator appointed by the parties
+                    by mutual consent, or failing this, by the Secretary-General of the Permanent Court of Arbitration.
+                    The place of arbitration, proposed by the Alliance, will be a neutral venue where the parties can
+                    expect a fair result. The language to be used in the arbitration proceedings will be English.
                 </p>
             </div>
             <div className={styles.button_container}>
