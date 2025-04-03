@@ -26,6 +26,8 @@ import {
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
 import EventsController from "@/helpers/Component/Controller/EventsController";
 
+import {ToastContainer, toast, Bounce} from 'react-toastify';
+
 const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   const [allData, setAllData] = useState<EventFormat[]>([]);
   const [tempEventData, setTempEventData] = useState<EventFormat[]>([]);
@@ -274,6 +276,11 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
 
     // Ensure the dropdown updates (derived from allEventData)
     setSelectedReport(null);
+    console.log(hasTooltipData())
+
+    if (hasTooltipData()) {
+      notify("Filtros aplicados");
+    }
   };
 
   const handleResetFilters = async () => {
@@ -289,6 +296,16 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     await fetchReports();
     setSelectedReport(null);
     setDateRange([null, null]);
+    console.log(hasTooltipData())
+    if (hasTooltipData()) {
+      notify("Filtros restaurados");
+    }
+  }
+
+  const hasTooltipData = () => {
+    let hasValues: boolean;
+    hasValues = tooltipValues.some((element) => element.value !== "");
+    return hasValues;
   }
 
   const handleReportSelection = (
@@ -321,99 +338,110 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 
+  const notify = (message: string) => toast.success(message);
+
   return (
-    <div className={styles.reports}>
-      <CustomTooltip
-        useDate={true}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-        options={tooltipOptions}
-        values={tooltipValues}
-        onChange={(selectedValue, filterType) =>
-          handleTooltipChange(
-            selectedValue,
-            filterType,
-            tempEventData,
-            setTooltipOptions,
-            tooltipValues,
-            setTooltipValues,
-            filterFunctionsEvents,
-            getUniqueValuesFunctionsEvents(),
-            filterTypes
-          )
-        }
-        onClick={handleApplyFilters}
-        onReset={handleResetFilters}
-        placeholders={placeHolders}
-        filterTypes={filterTypes}
-        getOptionLabel={(option) => option.label}
-        getOptionValue={(option) => String(option.value)}
-      />
-      <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
-        <div className={styles.first_div}>
-          <div className={styles.filter_div}>
-            <div style={{ width: "60%" }}>
-              <Select
-                options={reportOptions}
-                value={selectedReport}
-                onChange={handleReportSelection}
-                placeholder="Elige un reporte"
-                isSearchable
-              />
-            </div>
-            <div className="gap-2 flex flex-row">
-              <Button
-                variant="contained"
-                onClick={downloadPdf}
-                disabled={!pdfUrl}
-                style={{ fontSize: "1vw" }}
-              >
-                PDF
-              </Button>
-              <Button
-                style={{ fontSize: "1vw" }}
-                variant="contained"
-                onClick={() =>
-                  selectedReport && handleDownloadDocx(selectedReport.value)
-                }
-                disabled={!selectedReport}
-              >
-                Word
-              </Button>
-            </div>
-          </div>
-          <div className={styles.preview_div}>
-            {pdfUrl ? (
-              <iframe src={pdfUrl} className={styles.pdf} />
-            ) : (
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  alignContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <p style={{ textAlign: "center" }}>
-                  Por favor, selecciona un reporte para visualizar
-                </p>
-                <div
-                  style={{
-                    width: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <LoadingAnimation />
-                </div>
+      <div className={styles.reports}>
+        <CustomTooltip
+            useDate={true}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            options={tooltipOptions}
+            values={tooltipValues}
+            onChange={(selectedValue, filterType) =>
+                handleTooltipChange(
+                    selectedValue,
+                    filterType,
+                    tempEventData,
+                    setTooltipOptions,
+                    tooltipValues,
+                    setTooltipValues,
+                    filterFunctionsEvents,
+                    getUniqueValuesFunctionsEvents(),
+                    filterTypes
+                )
+            }
+            onClick={handleApplyFilters}
+            onReset={handleResetFilters}
+            placeholders={placeHolders}
+            filterTypes={filterTypes}
+            getOptionLabel={(option) => option.label}
+            getOptionValue={(option) => String(option.value)}
+        />
+        <div style={{display: "flex", flexDirection: "row", height: "100vh"}}>
+          <div className={styles.first_div}>
+            <div className={styles.filter_div}>
+              <div style={{width: "60%"}}>
+                <Select
+                    options={reportOptions}
+                    value={selectedReport}
+                    onChange={handleReportSelection}
+                    placeholder="Elige un reporte"
+                    isSearchable
+                />
               </div>
-            )}
+              <div className="gap-2 flex flex-row">
+                <Button
+                    variant="contained"
+                    onClick={downloadPdf}
+                    disabled={!pdfUrl}
+                    style={{fontSize: "1vw"}}
+                >
+                  PDF
+                </Button>
+                <Button
+                    style={{fontSize: "1vw"}}
+                    variant="contained"
+                    onClick={() =>
+                        selectedReport && handleDownloadDocx(selectedReport.value)
+                    }
+                    disabled={!selectedReport}
+                >
+                  Word
+                </Button>
+              </div>
+            </div>
+            <div className={styles.preview_div}>
+              {pdfUrl ? (
+                  <iframe src={pdfUrl} className={styles.pdf}/>
+              ) : (
+                  <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        alignContent: "center",
+                        alignItems: "center",
+                      }}
+                  >
+                    <p style={{textAlign: "center"}}>
+                      Por favor, selecciona un reporte para visualizar
+                    </p>
+                    <div
+                        style={{
+                          width: "50%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                    >
+                      <LoadingAnimation/>
+                    </div>
+                  </div>
+              )}
+            </div>
           </div>
         </div>
+        <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            closeOnClick
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
       </div>
-    </div>
   );
 };
 
