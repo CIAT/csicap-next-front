@@ -304,6 +304,11 @@ const ReportsPage: FC<PageCustomProps> = ({ customStyles }) => {
   const hasTooltipData = () => {
     let hasValues: boolean;
     hasValues = tooltipValues.some((element) => element.value !== "");
+
+    if (dateRange[0] && dateRange[1]) {
+      hasValues = true;
+    }
+
     return hasValues;
   }
 
