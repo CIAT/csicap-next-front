@@ -2,6 +2,12 @@
     scroll-behavior: smooth;
 }
 
+.button_container {
+    display: flex;
+    flex-direction: row;
+    gap: 3vw;
+}
+
 .img_background {
     background-image: url("/photo-collage.png");
     background-repeat: no-repeat;
@@ -38,7 +44,7 @@
     background-color: #e3e3e3;
     border-radius: 8px;
     font-size: 20px;
-    width: 250px;
+    width: 24vw;
     height: 60px;
 }
 
