@@ -4,7 +4,7 @@ import style from "@/components/data/Map/map.module.css";
 import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import mapboxgl, {DataDrivenPropertyValueSpecification} from "mapbox-gl";
 import {colors as staticColors} from "@/interfaces/Map/colors";
-import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
+import {MappedTrained} from "@/interfaces/Components/AssistanceComponent";
 import html2canvas from "html2canvas";
 
 class MapController {
@@ -566,6 +566,15 @@ class MapController {
         }).filter(feature => feature !== undefined);
     }
 
+    static getDepartmentNameByDepartmentCode(departmentCode: string) {
+        const data = colombiaGeoJSONByCities.features.find((feature: any) =>
+            feature.properties.dpto_ccdgo === departmentCode);
+
+        if (!data) return;
+
+        return data.properties.dpto_cnmbr;
+    }
+
     static updateCountTrainedByCityCodes(trainedPeople: MappedTrained[]): NestedDictionary {
         const cityCodeTrainedCounts: NestedDictionary = {};
 
@@ -658,21 +667,25 @@ class MapController {
         return cityEventCounts;
     }
 
-    static updateCountProfessionalsByProvince(events: { department_where_you_work: string[] }[]): Record<string, string> {
+    static updateCountProfessionalsByProvince(events: { muni_res_tec: string }[]): Record<string, string> {
         const provinceProfessionalsCounts: Record<string, string> = {};
 
         events.forEach(event => {
-            event.department_where_you_work.forEach(department => {
-                const province: string = this.removeAccents(department);
+            const rawProvince = event.muni_res_tec;
 
-                if (provinceProfessionalsCounts[province]) {
-                    const currentCount = parseInt(provinceProfessionalsCounts[province].replace(/\D/g, ''), 10);
-                    provinceProfessionalsCounts[province] = `Profesionales: ${currentCount + 1}`;
-                    return;
-                }
+            if (!rawProvince) return;
 
-                provinceProfessionalsCounts[province] = 'Profesionales: 1';
-            });
+            const province: string = this.removeAccents(this.getDepartmentNameByDepartmentCode(rawProvince.substring(0, 2)) ?? "no data");
+
+            if (province === "no data") return;
+
+            if (provinceProfessionalsCounts[province]) {
+                const currentCount = parseInt(provinceProfessionalsCounts[province].replace(/\D/g, ''), 10);
+                provinceProfessionalsCounts[province] = `Profesionales: ${currentCount + 1}`;
+                return;
+            }
+
+            provinceProfessionalsCounts[province] = 'Profesionales: 1';
         });
 
         return provinceProfessionalsCounts;
@@ -703,52 +716,35 @@ class MapController {
         return cityBeneficiariesCounts;
     }
 
-    static updateCountAssistantsByGender(events: {
-        city: string;
-        province: string;
-        event_objective: string;
-        female_participants: string;
-        male_participants: string;
-        other_participants: string;
-    }[]): NestedDictionary {
-        const genderCounts: NestedDictionary = {};
-
-        events.forEach(event => {
-            const province = this.removeAccents(event.province);
-            const city = this.removeAccents(event.city);
-            const maleCount = Number(event.male_participants) || 0;
-            const femaleCount = Number(event.female_participants) || 0;
-            const otherCount = Number(event.other_participants) || 0;
-
-            if (!genderCounts[province]) {
-                genderCounts[province] = {};
-            }
-
-            if (!genderCounts[province][city]) {
-                genderCounts[province][city] = `Capacitados: 0<br>Mujeres: 0<br>Hombres: 0<br>Otros: 0`;
-            }
-
-            const existingCounts = genderCounts[province][city];
-            const currentTotal = this.extractCount(existingCounts, 'Capacitados');
-            const currentFemale = this.extractCount(existingCounts, 'Mujeres');
-            const currentMale = this.extractCount(existingCounts, 'Hombres');
-            const currentOther = this.extractCount(existingCounts, 'Otros');
-
-            const newTotal = currentTotal + maleCount + femaleCount + otherCount;
-            const newFemale = currentFemale + femaleCount;
-            const newMale = currentMale + maleCount;
-            const newOther = currentOther + otherCount;
-
-            genderCounts[province][city] = `Capacitados: ${newTotal}<br>Mujeres: ${newFemale}<br>Hombres: ${newMale}<br>Otros: ${newOther}`;
-        });
-
-        return genderCounts;
-    }
-
     static extractCount(text: string, label: string): number {
         const regex = new RegExp(`${label}: (\\d+)`);
         const match = text.match(regex);
         return match ? Number(match[1]) : 0;
+    }
+
+    static getDepartmentCount(
+        municipality_codes: string[]
+    ): number {
+        const departmentCodes: string[] = [];
+        let departmentsCount = 0;
+
+        municipality_codes.forEach((code) => {
+            if(!code) return;
+            const departmentCode = code.substring(0, 2);
+            departmentCodes.push(departmentCode);
+        })
+
+        departmentsCount = Array.from(new Set(departmentCodes)).length;
+
+        return departmentsCount;
+    }
+
+    static getMunicipalitiesCount(
+        municipality_codes: string[]
+    ): number {
+        let municipalitiesCount = 0;
+        municipalitiesCount = Array.from(new Set(municipality_codes)).length;
+        return municipalitiesCount;
     }
 }
 

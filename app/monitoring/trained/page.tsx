@@ -196,6 +196,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
   const [cropState, setCropState] = useState<CustomTooltipData[]>([]);
   const [departmentState, setDepartmentState] = useState<CustomTooltipData[]>([]);
   const [cityState, setCityState] = useState<CustomTooltipData[]>([]);
+  const [institutionState, setInstitutionState] = useState<CustomTooltipData[]>([]);
+
   const [noInformationMunicipality, setNoInformationMunicipality] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -224,6 +226,10 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       value: "",
       label: "Municipio",
     },
+    {
+      value: "",
+      label: "Institución",
+    },
   ]);
 
   const tooltipOptions: Array<CustomTooltipData[]> = [
@@ -232,7 +238,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     cropState,
     occupationState,
     departmentState,
-    cityState
+    cityState,
+    institutionState
   ];
 
   const setTooltipOptions: Array<
@@ -243,7 +250,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     setCropState,
     setOccupationState,
     setDepartmentState,
-    setCityState
+    setCityState,
+    setInstitutionState
   ];
 
   const filterTypes = [
@@ -252,7 +260,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "crop",
     "occupation",
     "department",
-    "city"
+    "city",
+    "institution"
   ];
 
   const placeHolders = [
@@ -261,7 +270,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     "Sistema productivo",
     "Ocupación",
     "Departamento",
-    "Municipio"
+    "Municipio",
+    "Institución"
   ];
 
   useEffect(() => {
@@ -280,6 +290,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       const uniqueOccupation = EventController.getUniqueValues(mappedData, "group_ocupations");
       const uniqueDepartments = EventsController.getUniqueValues(mappedData, "dep_res_complete_label");
       const uniqueCities = EventsController.getUniqueValues(mappedData, "muni_res_complete_label");
+      const uniqueInstitutions = EventsController.getUniqueValues(data, "organization_affiliation_complete", true);
 
       setAllTrainedData(mappedData);
       setTempTrainedData(mappedData);
@@ -289,6 +300,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       setOccupationState([...uniqueOccupation]);
       setDepartmentState([...uniqueDepartments]);
       setCityState([...uniqueCities]);
+      setInstitutionState([...uniqueInstitutions]);
 
       initializeTreemapData(mappedData);
     });
@@ -309,12 +321,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       "No disponible": 0,
     };
 
-    let occupationCount: { [key: string]: number } = {
-      "Productor(a) agropecuario(a)": 0,
-      "Técnicos/profesionales": 0,
-      "Investigador(a)": 0,
-      "Otro": 0,
-    };
+    let occupationCount: { [key: string]: number } = {};
 
     let menCount = 0;
     let womenCount = 0;
@@ -334,11 +341,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       }
 
       // Count occupation
-      if(occupation in occupationCount){
-        occupationCount[occupation]++;
-      } else {
-        occupationCount["Otro"]++;
-      }
+      occupationCount[occupation] = (occupationCount[occupation] || 0 ) + 1;
 
       // Count age
       if (age !== null && age !== 0) {
@@ -368,14 +371,6 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
     }));
     setTreemapData(mappedData);
   };
-
-  const occupationBackgroundColors = Object.keys(occupationStats).map(
-    (_, index) => colors[index % colors.length]
-  );
-
-  const occupationBorderColors = Object.keys(occupationStats).map(
-    (_, index) => borderColors[index % borderColors.length]
-  );
 
   const treeData = {
     datasets: [
@@ -414,8 +409,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       {
         label: "Distribución de Edad",
         data: Object.values(ageStats),
-        backgroundColor: occupationBackgroundColors,
-        borderColor: occupationBorderColors,
+        backgroundColor: TrainedController.generateBackgroundColors(Object.keys(ageStats)),
+        borderColor: TrainedController.generateBorderColors(Object.keys(ageStats)),
       },
     ],
   };
@@ -426,8 +421,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       {
         label: "Distribución de Ocupaciones",
         data: Object.values(occupationStats),
-        backgroundColor: occupationBackgroundColors,
-        borderColor: occupationBorderColors,
+        backgroundColor: TrainedController.generateBackgroundColors(Object.keys(occupationStats)),
+        borderColor: TrainedController.generateBorderColors(Object.keys(occupationStats)),
       },
     ],
   };
@@ -438,8 +433,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       {
         label: "Distribución de Género",
         data: [genderStats.men, genderStats.women, genderStats.other],
-        backgroundColor: occupationBackgroundColors,
-        borderColor: occupationBorderColors,
+        backgroundColor: TrainedController.generateBackgroundColors(Object.keys(genderStats)),
+        borderColor: TrainedController.generateBorderColors(Object.keys(genderStats)),
       },
     ],
   };
@@ -621,7 +616,8 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                 <div className={styles.header_container}>
                   {noInformationMunicipality > 0 && (
                       <div className={styles.important_text}>
-                        <div className={styles.important}>*</div> No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
+                        <div className={styles.important}>*</div>
+                        <div className={styles.bold}>{EventsController.formatNumber(tempTrainedData.length)}</div> capacitados en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div> departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div> municipios. No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
                       </div>
                   )}
                   <ExportDropdown

@@ -60,9 +60,18 @@
   border-bottom: 1px solid white;
   font-size: 1rem;
   text-align: left;
-  padding: 15px;
   display: flex;
   align-items: center;
+}
+
+.padding {
+  padding: 15px 30px;
+}
+
+.dropdown_padding {
+  padding: 10px 20px;
+  width: 100%;
+  display: flex;
 }
 
 /* Hamburger menu settings */
@@ -94,9 +103,7 @@
 }
 
 .dropdownMenu li {
-  padding: 15px;
   text-align: left;
-  cursor: pointer;
 }
 
 .dropdownMenu li:hover {
@@ -104,7 +111,6 @@
 }
 
 .dropdownToggle {
-  cursor: pointer;
   display: block;
   width: 100%;
   text-align: left;
@@ -233,9 +239,7 @@
 }
 
 @media (min-width: 2000px) {
-
   .header_nav_item{
-    padding-left: 60px;
     font-size: 1vw;
   }
 }

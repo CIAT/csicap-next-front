@@ -8,6 +8,7 @@ export interface Trained {
     dep_res_complete_label: string;
     muni_res_complete_label: string;
     start_date: string;
+    organization_affiliation_complete: string[];
 }
 
 export interface MappedTrained {

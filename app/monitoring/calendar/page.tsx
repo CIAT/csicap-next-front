@@ -151,8 +151,8 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
         const uniqueInstitutions = EventsController.getInstitutionCategories(
           formattedEvents,
           "institution",
-            EventsController.predefinedInstitutions,
-            true
+            true,
+            EventsController.predefinedInstitutions
         );
         const uniqueCrops = EventsController.getUniqueValues(
           formattedEvents,
@@ -353,6 +353,10 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                   title="Eventos por municipio"
                   header={
                     <div className={styles.header_container}>
+                      <div className={styles.text_header}>
+                        <div className={styles.red_point}>*</div>
+                        <div className={styles.bold}>{EventsController.formatNumber(tempEventData.length)}</div> eventos en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> municipios
+                      </div>
                       <ExportDropdown
                           mapImageName={"calendario_map.png"}
                       />

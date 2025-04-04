@@ -22,6 +22,7 @@ export interface EventsData {
     not_assistant: string;
     age: string;
     is_reported: string;
+    municipality_code: string;
 }
 
 export interface Event {
@@ -47,6 +48,7 @@ export interface Event {
     report_date: string;
     not_assistant: string;
     is_reported: string;
+    municipality_code: string;
 }
 
 export interface DataFormat {

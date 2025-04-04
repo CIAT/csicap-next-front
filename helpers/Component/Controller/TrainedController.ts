@@ -2,6 +2,38 @@ import {TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent
 import {MappedTrained, Trained} from "@/interfaces/Components/AssistanceComponent";
 
 class TrainedController {
+    static colors = [
+        "#FECF00",
+        "#669d16",
+        "#0E6E8C",
+        "#00BFB3",
+        "#FAAF41",
+        "#C8A041",
+        "#80C41C",
+        "#D2D200",
+        "#569aaf",
+    ];
+
+    static borderColors = [
+        "#FECF00",
+        "#669d16",
+        "#0E6E8C",
+        "#00BFB3",
+        "#FAAF41",
+        "#C8A041",
+        "#80C41C",
+        "#D2D200",
+        "#569aaf",
+    ];
+
+    static generateBackgroundColors(elements: string[]): string[] {
+        return elements.map((_, index) => this.colors[index % this.colors.length]);
+    }
+
+    static generateBorderColors(elements: string[]): string[] {
+        return elements.map((_, index) => this.borderColors[index % this.borderColors.length]);
+    }
+
     static extractProvincesCode(events: MappedTrained[]): string[] {
         const uniqueCodes = new Set<string>();
 

@@ -3,13 +3,15 @@
 import { Inter } from "next/font/google";
 import { NextUIProvider } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import "./globals.css";
 import "../components/static/static.module.css";
 import Header from "@/components/static/Header";
 import Footer from "@/components/static/Footer";
 import { metadata } from "@/components/Metadata/Metadata";
 import Script from "next/script";
+import CookieBanner from "@/components/cookies/CookiesBanner/CookiesBanner";
+import TermsPopup from "@/components/cookies/TermsPopup/TermsPopup";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +26,14 @@ export default function RootLayout({
     const isProduction = process.env.NEXT_PUBLIC_ENV_DEPLOY === "prod";
 
     const [showTerms, setShowTerms] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+    useEffect(() => {
+        const cookiesAccepted = localStorage.getItem("cookiesAccepted");
+        if (cookiesAccepted) {
+            setAcceptedTerms(JSON.parse(cookiesAccepted));
+        }
+    }, []);
 
     return (
         <html lang="en">
@@ -31,7 +41,7 @@ export default function RootLayout({
             <title>{metadata.title}</title>
             <meta name="description" content={metadata.description} />
 
-            {isProduction && (
+            {(isProduction && acceptedTerms) && (
                 <>
                     {/* Google Analytics */}
                     <Script async src="https://www.googletagmanager.com/gtag/js?id=G-14FSWFJX6S" />
@@ -77,6 +87,12 @@ export default function RootLayout({
                     <Footer />
                 </footer>
             )}
+
+            {/* Banner de Cookies */}
+            <CookieBanner onShowTerms={() => setShowTerms(prevState => !prevState)} showTerms={showTerms} setAcceptedTerms={setAcceptedTerms}/>
+
+            {/* Modal de términos (solo se muestra si showTerms es true) */}
+            {showTerms && <TermsPopup onClose={() => setShowTerms(false)} />}
         </NextUIProvider>
         </body>
         </html>

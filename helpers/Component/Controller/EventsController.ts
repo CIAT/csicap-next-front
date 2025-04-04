@@ -3,9 +3,40 @@ import {EventsData} from "@/interfaces";
 import {parseISO} from "date-fns";
 
 class EventController {
+    static getFormattedDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     static formatNumber = (num: number): string => {
         return new Intl.NumberFormat('es-ES', { useGrouping: true }).format(num);
     };
+
+    static getMunicipalitiesCodes = (events: any, column: string, isArray: boolean = false): string[] => {
+        const codes = events.flatMap((event: any) => {
+            const code = event[column];
+
+            if (!code) return [];
+
+            if (isArray) {
+                return code.map((value: string) => this.addZero(value));
+            }
+
+            return [this.addZero(code)];
+        });
+
+        return Array.from(new Set(codes));
+    }
+
+    static addZero = (number: string): string => {
+        if (number.length === 4) {
+            return "0" + number;
+        }
+
+        return number;
+    }
 
     static getEventsByStartDate<T extends { date: string | Date, event_type: string }>(
         events: T[],
@@ -14,10 +45,6 @@ class EventController {
     ): T[] {
         return events.filter(event => {
             if (!event.date) return false;
-
-            if (event.event_type === "Visita de finca") {
-                return null;
-            }
 
             const eventDate = new Date(event.date);
             if (isNaN(eventDate.getTime())) return false;
@@ -118,12 +145,23 @@ class EventController {
             if (isArray) {
                 const values = event[key] as unknown as string[];
                 return values?.some(val => {
-                    if(val !== "nan"){
-                       return value === val
-                    }
+                    if(
+                        val === "nan" ||
+                        val === null
+                    ) return false;
+
+                    return value === val
                 });
             }
-            return event[key] === value;
+
+            const val = event[key];
+
+            if(
+                val === "nan" ||
+                val === null
+            ) return false;
+
+            return val === value;
         });
     }
 
@@ -240,21 +278,27 @@ class EventController {
     static getInstitutionCategories<T>(
         events: T[],
         key: keyof T,
-        predefinedInstitutions: Set<String>,
         isArray: boolean = false,
+        predefinedInstitutions?: Set<String>,
     ): CustomTooltipData[] {
         const categoryCounts: { [key: string]: number } = {};
         events.forEach(event => {
             const institutions = event[key];
-            if (institutions === null) return;
+
+            if (!institutions) return null;
+
             const institutionList = isArray
                 ? (institutions as unknown as string[])
                 : [institutions as unknown as string];
 
             institutionList.forEach(institution => {
-                const category = predefinedInstitutions.has(institution)
-                    ? institution
-                    : "Otras";
+                let category = institution;
+
+                if(predefinedInstitutions){
+                    category = predefinedInstitutions.has(institution)
+                        ? institution
+                        : "Otras";
+                }
 
                 if (!categoryCounts[category]) {
                     categoryCounts[category] = 0;
@@ -276,24 +320,29 @@ class EventController {
         events: T[],
         key: keyof T,
         selectedCategory: string,
-        predefinedInstitutions: Set<String>,
+        predefinedInstitutions?: Set<String>,
         isArray: boolean = false,
     ): T[] {
         return events.filter(event => {
             const institutions = event[key];
 
+            if (!institutions) return null;
+
             const institutionList = isArray
                 ? (institutions as unknown as string[])
                 : [institutions as unknown as string];
 
-            return institutionList.some(institution =>
-                predefinedInstitutions.has(institution)
-                    ? institution === selectedCategory
-                    : selectedCategory === "Otras"
-            );
+            if(predefinedInstitutions) {
+                return institutionList.some(institution =>
+                    predefinedInstitutions.has(institution)
+                        ? institution === selectedCategory
+                        : selectedCategory === "Otras"
+                );
+            }
+
+            return institutionList.some(institution => institution === selectedCategory);
         });
     }
-
 }
 
 export default EventController;

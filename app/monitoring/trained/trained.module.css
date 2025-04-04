@@ -148,8 +148,15 @@
 
 .important_text {
   font-weight: 500;
-  font-size: 0.5vw;
+  font-size: 0.7vw;
+  width: 22vw;
   display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.bold {
+  font-weight: bold;
 }
 
 .treemap_container {
@@ -218,6 +225,13 @@
 @media (min-width: 2000px) {
   .card_header {
     font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 1280px){
+  .important_text {
+    font-size: 0.7vw;
+    width: 18vw;
   }
 }
 

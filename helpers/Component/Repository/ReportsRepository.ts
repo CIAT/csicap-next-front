@@ -24,7 +24,6 @@ class ReportsRepository {
       // Encode the reportId to handle any special characters
       const encodedReportId = encodeURIComponent(reportId);
       const url = `${baseUrl}?id_event=${encodedReportId}`; // Construct the URL with encoded reportId
-      
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -48,7 +47,7 @@ class ReportsRepository {
       const url = `${baseUrl}?${queryParams}`; // Construct the full URL with filters
   
       const response = await fetch(`/api/verify-token?shortName=${encodeURIComponent(url)}`);
-  
+
       if (!response.ok) {
           alert("No hay reportes para los filtros seleccionados.");
           throw new Error("Error fetching filtered reports");

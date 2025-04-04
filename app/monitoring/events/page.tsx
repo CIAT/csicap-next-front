@@ -36,6 +36,7 @@ import {
   handleReset,
   handleTooltipChange,
 } from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
+import MapController from "@/helpers/Component/Controller/MapController";
 
 Chart.register(
   Tooltip,
@@ -336,8 +337,8 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       const uniqueInstitutions = EventsController.getInstitutionCategories(
         formattedEvents,
         "institution",
+          true,
           EventsController.predefinedInstitutions,
-          true
       );
       const uniqueCrops = EventsController.getUniqueValues(
         formattedEvents,
@@ -466,8 +467,23 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
 
   const ejeCounts: { [key: string]: number } = {};
   tempEventData.forEach((EventFormat) => {
+    const componentOne = "Componente 1";
+    const componentThree = "Componente 3";
+
     if (EventFormat.eje && Array.isArray(EventFormat.eje)) {
       EventFormat.eje.forEach((eje) => {
+        const ejeNumber = eje.split("-")[0].trim();
+
+        if(ejeNumber === "1" || ejeNumber === "2"){
+          ejeCounts[componentOne] = (ejeCounts[componentOne] || 0) + 1;
+          return;
+        }
+
+        if(ejeNumber === "5" || ejeNumber === "6"){
+          ejeCounts[componentThree] = (ejeCounts[componentThree] || 0) + 1;
+          return;
+        }
+
         ejeCounts[eje] = (ejeCounts[eje] || 0) + 1;
       });
     }
@@ -490,20 +506,20 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
   }
 
   for (let key in replacedEjeCounts) {
-    if (replacedEjeCounts.hasOwnProperty(key)) {
-      labelsDoughnutEvent.push(key);
-      dataDoughnutEvent.push(replacedEjeCounts[key]);
-    }
+    if (!replacedEjeCounts.hasOwnProperty(key)) return;
+
+    labelsDoughnutEvent.push(key);
+    dataDoughnutEvent.push(replacedEjeCounts[key]);
   }
 
   const ejesChartData = {
-    labels: labelsDoughnutEvent, // Use shortened labels for both display and tooltips
+    labels: labelsDoughnutEvent,
     datasets: [
       {
         label: "Eje Count",
         data: dataDoughnutEvent,
-        backgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for background
-        hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length), // Reuse colors for hover
+        backgroundColor: colors.slice(0, dataDoughnutEvent.length),
+        hoverBackgroundColor: colors.slice(0, dataDoughnutEvent.length),
       },
     ],
   };
@@ -729,22 +745,35 @@ const EventPage: NextPage<PageCustomProps> = ({ customStyles }) => {
       />
       <div className={styles.container}>
         <div className={styles.side_card}>
-          <CardComponent
-              title="Total eventos"
-              style={styles.card}
-          >
-            <label className={styles.side_card_label}>
-              {eventStatusData.
-              reduce((accumulateValue, currentValue) =>
-                  accumulateValue + currentValue, 0) > 0 ? (
-                  EventsController.formatNumber(eventStatusData.
-                  reduce((accumulateValue, currentValue) =>
-                      accumulateValue + currentValue, 0))
-              ) : (
-                  <LoadingAnimation />
-              )}
-            </label>
-          </CardComponent>
+          <div className={styles.message_container}>
+            <CardComponent
+                title="Total eventos"
+                style={styles.card}
+            >
+              <label className={styles.side_card_label}>
+                {eventStatusData.
+                reduce((accumulateValue, currentValue) =>
+                    accumulateValue + currentValue, 0) > 0 ? (
+                    <div className={styles.header_container}>
+                      <div>
+                        {
+                          EventsController.formatNumber(eventStatusData.reduce((accumulateValue, currentValue) =>
+                              accumulateValue + currentValue, 0))
+                        }
+                      </div>
+                      <div className={styles.text_header}>
+                        en
+                        <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> departamentos
+                        y
+                        <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> municipios
+                      </div>
+                    </div>
+                ) : (
+                    <LoadingAnimation/>
+                )}
+              </label>
+            </CardComponent>
+          </div>
           <ChartCardComponent
               title="Eventos por sistema productivo"
               style={styles.card_tree}

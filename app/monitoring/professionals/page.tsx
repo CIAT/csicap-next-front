@@ -21,24 +21,15 @@ import React, { useEffect, useState } from "react";
 import TechnicalRepository from "@/helpers/Component/Repository/TechnicalRepository";
 import {DataFormat, FormattedBeneficiary, TechnicalBeneficiaries} from "@/interfaces/Components/TechnicalComponent";
 import ProfessionalController from "@/helpers/Component/Controller/ProfessionalController";
-import {
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
 import LoadingAnimation from "@/components/loadingAnimation";
 import MapComponent from "@/components/data/Map/MapComponent";
 import MapController from "@/helpers/Component/Controller/MapController";
-import {NestedDictionary} from "@/interfaces/Map/NestedDictionary";
 import {PageCustomProps} from "@/interfaces/Components/PageCustomProps";
 import ExportDropdown from "@/components/download/DowloadDropDown/ExportDropdown";
 import {handleOnClick, handleReset, handleTooltipChange} from "@/helpers/Component/CustomTooltip/CustomTooltipHandler";
 import {
   filterFunctions,
-  filterFunctionsEvents, filterFunctionsProfessionals,
-  getUniqueValuesFunctionsEvents,
+  filterFunctionsProfessionals,
   getUniqueValuesFunctionsProfessionals
 } from "@/interfaces/Components/CustomTooltipHandler";
 import CustomTooltip from "@/components/CustomTooltip/CustomTooltip";
@@ -114,42 +105,14 @@ function countEthnicity(data: TechnicalBeneficiaries[]) {
 }
 
 function countOrganizations(events: TechnicalBeneficiaries[]) {
-  const predefinedInstitutions = new Set([
-    "AGROSAVIA",
-    "AUGURA",
-    "ASBAMA",
-    "ASOHOFRUCOL",
-    "CENICAFE",
-    "CENICAÑA",
-    "CIAT (Alianza Bioversity-CIAT)",
-    "CIPAV",
-    "CIMMYT",
-    "FEDEARROZ",
-    "FEDEGAN",
-    "FEDEPANELA",
-    "FEDEPAPA",
-    "FENALCE",
-    "FEDECAFE",
-    "ASOCAÑA",
-    "MADR",
-    "ADR",
-    "Todas"
-  ]);
-
-  const organizations: { [key: string]: number } = {
-    Otras: 0,
-  };
+  const organizations: { [key: string]: number } = {};
 
   events.forEach((event) => {
     const institutions = event.affiliated_guild_or_organization;
     if(institutions === null) return;
 
     institutions.forEach((organization) => {
-      if (predefinedInstitutions.has(organization)) {
-        organizations[organization] = (organizations[organization] || 0) + 1;
-      } else {
-        organizations["Otras"] += 1;
-      }
+      organizations[organization] = (organizations[organization] || 0) + 1;
     });
   });
 
@@ -225,7 +188,7 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
         const uniqueEducationalLevel = EventsController.getUniqueValues(formattedEvents, "highest_educational_level");
         const uniqueGender = EventsController.getUniqueValues(formattedEvents, "gender_at_birth");
         const uniqueCrop = EventsController.getUniqueValues(formattedEvents, "crops_worked_last_12_months", true);
-        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", EventsController.predefinedInstitutions, true);
+        const uniqueInstitutions = EventsController.getInstitutionCategories(formattedEvents, "affiliated_guild_or_organization", true);
 
         setEvents(formattedEvents);
         setFilteredEvents(formattedEvents);
@@ -622,6 +585,11 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                     title="Profesionales por departamento donde trabajan"
                     header={
                       <div className={styles.header_container}>
+                        <div className={styles.text_header}>
+                          <div className={styles.red_point}>*</div>
+                          <div className={styles.bold}>{EventsController.formatNumber(filteredEvents.length)}</div> profesionales registrados
+                          en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(filteredEvents, "municipalities_code", true))}</div> departamentos
+                        </div>
                         <ExportDropdown
                             mapImageName={"profesionales_map.png"}/>
                       </div>

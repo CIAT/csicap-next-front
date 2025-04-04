@@ -6,11 +6,11 @@ import ReportsRepository from "@/helpers/Component/Repository/ReportsRepository"
 async function getReportData(reportId: string) {
   const dataset = await ReportsRepository.fetchEventById(reportId);
 
-  if (!dataset || !dataset.data || dataset.data.length === 0) {
+  if (!dataset || !dataset.data) {
     throw new Error("Report data not found");
   }
 
-  return dataset.data[0];
+  return dataset.data;
 }
 
 // Function to replace unsupported characters in filenames only
