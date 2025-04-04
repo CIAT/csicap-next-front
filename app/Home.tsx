@@ -50,13 +50,20 @@ export default function Home() {
                         <br />
                         Este sistema ofrece tableros interactivos que resumen el avance de los indicadores, proporcionando información en tiempo real para facilitar la toma de decisiones y mejorar la implementación del proyecto.
                     </div>
-                    <div>
+                    <div className={styles.button_container}>
                         <button
                             className={`${styles.shadow} ${styles.spacing} ${styles.button}`}
                             onClick={() => scrollToSection("information_section")}
                         >
-                            Conocer más
+                            Conocer más de la plataforma
                         </button>
+                        <a href={"https://agroalimentariasostenible.co/"} target="_blank" rel="noopener noreferrer">
+                            <button
+                                className={`${styles.shadow} ${styles.spacing} ${styles.button}`}
+                            >
+                                Conocer más del proyecto
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
