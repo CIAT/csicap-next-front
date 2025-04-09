@@ -276,10 +276,14 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     AssistanceRepository.getAssistanceData().then((data: Trained[]) => {
-      const mappedData = data.map(({ start_date, ...rest }) => ({
+      let mappedData = data.map(({ start_date, ...rest }) => ({
         ...rest,
         date: start_date,
       }));
+
+      mappedData = mappedData.filter(
+          data => data.group_ocupations !== "Equipo organizador del evento"
+      );
 
       setCounts(MapController.updateCountTrainedByCityCodes(mappedData));
       setNoInformationMunicipality(TrainedController.countDataWithoutInformation(mappedData, "muni_res_complete_code"));
