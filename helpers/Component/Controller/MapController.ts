@@ -667,25 +667,21 @@ class MapController {
         return cityEventCounts;
     }
 
-    static updateCountProfessionalsByProvince(events: { muni_res_tec: string }[]): Record<string, string> {
+    static updateCountProfessionalsByProvince(events: { department_where_you_work: string[] }[]): Record<string, string> {
         const provinceProfessionalsCounts: Record<string, string> = {};
 
         events.forEach(event => {
-            const rawProvince = event.muni_res_tec;
+            event.department_where_you_work.forEach(department => {
+                const province: string = this.removeAccents(department);
 
-            if (!rawProvince) return;
+                if (provinceProfessionalsCounts[province]) {
+                    const currentCount = parseInt(provinceProfessionalsCounts[province].replace(/\D/g, ''), 10);
+                    provinceProfessionalsCounts[province] = `Profesionales: ${currentCount + 1}`;
+                    return;
+                }
 
-            const province: string = this.removeAccents(this.getDepartmentNameByDepartmentCode(rawProvince.substring(0, 2)) ?? "no data");
-
-            if (province === "no data") return;
-
-            if (provinceProfessionalsCounts[province]) {
-                const currentCount = parseInt(provinceProfessionalsCounts[province].replace(/\D/g, ''), 10);
-                provinceProfessionalsCounts[province] = `Profesionales: ${currentCount + 1}`;
-                return;
-            }
-
-            provinceProfessionalsCounts[province] = 'Profesionales: 1';
+                provinceProfessionalsCounts[province] = 'Profesionales: 1';
+            });
         });
 
         return provinceProfessionalsCounts;

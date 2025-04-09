@@ -18,11 +18,13 @@ class ProfessionalController {
         const uniqueCodes = new Set<string>();
 
         events.forEach(event => {
-            const province = event.muni_res_tec;
-
-            if (!province) return;
-
-            uniqueCodes.add(province);
+            if (event && Array.isArray(event.department_where_you_work)) {
+                event.department_where_you_work.forEach(code => {
+                    if (code && code.trim() !== '') {
+                        uniqueCodes.add(code);
+                    }
+                });
+            }
         });
 
         return Array.from(new Set(uniqueCodes));
