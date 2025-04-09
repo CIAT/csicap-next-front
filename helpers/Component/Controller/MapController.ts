@@ -732,6 +732,10 @@ class MapController {
 
         departmentsCount = Array.from(new Set(departmentCodes)).length;
 
+        if (this.hasBogota(municipality_codes)) {
+            departmentsCount--;
+        }
+
         return departmentsCount;
     }
 
@@ -741,6 +745,15 @@ class MapController {
         let municipalitiesCount = 0;
         municipalitiesCount = Array.from(new Set(municipality_codes)).length;
         return municipalitiesCount;
+    }
+
+    static hasBogota(municipality_codes: string[]): boolean {
+        const BogotaCode = "11";
+        return municipality_codes.some(element => {
+            if (!element) return false;
+
+            return element.substring(0, 2) === BogotaCode
+        });
     }
 }
 

@@ -20,7 +20,11 @@ class ProfessionalController {
         events.forEach(event => {
             if (event && Array.isArray(event.department_where_you_work)) {
                 event.department_where_you_work.forEach(code => {
-                    if (code && code.trim() !== '') {
+                    if (
+                        code &&
+                        code.trim() !== '' &&
+                        code !== "Todos"
+                    ) {
                         uniqueCodes.add(code);
                     }
                 });
