@@ -42,7 +42,7 @@
 }
 
 .text_header {
-  width: 12vw;
+  width: 16vw;
   font-size: 0.7vw;
   display: flex;
   flex-wrap: wrap;
@@ -148,6 +148,6 @@
 @media screen and (max-width: 1280px){
   .text_header {
     font-size: 0.9vw;
-    width: 15vw;
+    width: 20vw;
   }
 }

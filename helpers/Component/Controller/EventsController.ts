@@ -18,10 +18,17 @@ class EventController {
         const codes = events.flatMap((event: any) => {
             const code = event[column];
 
-            if (!code) return [];
+            if (
+                !code ||
+                code === "1000000"
+            ) return [];
 
             if (isArray) {
-                return code.map((value: string) => this.addZero(value));
+                return code.map((value: string) => {
+                    if (value === "1000000") return;
+
+                    return this.addZero(value)
+                });
             }
 
             return [this.addZero(code)];

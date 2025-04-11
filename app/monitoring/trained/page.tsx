@@ -276,10 +276,14 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
 
   useEffect(() => {
     AssistanceRepository.getAssistanceData().then((data: Trained[]) => {
-      const mappedData = data.map(({ start_date, ...rest }) => ({
+      let mappedData = data.map(({ start_date, ...rest }) => ({
         ...rest,
         date: start_date,
       }));
+
+      mappedData = mappedData.filter(
+          data => data.group_ocupations !== "Equipo organizador del evento"
+      );
 
       setCounts(MapController.updateCountTrainedByCityCodes(mappedData));
       setNoInformationMunicipality(TrainedController.countDataWithoutInformation(mappedData, "muni_res_complete_code"));
@@ -617,7 +621,12 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                   {noInformationMunicipality > 0 && (
                       <div className={styles.important_text}>
                         <div className={styles.important}>*</div>
-                        <div className={styles.bold}>{EventsController.formatNumber(tempTrainedData.length)}</div> capacitados en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div> departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div> municipios. No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
+                        <div className={styles.bold}>
+                          {EventsController.formatNumber(tempTrainedData.length)}</div> capacitados en
+                          <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div>
+                          departamentos{MapController.hasBogota(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code")) && (`${", Bogotá D. C."}`)}
+                          {" "}y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div>
+                          municipios. No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
                       </div>
                   )}
                   <ExportDropdown
