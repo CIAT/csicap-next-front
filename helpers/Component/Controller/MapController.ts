@@ -115,9 +115,9 @@ class MapController {
             ['==', ['get', 'value'], null],
             'white',
             ['step', ['get', 'value'],
-                colors[0], adjustedSteps[1],
-                colors[1], adjustedSteps[3],
-                colors[2], adjustedSteps[5],
+                colors[0], Number(adjustedSteps[1]) + 1,
+                colors[1], Number(adjustedSteps[3]) + 1,
+                colors[2], Number(adjustedSteps[5]) + 1,
                 colors[3]
             ]
         ];
