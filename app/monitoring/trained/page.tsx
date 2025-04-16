@@ -282,7 +282,9 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
       }));
 
       mappedData = mappedData.filter(
-          data => data.group_ocupations !== "Equipo organizador del evento"
+          data =>
+              data.group_ocupations !== "Equipo organizador del evento" &&
+              data.direct_ben === "1"
       );
 
       setCounts(MapController.updateCountTrainedByCityCodes(mappedData));
