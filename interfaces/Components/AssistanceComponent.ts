@@ -9,6 +9,7 @@ export interface Trained {
     muni_res_complete_label: string;
     start_date: string;
     organization_affiliation_complete: string[];
+    direct_ben: string;
 }
 
 export interface MappedTrained {
