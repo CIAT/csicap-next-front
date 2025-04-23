@@ -359,8 +359,7 @@ const CalendarPage: NextPage<PageCustomProps> = ({ customStyles }) => {
                           {EventsController.formatNumber(tempEventData.length)}</div>
                           eventos en
                           <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div>
-                          departamentos{MapController.hasBogota(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code")) && (`${", Bogotá D. C."}`)}
-                          {" "}y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> municipios
+                          departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempEventData, "municipality_code"))}</div> municipios
                       </div>
                       <ExportDropdown
                           mapImageName={"calendario_map.png"}

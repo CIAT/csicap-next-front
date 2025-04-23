@@ -589,7 +589,6 @@ const ProfessionalsPage: NextPage<PageCustomProps> = ({customStyles}) => {
                           <div className={styles.red_point}>*</div>
                           <div className={styles.bold}>{EventsController.formatNumber(filteredEvents.length)}</div> profesionales registrados
                           en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(filteredEvents, "municipalities_code", true))}</div> departamentos
-                          {MapController.hasBogota(EventsController.getMunicipalitiesCodes(filteredEvents, "municipalities_code", true)) && (<div> y Bogotá D. C.</div>)}
                         </div>
                         <ExportDropdown
                             mapImageName={"profesionales_map.png"}/>
