@@ -551,8 +551,7 @@ const ProducersPage: NextPage<PageCustomProps> = ({customStyles}) => {
                         <div className={styles.red_point}>*</div>
                         <div className={styles.bold}>{EventsController.formatNumber(filteredEvents.length)}</div> familias
                         en <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(filteredEvents, "id_farm_muni"))}</div>
-                        departamentos{MapController.hasBogota(EventsController.getMunicipalitiesCodes(filteredEvents, "id_farm_muni")) && (`${", Bogotá D. C."}`)}
-                        {" "}y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(filteredEvents, "id_farm_muni"))}</div> municipios
+                        departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(filteredEvents, "id_farm_muni"))}</div> municipios
                       </div>
                       <ExportDropdown
                           mapImageName={"productores_map.png"}/>

@@ -626,8 +626,7 @@ const AssistancePage: NextPage<PageCustomProps> = ({customStyles}) => {
                         <div className={styles.bold}>
                           {EventsController.formatNumber(tempTrainedData.length)}</div> capacitados en
                           <div className={styles.bold}>{MapController.getDepartmentCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div>
-                          departamentos{MapController.hasBogota(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code")) && (`${", Bogotá D. C."}`)}
-                          {" "}y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div>
+                          departamentos y <div className={styles.bold}>{MapController.getMunicipalitiesCount(EventsController.getMunicipalitiesCodes(tempTrainedData, "muni_res_complete_code"))}</div>
                           municipios. No se tiene información para el {Math.round((noInformationMunicipality / allTrainedData.length) * 100)}% de los capacitados.
                       </div>
                   )}
